@@ -33,6 +33,20 @@
  */
 class CompanyInformation extends CActiveRecord
 {
+            /**
+         * Behaviors for this model
+         */
+        public function behaviors(){
+          return array(
+            'sluggable' => array(
+              'class'=>'ext.behaviors.SluggableBehavior',
+              'columns' => array('company_name'),
+              'unique' => true,
+              'update' => true,
+            ),
+          );
+        }
+    
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -59,7 +73,7 @@ class CompanyInformation extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('member_id, company_name, slug, logo, banner_image, company_location, country_of_origin, website, established_at, active_business_years, import_export, no_of_staffs, description, status, trash, created_at, modified_at, trashed_at', 'required'),
+			array('member_id, company_name, logo, banner_image, company_location, country_of_origin, website, established_at, active_business_years, import_export, no_of_staffs, description, status, created_at, modified_at', 'required'),
 			array('member_id, active_business_years, import_export, no_of_staffs, status, trash', 'numerical', 'integerOnly'=>true),
 			array('company_name, slug, logo, banner_image, company_location, country_of_origin, website', 'length', 'max'=>255),
 			// The following rule is used by search().

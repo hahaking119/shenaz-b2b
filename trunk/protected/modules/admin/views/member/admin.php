@@ -40,32 +40,36 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 )); ?>
 </div><!-- search-form -->
 
-<?php $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'member-grid',
-	'dataProvider'=>$model->search(),
-	'filter'=>$model,
-	'columns'=>array(
-		'member_id',
-		'email',
-		'password',
-		'password_text',
-		'first_name',
-		'middle_name',
-		/*
-		'last_name',
-		'phone',
-		'membership_id',
-		'business_type',
-		'activation_key',
-		'activation_status',
-		'status',
-		'trash',
-		'created_at',
-		'modified_at',
-		'trashed_at',
-		*/
-		array(
-			'class'=>'CButtonColumn',
-		),
-	),
-)); ?>
+<?php
+$this->widget('bootstrap.widgets.TbGridView', array(
+    'type' => 'striped bordered condensed',
+    'dataProvider' => $model->search(),
+    'template' => "{items}",
+    'columns' => array(
+        'member_id',
+        'email',
+        'password',
+        'password_text',
+        'first_name',
+        'middle_name',
+        array(
+            'class' => 'bootstrap.widgets.TbButtonColumn',
+            'htmlOptions' => array('style' => 'width: 60px'),
+            'template' => '{view}{update}{add}{delete}',
+            'buttons' => array(
+                'add' => array(
+                    'label' => 'Add Company/Directory Information',
+                    'icon' => 'icon-plus',
+                    'url' => 'Yii::app()->createAbsoluteUrl("admin/member/add_directory_company_info", array("id"=>$data->member_id))',
+                ),
+//                'trash' => array(
+//                    'label' => 'Trash',
+//                    'icon' => 'icon-trash',
+//                    'url' => 'Yii::app()->createAbsoluteUrl("admin/registrant/trash", array("id"=>$data->id))',
+//                    'click' => 'js:function(){return confirm("Are you sure you want to trash the retailer information?")}'
+//                ),
+            ),
+        ),
+    ),
+));
+?>
