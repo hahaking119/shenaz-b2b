@@ -30,7 +30,7 @@ class MemberController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'admin', 'update'),
+                'actions' => array('create', 'admin', 'update','add_directory_company_info', 'upload', 'remove_image'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -171,5 +171,112 @@ class MemberController extends Controller {
             Yii::app()->end();
         }
     }
+    
+    public function actionAdd_directory_company_info($id=''){
+        $companyInformation = CompanyInformation::model()->findByAttributes(array('member_id'=>$id));
+        if(!isset($companyInformation)){
+        $companyInformation = new CompanyInformation;
+        $companyInformation->member_id =$id;
+        }
+        
+        $model = DirectoryInformation::model()->findByAttributes(array('company_id'=>$companyInformation->company_id));
+        if(empty($model))
+        $model = new DirectoryInformation;
+        
+        $this->performAjaxValidation($model, $companyInformation);
 
+        if (isset($_POST['CompanyInformation'])) {
+            $companyInformation->attributes = $_POST['CompanyInformation'];
+//            $companyInformation->member_id = $id;
+            $companyInformation->created_at = new CDbExpression('NOW()');
+            $companyInformation->modified_at = new CDbExpression('NOW()');
+            if ($companyInformation->save()) {
+                $tempdir = Yii::app()->basePath . '/../uploads/temp/';
+                $realdir = Yii::app()->basePath . '/../uploads/company/';
+                $image = $companyInformation->logo;
+
+                @copy($tempdir . 'original/' . $image, $realdir . 'logo/original/' . $image);
+                @copy($tempdir . 'thumbs/' . $image, $realdir . 'logo/thumbs/' . $image);
+                @unlink($tempdir . 'original/' . $image);
+                @unlink($tempdir . 'thumbs/' . $image);
+                $banner = $companyInformation->banner_image;
+
+                @copy($tempdir . 'original/' . $banner, $realdir . 'banner/original/' . $banner);
+                @copy($tempdir . 'thumbs/' . $banner, $realdir . 'banner/thumbs/' . $banner);
+                @unlink($tempdir . 'original/' . $banner);
+                @unlink($tempdir . 'thumbs/' . $banner);
+                        
+                if (isset($_POST['DirectoryInformation'])) {
+                    $model->attributes = $_POST['DirectoryInformation'];
+                    $model->company_id = $companyInformation->company_id;
+                    $model->created_at = new CDbExpression('NOW()');
+                    $model->modified_at = new CDbExpression('NOW()');
+                    
+                    if ($model->save()) {
+                        $tempdir = Yii::app()->basePath . '/../uploads/temp/';
+                        $realdir = Yii::app()->basePath . '/../uploads/directory/';
+                        $image = $model->image;
+
+                        @copy($tempdir . 'original/' . $image, $realdir . 'image/original/' . $image);
+                        @copy($tempdir . 'thumbs/' . $image, $realdir . 'image/thumbs/' . $image);
+                        @unlink($tempdir . 'original/' . $image);
+                        @unlink($tempdir . 'thumbs/' . $image);
+                    } else {
+                        print_r($model->getErrors());
+                        die();
+                    }
+                }
+                Yii::app()->user->setFlash('success', '<strong>Updated!</strong> The directory informaton has been updated.');
+                $this->redirect(array('admin'));
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
+        }
+        
+        $this->render('add_company_and_directory_info',array('model'=>$model,'companyInformation'=>$companyInformation));
+    }
+    
+    public function actionUpload($type) {
+        Yii::import("ext.EAjaxUpload.qqFileUploader");
+
+        $folder = Yii::app()->basePath . '/../uploads/temp/original/'; // folder for uploaded files
+        $allowedExtensions = array("jpg", "jpeg", "gif", "png"); //array("jpg","jpeg","gif","exe","mov" and etc...
+        $sizeLimit = 2 * 1024 * 1024; // maximum file size in bytes
+        $uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
+        $result = $uploader->handleUpload($folder);
+        if ($result['success']) {
+            $img = Yii::app()->simpleImage->load($folder . $result['filename']);
+            $uploadDetail = CommonClass::getImageResizeDetails($type);
+            $function = $uploadDetail["thumbs"]["function"];
+            $img->$function($uploadDetail["thumbs"]["width"], $uploadDetail["thumbs"]["height"]);
+            $img->save(Yii::app()->basePath . "/../uploads/temp/thumbs/" . $result['filename'], NULL);
+
+            $result['imageThumb'] = Yii::app()->baseUrl . '/uploads/temp/thumbs/' . $result['filename'];
+        }
+
+        $return = htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+
+        echo $return; // it's array
+    }
+    
+    public function actionRemove_image() {
+        if (Yii::app()->request->isAjaxRequest) {
+            $image = $_POST['image'];
+            $tempdir = Yii::app()->basePath . '/../uploads/temp/';
+            $realdir = Yii::app()->basePath . '/../uploads/company/';
+            if (file_exists($tempdir . 'original/' . $image))
+                @unlink($tempdir . 'original/' . $image);
+            if (file_exists($tempdir . 'thumbs/' . $image))
+                @unlink($tempdir . 'thumbs/' . $image);
+            if (file_exists($realdir . 'original/' . $image))
+                @unlink($realdir . 'logo/original/' . $image);
+            if (file_exists($realdir . 'logo/thumbs/' . $image))
+                @unlink($realdir . 'thumbs/' . $image);
+            if (file_exists($realdir . 'original/' . $image))
+                @unlink($realdir . 'banner/original/' . $image);
+            if (file_exists($realdir . 'banner/thumbs/' . $image))
+                @unlink($realdir . 'thumbs/' . $image);
+            echo 'success';
+        }
+    }
 }
