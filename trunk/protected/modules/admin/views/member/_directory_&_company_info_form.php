@@ -37,25 +37,17 @@
             <?php echo $form->textFieldRow($companyInformation, 'website'); ?>
             
             
-            <?php echo $form->labelEx($model,'established_at'); ?>
-            <?php 
-//                $this->widget('ext.rezvan.RDatePicker',array(
-//                    'name'=>'CompanyInformation[established_at]',
-//                    'value'=>$companyInformation->established_at,
-//                    'options' => array(
-//                        'format' => 'yyyy/mm/dd',
-//                        'viewformat' => 'yyyy/mm/dd',
-//                        'placement' => 'right',
-//                        'todayBtn'=>true,
-//                        'language'=>'en',
-//                    )
-//                ));  
+            <?php echo $form->labelEx($companyInformation,'established_at'); ?>
+            <?php
                 $this->widget('zii.widgets.jui.CJuiDatePicker',array(
-                    'name'=>'CompanyInformation[established_at]',
-                    'value'=>$companyInformation->established_at,
+                    'model'=>$companyInformation,
+                    'attribute'=>'established_at',
+                    'value'=>$companyInformation->established_at, 
                     // additional javascript options for the date picker plugin
                     'options'=>array(
                         'showAnim'=>'fold',
+                        'dateFormat' => 'yy-mm-dd',
+                        'language'=>'en',
                     ),
                     'htmlOptions'=>array(
                         'style'=>'height:20px;'
@@ -219,7 +211,7 @@
             <?php echo $form->textFieldRow($model, 'last_name', array('size' => 60, 'maxlength' => 255)); ?>
 
             <?php echo $form->textFieldRow($model, 'job_title', array('size' => 20, 'maxlength' => 20)); ?>
-<!-- Image -->
+
             <div class="control-group">
                 <div class="control-label"><?php echo $form->labelEx($model, 'image'); ?></div>
                 <div class="controls">
@@ -305,6 +297,7 @@
 
             <div class="form-actions">
                 <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Update', array('class' => 'btn btn-info')); ?>
+                <?php echo CHtml::resetButton('Reset',array('class' => 'btn btn-info','onclick'=>'$("#directory-information-form").trigger("reset");alert("see");'));?>
             </div>
         </div>
     </div>
