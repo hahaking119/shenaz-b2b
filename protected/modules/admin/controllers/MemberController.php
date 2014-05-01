@@ -137,6 +137,7 @@ class MemberController extends Controller {
      * Manages all models.
      */
     public function actionAdmin() {
+        $this->layout="//layouts/column2";
         $model = new Member('search');
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Member']))
@@ -183,11 +184,10 @@ class MemberController extends Controller {
         if(empty($model))
         $model = new DirectoryInformation;
         
-        $this->performAjaxValidation($model, $companyInformation);
+        $this->performAjaxValidation(array($model, $companyInformation));
 
         if (isset($_POST['CompanyInformation'])) {
             $companyInformation->attributes = $_POST['CompanyInformation'];
-//            $companyInformation->member_id = $id;
             $companyInformation->created_at = new CDbExpression('NOW()');
             $companyInformation->modified_at = new CDbExpression('NOW()');
             if ($companyInformation->save()) {
