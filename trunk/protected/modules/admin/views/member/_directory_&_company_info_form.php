@@ -300,7 +300,7 @@
 
             <div class="form-actions">
                 <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Update', array('class' => 'btn btn-info')); ?>
-                <?php echo CHtml::resetButton('Reset',array('class' => 'btn btn-info'));?>
+                <?php if ($model->isNewRecord) echo CHtml::resetButton('Reset', array('class' => 'btn')); ?>
             </div>
         </div>
     </div>
