@@ -16,7 +16,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>View Category #<?php echo $model->category_id; ?></h1>
+<h1>View Category - <?php echo $model->title; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
