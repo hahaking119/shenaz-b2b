@@ -187,6 +187,8 @@ class MemberController extends Controller {
         $this->performAjaxValidation(array($model, $companyInformation));
 
         if (isset($_POST['CompanyInformation'])) {
+            if(Yii::app()->request->isAjaxRequest)
+                Yii::app()->end();
             $companyInformation->attributes = $_POST['CompanyInformation'];
             $companyInformation->created_at = new CDbExpression('NOW()');
             $companyInformation->modified_at = new CDbExpression('NOW()');

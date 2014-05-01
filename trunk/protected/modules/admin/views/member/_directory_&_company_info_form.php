@@ -3,7 +3,8 @@
 /* @var $model DirectoryInformation */
 /* @var $form CActiveForm */
 ?>
-
+<link rel="stylesheet" href="<?php echo Yii::app()->createUrl("/scripts/datepicker/datepicker.css"); ?>" type="text/css" />
+<script type="text/javascript" src="<?php echo Yii::app()->createUrl("/scripts/datepicker/bootstrap-datepicker.js"); ?>"></script>
 <div class="form">
 
     <?php
@@ -39,22 +40,7 @@
             <div class="control-group">
                 <div class="control-label"><?php echo $form->labelEx($companyInformation,'established_at'); ?></div>
                 <div class="controls">
-                <?php
-                    $this->widget('zii.widgets.jui.CJuiDatePicker',array(
-                        'model'=>$companyInformation,
-                        'attribute'=>'established_at',
-                        'value'=>$companyInformation->established_at, 
-                        // additional javascript options for the date picker plugin
-                        'options'=>array(
-                            'showAnim'=>'fold',
-                            'dateFormat' => 'yy-mm-dd',
-                            'language'=>'en',
-                        ),
-                        'htmlOptions'=>array(
-                            'style'=>'height:20px;'
-                        ),
-                    ));
-                ?>
+                    <?php echo $form->textField($companyInformation,'established_at',array('class'=>'date_picker')); ?>
                 </div>
             </div>
             <?php echo $form->error($model,'messageDate'); ?>
@@ -339,4 +325,7 @@
         $('#directory-information').addClass('active');
     }
     
+    $('.date_picker').datepicker({
+        format:'yyyy-mm-dd'
+    });
 </script>
