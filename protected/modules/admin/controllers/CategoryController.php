@@ -59,7 +59,7 @@ class CategoryController extends Controller {
      */
     public function actionCreate() {
         $model = new Category;
-        $parentCategories = Category::model()->findAll('parent_id = 0');
+        $parentCategories = Category::model()->findAll('parent_id = 0',array('order'=>'title ASC'));
         if (!$parentCategories) {
             $parentCategories = new Category;
         }
