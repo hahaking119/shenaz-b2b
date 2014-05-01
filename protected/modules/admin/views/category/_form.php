@@ -23,7 +23,7 @@
 
     <?php
     if (!$parentCategories->isNewRecord) {
-        $parentCategories = CHtml::listData($parentCategories, 'category_id', 'name');
+        $parentCategories = CHtml::listData($parentCategories, 'category_id', 'title');
     } else {
         $parentCategories = array();
     }
