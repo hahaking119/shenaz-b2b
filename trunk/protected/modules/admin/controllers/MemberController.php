@@ -189,7 +189,27 @@ class MemberController extends Controller {
         if (isset($_POST['CompanyInformation'])) {
             if(Yii::app()->request->isAjaxRequest)
                 Yii::app()->end();
+            
+            $prev_logo = $companyInformation->logo;
+            $prev_banner = $companyInformation->banner_image;
+            
             $companyInformation->attributes = $_POST['CompanyInformation'];
+            
+            if($prev_logo !== $companyInformation->logo){
+                $logoPath = Yii::app()->basePath.'/../uploads/company/logo/';
+                if(file_exists($logoPath.'thumbs/'.$prev_logo))
+                    unlink ($logoPath.'thumbs/'.$prev_logo);
+                if(file_exists($logoPath.'original/'.$prev_logo))
+                    unlink ($logoPath.'original/'.$prev_logo);
+            }
+            if($prev_banner !== $companyInformation->banner_image){
+                $bannerPath = Yii::app()->basePath.'/../uploads/company/banner/';
+                if(file_exists($bannerPath.'thumbs/'.$prev_banner))
+                    unlink ($bannerPath.'thumbs/'.$prev_banner);
+                if(file_exists($bannerPath.'original/'.$prev_banner))
+                    unlink ($bannerPath.'original/'.$prev_banner);
+            }
+            
             $companyInformation->created_at = new CDbExpression('NOW()');
             $companyInformation->modified_at = new CDbExpression('NOW()');
             if ($companyInformation->save()) {
@@ -209,7 +229,18 @@ class MemberController extends Controller {
                 @unlink($tempdir . 'thumbs/' . $banner);
                         
                 if (isset($_POST['DirectoryInformation'])) {
+                    $prev_image = $model->image;
+                    
                     $model->attributes = $_POST['DirectoryInformation'];
+                    
+                    if($prev_image !== $model->image){
+                        $imagePath = Yii::app()->basePath.'/../uploads/directory/image/';
+                        if(file_exists($imagePath.'thumbs/'.$prev_image))
+                            unlink ($imagePath.'thumbs/'.$prev_image);
+                        if(file_exists($imagePath.'original/'.$prev_image))
+                            unlink ($imagePath.'original/'.$prev_image);
+                    }
+                    
                     $model->company_id = $companyInformation->company_id;
                     $model->created_at = new CDbExpression('NOW()');
                     $model->modified_at = new CDbExpression('NOW()');

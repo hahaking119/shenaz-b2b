@@ -93,7 +93,7 @@
                 if (!$model->isNewRecord && !empty($model->image)) {
                         static $i = 1;
                         echo '<li id="thumbs_' . $i . '" class="preview_' . $i . '">';
-//                        echo CHtml::hiddenField('CategoryBanner[banner][]', $image->image);
+                        echo CHtml::hiddenField('CategoryBanner[banner][]', $image->image);
                         echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/category/image/thumbs/' . $model->image), $model->image, array('class' => 'thumbnail span2'));
                         echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $model->image . '\',\''.'image\''.',\''.$model->category_id.'\')" class="btn btn-danger">Remove</a>';
                         echo '</li>';
