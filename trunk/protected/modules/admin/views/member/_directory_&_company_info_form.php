@@ -52,7 +52,7 @@
             
             <?php echo $form->textFieldRow($companyInformation, 'no_of_staffs'); ?>
             
-            <?php echo $form->textAreaRow($companyInformation, 'description'); ?>
+            <?php echo $form->textAreaRow($companyInformation, 'description',array('rows' => 6, 'cols' => 50)); ?>
             
             <?php echo $form->dropDownListRow($companyInformation, 'status', array(''=>'--Select Status--','1'=>'Active', '0'=>'Inactive')); ?>
             
