@@ -93,7 +93,7 @@
                                                 }
                                                 $('.qq-upload-list').remove()+
                                                 $('#thumbs_list').html('<div id=\"image_preview\" class=\"preview_'+index+'\"><div id=\"thumbs_'+index+'\" class=\"pull-left thumbnail\"><img src=\"'+responseJSON.imageThumb+'\" alt=\"'+responseJSON.filename+'\" class=\"span2\"></div>'+
-                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"CompanyInformation[logo]\" value=\"'+responseJSON.filename+'\"></div>');
+                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\','+'\'logo\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"CompanyInformation[logo]\" value=\"'+responseJSON.filename+'\"></div>');
                                             }
                                             else
                                             {
@@ -159,7 +159,7 @@
                                                 }
                                                 $('.qq-upload-list').remove()+
                                                 $('#banner_list').html('<div id=\"image_preview\" class=\"preview_'+index+'\"><div id=\"thumbs_'+index+'\" class=\"pull-left thumbnail\"><img src=\"'+responseJSON.imageThumb+'\" alt=\"'+responseJSON.filename+'\" class=\"span2\"></div>'+
-                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"CompanyInformation[banner_image]\" value=\"'+responseJSON.filename+'\"></div>');
+                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\','+'\'banner\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"CompanyInformation[banner_image]\" value=\"'+responseJSON.filename+'\"></div>');
                                             }
                                             else
                                             {
@@ -238,7 +238,7 @@
                                                 }
                                                 $('.qq-upload-list').remove()+
                                                 $('#image_list').html('<div id=\"image_preview\" class=\"preview_'+index+'\"><div id=\"thumbs_'+index+'\" class=\"pull-left thumbnail\"><img src=\"'+responseJSON.imageThumb+'\" alt=\"'+responseJSON.filename+'\" class=\"span2\"></div>'+
-                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"DirectoryInformation[image]\" value=\"'+responseJSON.filename+'\"></div>');
+                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\','+'\'image\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"DirectoryInformation[image]\" value=\"'+responseJSON.filename+'\"></div>');
                                             }
                                             else
                                             {
@@ -301,14 +301,26 @@
     });
 </script>
 <script>
-    function getRemove(index, image) {
+    function getRemove(index, image, type, id) {
         $.ajax({
             type: 'POST',
             url: '<?php echo Yii::app()->createAbsoluteUrl("admin/member/remove_image"); ?>',
-            data: {image: image},
+            data: {image: image, id: id},
             success: function(data) {
-                if (data == 'success') {
-                    $('.preview_' + index).remove();
+                if (data === 'success') {
+                    if(type==='banner'){
+                        //alert(type);
+                        $('#banner_list .preview_' + index).remove();
+                        $('#banner_list #thumbs_'+index).remove();
+                    }
+                    else if(type==='logo'){
+                        $('#thumbs_list .preview_' + index).remove();
+                        $('#thumbs_list #thumbs_'+index).remove();
+                    }
+                    else{
+                        $('#image_list .preview_' + index).remove();
+                        $('#image_list #thumbs_'+index).remove();
+                    }
                     var message = '<div class="alert alert-success"><span class="close" data-dismiss="alert">×</span>Image removed.</div>';
                     $("#msg").html(message).fadeIn().animate({opacity: 1.0}, 4000).fadeOut("slow");
                 }
