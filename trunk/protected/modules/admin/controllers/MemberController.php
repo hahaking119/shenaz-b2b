@@ -264,8 +264,13 @@ class MemberController extends Controller {
     public function actionRemove_image() {
         if (Yii::app()->request->isAjaxRequest) {
             $image = $_POST['image'];
+            $id = $_POST['id'];
+            
             $tempdir = Yii::app()->basePath . '/../uploads/temp/';
             $realdir = Yii::app()->basePath . '/../uploads/company/';
+            
+            $realdir2 = Yii::app()->basePath . '/../uploads/category/';
+            
             if (file_exists($tempdir . 'original/' . $image))
                 @unlink($tempdir . 'original/' . $image);
             if (file_exists($tempdir . 'thumbs/' . $image))
@@ -278,6 +283,24 @@ class MemberController extends Controller {
                 @unlink($realdir . 'banner/original/' . $image);
             if (file_exists($realdir . 'banner/thumbs/' . $image))
                 @unlink($realdir . 'thumbs/' . $image);
+            
+            if (file_exists($realdir2 . 'banner/thumbs/' . $image)){
+                $banner = CategoryBanner::model()->findByAttributes(array('id'=>$id));
+                if($banner->delete())
+                    @unlink($realdir2 . 'banner/thumbs/' . $image);
+            }
+            if (file_exists($realdir2 . 'banner/original/' . $image))
+                @unlink($realdir2 . 'banner/original/' . $image);
+            
+            if (file_exists($realdir2 . 'image/thumbs/' . $image)){
+                $category = Category::model()->findByAttributes(array('category_id'=>$id));
+                $category->image = "";
+                $category->modified_at = new CDbExpression('NOW()');
+                if($category->save())
+                    @unlink($realdir2 . 'image/thumbs/' . $image);
+            }
+            if (file_exists($realdir2 . 'image/original/' . $image))
+                @unlink($realdir2 . 'image/original/' . $image);
             echo 'success';
         }
     }

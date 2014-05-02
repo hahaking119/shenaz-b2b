@@ -69,7 +69,7 @@
                                                 }
                                                 $('.qq-upload-list').remove()+
                                                 $('#cat-image').append('<li id=\"thumbs_'+index+'\" class=\"pull-left thumbnail span2\"><div id=\"image_preview\" class=\"preview_'+index+'\"><img src=\"'+responseJSON.imageThumb+'\" alt=\"'+responseJSON.filename+'\">'+
-                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"Category[image]\" value=\"'+responseJSON.filename+'\"></div></li>');
+                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+',\''+responseJSON.filename+'\','+'\'image\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"Category[image]\" value=\"'+responseJSON.filename+'\"></div></li>');
                                             }
                                             else
                                             {
@@ -90,12 +90,12 @@
             <div class="clearfix"></div>
             <ul id="cat-image">
                 <?php
-                if (!$model->isNewRecord && isset($model->image)) {
+                if (!$model->isNewRecord && !empty($model->image)) {
                         static $i = 1;
                         echo '<li id="thumbs_' . $i . '" class="preview_' . $i . '">';
 //                        echo CHtml::hiddenField('CategoryBanner[banner][]', $image->image);
                         echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/category/image/thumbs/' . $model->image), $model->image, array('class' => 'thumbnail span2'));
-                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $model->image . '\')" class="btn btn-danger">Remove</a>';
+                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $model->image . '\',\''.'image\''.',\''.$model->category_id.'\')" class="btn btn-danger">Remove</a>';
                         echo '</li>';
                         echo '<div class="clearfix"></div>';
                     }
@@ -142,7 +142,7 @@
                                                 }
                                                 $('.qq-upload-list').remove()+
                                                 $('#thumbs_list').append('<li id=\"thumbs_'+index+'\" class=\"pull-left thumbnail span2\"><div id=\"image_preview\" class=\"preview_'+index+'\"><img src=\"'+responseJSON.imageThumb+'\" alt=\"'+responseJSON.filename+'\">'+
-                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+',\'+'image')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"ProductImages[image][]\" value=\"'+responseJSON.filename+'\"></div></li>');
+                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+',\''+responseJSON.filename+'\','+'\'banner\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"ProductImages[image][]\" value=\"'+responseJSON.filename+'\"></div></li>');
                                             }
                                             else
                                             {
@@ -169,7 +169,7 @@
                         echo '<li id="thumbs_' . $i . '" class="preview_' . $i . '">';
                         echo CHtml::hiddenField('CategoryBanner[banner][]', $image->banner);
                         echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/category/banner/thumbs/' . $image->banner), $image->banner, array('class' => 'thumbnail span2'));
-                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $image->banner . '\')" class="btn btn-danger">Remove</a>';
+                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $image->banner . '\',\''.'banner\''.',\''.$image->id.'\')" class="btn btn-danger">Remove</a>';
                         echo '</li>';
                         echo '<div class="clearfix"></div>';
                         $i++;
@@ -193,16 +193,22 @@
 
 </div><!-- form -->
 <script>
-    function getRemove(index, image, type) {
+    function getRemove(index, image, type, id) {
         $.ajax({
             type: 'POST',
             url: '<?php echo Yii::app()->createAbsoluteUrl("admin/member/remove_image"); ?>',
-            data: {image: image},
+            data: {image: image, id: id},
             success: function(data) {
-                if (data == 'success') {
-                    if(type==='image'){alert('123');}
-                    $('.preview_' + index).remove();
-                    $('#thumbs_'+index).remove();
+                if (data === 'success') {
+                    if(type==='banner'){
+                        //alert(type);
+                        $('#thumbs_list .preview_' + index).remove();
+                        $('#thumbs_list #thumbs_'+index).remove();
+                    }
+                    else{
+                    $('#cat-image .preview_' + index).remove();
+                    $('#cat-image #thumbs_'+index).remove();
+                    }
                     var message = '<div class="alert alert-success"><span class="close" data-dismiss="alert">×</span>Image removed.</div>';
                     $("#msg").html(message).fadeIn().animate({opacity: 1.0}, 4000).fadeOut("slow");
                 }
