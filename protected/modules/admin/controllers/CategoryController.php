@@ -30,7 +30,7 @@ class CategoryController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'update', 'upload', 'remove'),
+                'actions' => array('create', 'update', 'upload', 'remove', 'admin'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -125,18 +125,62 @@ class CategoryController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
+//        $parentCategories = Category::model()->findAllByAttributes(array('parent_id' => '0', 'title'!=>$model->title),array('order'=>'title ASC'));
+        $parentCategories = Category::model()->findAll(array('condition'=>'parent_id = 0'));
+        if (!$parentCategories) {
+            $parentCategories = new Category;
+        }
+        
+        $categoryBanner = new CategoryBanner;
+        $banners = CategoryBanner::model()->findAllByAttributes(array('category_id'=>$id));
 
         // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+         $this->performAjaxValidation($model);
 
         if (isset($_POST['Category'])) {
             $model->attributes = $_POST['Category'];
-            if ($model->save())
+            $model->slug = CommonClass::getSlug($model->title);
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                if (isset($model->image) && !empty($model->image)) {
+                    $tempdir = Yii::app()->basePath . '/../uploads/temp/';
+                    $realdir = Yii::app()->basePath . '/../uploads/category/';
+                    $image = $model->image;
+
+                    @copy($tempdir . 'original/' . $image, $realdir . 'image/original/' . $image);
+                    @copy($tempdir . 'thumbs/' . $image, $realdir . 'image/thumbs/' . $image);
+                    @unlink($tempdir . 'original/' . $image);
+                    @unlink($tempdir . 'thumbs/' . $image);
+                }
+                if (isset($_POST['ProductImages'])) {
+                    foreach ($_POST['ProductImages']['image'] as $key => $value) {
+                        $banner = new CategoryBanner();
+                        $banner->category_id = $model->category_id;
+                        $banner->banner = $value;
+                        $banner->save();
+
+                        $tempdir = Yii::app()->basePath . '/../uploads/temp/';
+                        $realdir = Yii::app()->basePath . '/../uploads/category/';
+                        $image = $value;
+
+                        @copy($tempdir . 'original/' . $image, $realdir . 'banner/original/' . $image);
+                        @copy($tempdir . 'thumbs/' . $image, $realdir . 'banner/thumbs/' . $image);
+                        @unlink($tempdir . 'original/' . $image);
+                        @unlink($tempdir . 'thumbs/' . $image);
+                    }
+                }
+                Yii::app()->user->setFlash('success', '<strong>Updated!</strong> Category has been updated.');
                 $this->redirect(array('view', 'id' => $model->category_id));
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
         }
 
         $this->render('update', array(
             'model' => $model,
+            'parentCategories' => $parentCategories,
+            'categoryBanner' => $categoryBanner,
+            'banners'=>$banners,
         ));
     }
 

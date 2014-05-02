@@ -18,4 +18,9 @@ $this->menu=array(
 
 <h1>Update Category <?php echo $model->category_id; ?></h1>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php echo $this->renderPartial('_form', array(
+    'model'=>$model,
+    'parentCategories' => $parentCategories,
+    'categoryBanner' => $categoryBanner,
+    'banners'=>$banners
+    )); ?>
