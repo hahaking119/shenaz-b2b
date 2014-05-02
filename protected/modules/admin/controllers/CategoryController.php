@@ -126,7 +126,7 @@ class CategoryController extends Controller {
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
 //        $parentCategories = Category::model()->findAllByAttributes(array('parent_id' => '0', 'title'!=>$model->title),array('order'=>'title ASC'));
-        $parentCategories = Category::model()->findAll(array('condition'=>'parent_id = 0'));
+        $parentCategories = Category::model()->findAll(array('order'=>'title ASC','condition'=>'parent_id = 0 AND category_id!='.$id));
         if (!$parentCategories) {
             $parentCategories = new Category;
         }
