@@ -13,8 +13,28 @@ html, body{
     border: 0;
     padding: 0;
 }
-
+ul, ol{
+    list-style: none;
+    margin: 0 auto !important;
+    padding: 0;
+}
+.parent li{
+    line-height: 24px;
+}
+.parent > li > ul > li{
+    padding: 0 10px;
+}
+.parent-menu.active{
+}
 .login-box{
     margin: 0 auto;
     width: 35%;
+}
+.child{
+    display: none;
+}
+.active{
+    display: block;
+}
+.child .active{
 }

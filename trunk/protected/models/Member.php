@@ -77,7 +77,7 @@ class Member extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
-            'companyInformations' => array(self::HAS_MANY, 'CompanyInformation', 'member_id'),
+            'companyInformations' => array(self::HAS_ONE, 'CompanyInformation', 'member_id'),
             'emails' => array(self::HAS_MANY, 'Email', 'to'),
             'membership' => array(self::BELONGS_TO, 'Membership', 'membership_id'),
             'memberSettings' => array(self::HAS_MANY, 'MemberSetting', 'member_id'),
@@ -139,11 +139,11 @@ class Member extends CActiveRecord {
         $criteria->compare('trashed_at', $this->trashed_at, true);
 
         return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
-            'sort' => array(
-                'defaultOrder' => 't.member_id DESC'
-            )
-        ));
+                    'criteria' => $criteria,
+                    'sort' => array(
+                        'defaultOrder' => 't.member_id DESC'
+                    )
+                ));
     }
 
     public function afterValidate() {
@@ -158,6 +158,19 @@ class Member extends CActiveRecord {
                 $this->password = sha1($this->password_text);
             }
         }
+    }
+
+    public function getName($id) {
+        $model = Member::model()->findByPk($id);
+        $name = $model->first_name;
+        $name .= ($model->middle_name != "") ? (' ' . $model->middle_name . ' ') : (' ');
+        $name .= $model->last_name;
+        return $name;
+    }
+
+    public function getBusinessType($type) {
+        $array = array(0 => 'Both [B/S]', '1' => 'Buyer', 2 => 'Seller');
+        return ($array[$type]);
     }
 
 }

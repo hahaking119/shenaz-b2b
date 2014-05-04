@@ -30,7 +30,7 @@ class MemberController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'admin', 'update','add_directory_company_info', 'upload', 'remove_image'),
+//                'actions' => array('create', 'admin', 'update', 'add_directory_company_info', 'upload', 'remove_image', 'updatestatus'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -137,7 +137,7 @@ class MemberController extends Controller {
      * Manages all models.
      */
     public function actionAdmin() {
-        $this->layout="//layouts/column2";
+        $this->layout = "//layouts/column2";
         $model = new Member('search');
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Member']))
@@ -172,22 +172,22 @@ class MemberController extends Controller {
             Yii::app()->end();
         }
     }
-    
-    public function actionAdd_directory_company_info($id=''){
-        $companyInformation = CompanyInformation::model()->findByAttributes(array('member_id'=>$id));
-        if(!isset($companyInformation)){
-        $companyInformation = new CompanyInformation;
-        $companyInformation->member_id =$id;
+
+    public function actionAdd_directory_company_info($id = '') {
+        $companyInformation = CompanyInformation::model()->findByAttributes(array('member_id' => $id));
+        if (!isset($companyInformation)) {
+            $companyInformation = new CompanyInformation;
+            $companyInformation->member_id = $id;
         }
-        
-        $model = DirectoryInformation::model()->findByAttributes(array('company_id'=>$companyInformation->company_id));
-        if(empty($model))
-        $model = new DirectoryInformation;
-        
+
+        $model = DirectoryInformation::model()->findByAttributes(array('company_id' => $companyInformation->company_id));
+        if (empty($model))
+            $model = new DirectoryInformation;
+
         $this->performAjaxValidation(array($model, $companyInformation));
 
         if (isset($_POST['CompanyInformation'])) {
-            if(Yii::app()->request->isAjaxRequest)
+            if (Yii::app()->request->isAjaxRequest)
                 Yii::app()->end();
             
             $prev_logo = $companyInformation->logo;
@@ -227,7 +227,7 @@ class MemberController extends Controller {
                 @copy($tempdir . 'thumbs/' . $banner, $realdir . 'banner/thumbs/' . $banner);
                 @unlink($tempdir . 'original/' . $banner);
                 @unlink($tempdir . 'thumbs/' . $banner);
-                        
+
                 if (isset($_POST['DirectoryInformation'])) {
                     $prev_image = $model->image;
                     
@@ -244,7 +244,7 @@ class MemberController extends Controller {
                     $model->company_id = $companyInformation->company_id;
                     $model->created_at = new CDbExpression('NOW()');
                     $model->modified_at = new CDbExpression('NOW()');
-                    
+
                     if ($model->save()) {
                         $tempdir = Yii::app()->basePath . '/../uploads/temp/';
                         $realdir = Yii::app()->basePath . '/../uploads/directory/';
@@ -265,10 +265,10 @@ class MemberController extends Controller {
                 Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
             }
         }
-        
-        $this->render('add_company_and_directory_info',array('model'=>$model,'companyInformation'=>$companyInformation));
+
+        $this->render('add_company_and_directory_info', array('model' => $model, 'companyInformation' => $companyInformation));
     }
-    
+
     public function actionUpload($type) {
         Yii::import("ext.EAjaxUpload.qqFileUploader");
 
@@ -291,7 +291,7 @@ class MemberController extends Controller {
 
         echo $return; // it's array
     }
-    
+
     public function actionRemove_image() {
         if (Yii::app()->request->isAjaxRequest) {
             $image = $_POST['image'];
@@ -355,4 +355,31 @@ class MemberController extends Controller {
             echo 'success';
         }
     }
+
+    public function actionupdateStatus($id) {
+        $model = $this->loadModel($id);
+        if (isset($_POST['status'])) {
+            $model->status = $_POST['status'];
+            $model->password = $model->password_text;
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save())
+                echo 'success';
+            Yii::app()->end();
+        }
+    }
+
+    public function actiontrash($id) {
+        $model = $this->loadModel($id);
+        $model->trash = 1;
+        $model->password = $model->password_text;
+        $model->modified_at = new CDbExpression('NOW()');
+        $model->trashed_at = new CDbExpression('NOW()');
+        if ($model->save()) {
+            Yii::app()->user->setFlash('success', '<strong>Trashed!</strong> The member information has been trashed.');
+        } else {
+            Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+        }
+        $this->redirect(array('admin'));
+    }
+
 }
