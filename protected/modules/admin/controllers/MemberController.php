@@ -313,6 +313,7 @@ class MemberController extends Controller {
             if (file_exists($realdir . 'logo/thumbs/' . $image)){
                 $company = CompanyInformation::model()->findByPk($id);
                 $company->logo = "";
+                $company->modified_at = new CDbExpression('NOW()');
                 if($company->update())
                     @unlink($realdir . 'thumbs/' . $image);
             }
@@ -321,6 +322,7 @@ class MemberController extends Controller {
             if (file_exists($realdir . 'banner/thumbs/' . $image)){
                 $company = CompanyInformation::model()->findByPk($id);
                 $company->banner_image = "";
+                $company->modified_at = new CDbExpression('NOW()');
                 if($company->save())
                     @unlink($realdir . 'banner/thumbs/' . $image);
             }
@@ -346,6 +348,7 @@ class MemberController extends Controller {
             if (file_exists($directory_dir . 'image/thumbs/' . $image)){
                 $directory = DirectoryInformation::model()->model()->findByPk($id);
                 $directory->image = "";
+                $directory->modified_at = new CDbExpression('NOW()');
                 if($directory->save())
                     @unlink($directory_dir . 'image/thumbs/' . $image);
             }
