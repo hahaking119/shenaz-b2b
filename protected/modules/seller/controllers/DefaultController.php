@@ -3,7 +3,7 @@
 class DefaultController extends Controller {
 
     public function actionIndex() {
-        $this->redirect(array('seller/login'));
+        $this->redirect(array('login/dashboard'));
     }
 
 }
