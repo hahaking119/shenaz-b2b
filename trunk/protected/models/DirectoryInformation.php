@@ -56,7 +56,7 @@ class DirectoryInformation extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('first_name, last_name, job_title, image, email, phone, zip_code, address, area, province, country, status, created_at, modified_at', 'required'),
+			array('first_name, last_name, job_title, email, phone, zip_code, address, area, province, country, status, created_at, modified_at', 'required'),
 			array('company_id, status, trash', 'numerical', 'integerOnly'=>true),
 			array('first_name, middle_name, last_name, job_title, image, email, zip_code, address, area, province, country', 'length', 'max'=>255),
 			array('phone, fax', 'length', 'max'=>60),
