@@ -209,8 +209,9 @@ class MemberController extends Controller {
                 if(file_exists($bannerPath.'original/'.$prev_banner))
                     unlink ($bannerPath.'original/'.$prev_banner);
             }
+            if($companyInformation->isNewRecord)
+                $companyInformation->created_at = new CDbExpression('NOW()');
             
-            $companyInformation->created_at = new CDbExpression('NOW()');
             $companyInformation->modified_at = new CDbExpression('NOW()');
             if ($companyInformation->save()) {
                 $tempdir = Yii::app()->basePath . '/../uploads/temp/';
@@ -242,7 +243,10 @@ class MemberController extends Controller {
                     }
                     
                     $model->company_id = $companyInformation->company_id;
-                    $model->created_at = new CDbExpression('NOW()');
+
+                    if($model->isNewRecord)
+                        $model->created_at = new CDbExpression('NOW()');
+                    
                     $model->modified_at = new CDbExpression('NOW()');
 
                     if ($model->save()) {
