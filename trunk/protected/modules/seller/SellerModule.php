@@ -1,5 +1,5 @@
 <?php
-
+Yii::app()->theme = "seller";
 class SellerModule extends CWebModule {
     
     public function init() {
