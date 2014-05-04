@@ -195,14 +195,14 @@ class MemberController extends Controller {
             
             $companyInformation->attributes = $_POST['CompanyInformation'];
             
-            if($prev_logo !== $companyInformation->logo){
+            if(!empty($prev_logo) && $prev_logo !== $companyInformation->logo && !empty($companyInformation->logo)){
                 $logoPath = Yii::app()->basePath.'/../uploads/company/logo/';
                 if(file_exists($logoPath.'thumbs/'.$prev_logo))
                     unlink ($logoPath.'thumbs/'.$prev_logo);
                 if(file_exists($logoPath.'original/'.$prev_logo))
                     unlink ($logoPath.'original/'.$prev_logo);
             }
-            if($prev_banner !== $companyInformation->banner_image){
+            if(!empty($prev_banner) && $prev_banner !== $companyInformation->banner_image){
                 $bannerPath = Yii::app()->basePath.'/../uploads/company/banner/';
                 if(file_exists($bannerPath.'thumbs/'.$prev_banner))
                     unlink ($bannerPath.'thumbs/'.$prev_banner);
@@ -233,7 +233,7 @@ class MemberController extends Controller {
                     
                     $model->attributes = $_POST['DirectoryInformation'];
                     
-                    if($prev_image !== $model->image){
+                    if(!empty($prev_image) && $prev_image !== $model->image){
                         $imagePath = Yii::app()->basePath.'/../uploads/directory/image/';
                         if(file_exists($imagePath.'thumbs/'.$prev_image))
                             unlink ($imagePath.'thumbs/'.$prev_image);
@@ -302,19 +302,28 @@ class MemberController extends Controller {
             
             $realdir2 = Yii::app()->basePath . '/../uploads/category/';
             
+            $directory_dir = Yii::app()->basePath . '/../uploads/directory/';
+            
             if (file_exists($tempdir . 'original/' . $image))
                 @unlink($tempdir . 'original/' . $image);
             if (file_exists($tempdir . 'thumbs/' . $image))
                 @unlink($tempdir . 'thumbs/' . $image);
-            if (file_exists($realdir . 'original/' . $image))
+            if (file_exists($realdir . 'logo/original/' . $image))
                 @unlink($realdir . 'logo/original/' . $image);
-            if (file_exists($realdir . 'logo/thumbs/' . $image))
-                @unlink($realdir . 'thumbs/' . $image);
-            if (file_exists($realdir . 'original/' . $image))
+            if (file_exists($realdir . 'logo/thumbs/' . $image)){
+                $company = CompanyInformation::model()->findByPk($id);
+                $company->logo = "";
+                if($company->update())
+                    @unlink($realdir . 'thumbs/' . $image);
+            }
+            if (file_exists($realdir . 'banner/original/' . $image))
                 @unlink($realdir . 'banner/original/' . $image);
-            if (file_exists($realdir . 'banner/thumbs/' . $image))
-                @unlink($realdir . 'thumbs/' . $image);
-            
+            if (file_exists($realdir . 'banner/thumbs/' . $image)){
+                $company = CompanyInformation::model()->findByPk($id);
+                $company->banner_image = "";
+                if($company->save())
+                    @unlink($realdir . 'banner/thumbs/' . $image);
+            }
             if (file_exists($realdir2 . 'banner/thumbs/' . $image)){
                 $banner = CategoryBanner::model()->findByAttributes(array('id'=>$id));
                 if($banner->delete())
@@ -332,6 +341,14 @@ class MemberController extends Controller {
             }
             if (file_exists($realdir2 . 'image/original/' . $image))
                 @unlink($realdir2 . 'image/original/' . $image);
+            if (file_exists($directory_dir . 'image/original/' . $image))
+                @unlink($directory_dir . 'image/original/' . $image);
+            if (file_exists($directory_dir . 'image/thumbs/' . $image)){
+                $directory = DirectoryInformation::model()->model()->findByPk($id);
+                $directory->image = "";
+                if($directory->save())
+                    @unlink($directory_dir . 'image/thumbs/' . $image);
+            }
             echo 'success';
         }
     }

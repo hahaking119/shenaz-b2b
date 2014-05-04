@@ -93,7 +93,8 @@
                                                 }
                                                 $('.qq-upload-list').remove()+
                                                 $('#thumbs_list').html('<div id=\"image_preview\" class=\"preview_'+index+'\"><div id=\"thumbs_'+index+'\" class=\"pull-left thumbnail\"><img src=\"'+responseJSON.imageThumb+'\" alt=\"'+responseJSON.filename+'\" class=\"span2\"></div>'+
-                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\','+'\'logo\')\" class=\"btn btn-danger\">Remove</a><input type=\"hidden\" name=\"CompanyInformation[logo]\" value=\"'+responseJSON.filename+'\"></div>');
+                                                '<a href=\"javascript:(void);\" onClick=\"getRemove('+index+', \''+responseJSON.filename+'\','+'\'logo\')\" class=\"btn btn-danger\">Remove</a></div>');
+                                                $('#company_logo_hidden').val(responseJSON.filename);
                                             }
                                             else
                                             {
@@ -111,12 +112,20 @@
                         )
                     ));
                     ?>
-                    <?php echo $form->error($companyInformation, 'company_logo'); ?>
+                    <div class="logo_msg"></div>
+                    <?php echo $form->error($companyInformation, 'logo'); ?>
+                    <?php echo $form->hiddenField($companyInformation, 'logo',array('id'=>'company_logo_hidden')); ?>
                     <div class="clearfix"></div>
                     <div id="thumbs_list">
                         <?php
-                        if (!$companyInformation->isNewRecord && !empty($companyInformation->logo))
+                        if (!$companyInformation->isNewRecord && !empty($companyInformation->logo)){
+                            static $i = 1;
+                            echo '<li style="list-style-type: none;" id="thumbs_' . $i . '" class="preview_' . $i . '">';
                             echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/company/logo/thumbs/' . $companyInformation->logo), $companyInformation->logo, array('class' => 'thumbnail span2'));
+                            echo '<a href="javascript:void(0);" onClick="hideImg(' . $i . ')" class="btn btn-danger">Remove</a>';
+                            echo '</li>';
+                            echo '<div class="clearfix"></div>';
+                        }
                         ?>
                     </div>
                 </div>
@@ -181,8 +190,14 @@
                     <div class="clearfix"></div>
                     <div id="banner_list">
                         <?php
-                        if (!$companyInformation->isNewRecord && !empty($companyInformation->banner_image))
+                        if (!$companyInformation->isNewRecord && !empty($companyInformation->banner_image)){
+                            static $i = 1;
+                            echo '<li style="list-style-type: none;" id="thumbs_' . $i . '" class="preview_' . $i . '">';
                             echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/company/banner/thumbs/' . $companyInformation->banner_image), $companyInformation->banner_image, array('class' => 'thumbnail span2'));
+                            echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $companyInformation->banner_image. '\',\''.'banner\''.',\''.$companyInformation->company_id.'\')" class="btn btn-danger">Remove</a>';
+                            echo '</li>';
+                            echo '<div class="clearfix"></div>';
+                        }
                         ?>
                     </div>
                 </div>
@@ -260,8 +275,14 @@
                     <div class="clearfix"></div>
                     <div id="image_list">
                         <?php
-                        if (!$model->isNewRecord && !empty($model->image))
+                        if (!$model->isNewRecord && !empty($model->image)){
+                            static $i = 1;
+                            echo '<li style="list-style-type: none;" id="thumbs_' . $i . '" class="preview_' . $i . '">';
                             echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/directory/image/thumbs/' . $model->image), $model->image, array('class' => 'thumbnail span2'));
+                            echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $model->image. '\',\''.'image\''.',\''.$model->directory_id.'\')" class="btn btn-danger">Remove</a>';
+                            echo '</li>';
+                            echo '<div class="clearfix"></div>';
+                        }
                         ?>
                     </div>
                 </div>
@@ -316,6 +337,7 @@
                     else if(type==='logo'){
                         $('#thumbs_list .preview_' + index).remove();
                         $('#thumbs_list #thumbs_'+index).remove();
+                        $('#company_logo_hidden').val('');
                     }
                     else{
                         $('#image_list .preview_' + index).remove();
@@ -340,4 +362,11 @@
     $('.date_picker').datepicker({
         format:'yyyy-mm-dd'
     });
+    function hideImg(index){
+        $('#thumbs_list .preview_' + index).remove();
+        $('#thumbs_list #thumbs_'+index).remove();
+        $('#company_logo_hidden').val('');
+        var logo_message = '<div class="alert alert-danger"><span class="close" data-dismiss="alert">×</span>Please upload a new Company Logo</div>';
+        $(".logo_msg").html(logo_message).fadeIn().animate({opacity: 1.0}, 4000).fadeOut("slow");
+    }
 </script>
