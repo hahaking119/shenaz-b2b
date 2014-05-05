@@ -10,15 +10,15 @@ class CommonClass extends CComponent {
     public static function getKey() {
         return sha1(date('Y-m-d h:m:s') . '' . Yii::app()->params->publicKey);
     }
-    
+
     public static function getSlug($string) {
         $new_string = preg_replace("/[^a-zA-Z0-9-\@\$ \s]/", "", strtolower(strip_tags($string)));
         $rep_string = str_replace(" ", "-", trim($new_string));
         $rep_string = preg_replace('/-+/', '-', $rep_string);
         $ret_string = preg_replace('/\'/', '', $rep_string);
-        return $ret_string.'-'.date('ymdhms');
+        return $ret_string . '-' . date('ymdhms');
     }
-    
+
     public static function getImageResizeDetails($case) {
         switch ($case) {
             // keep all the final image details here
@@ -72,7 +72,7 @@ class CommonClass extends CComponent {
                     ),
                 );
                 break;
-				case "image":
+            case "image":
                 return array(
                     'thumbs' => array(
                         "function" => "optimizedResize",
@@ -82,6 +82,14 @@ class CommonClass extends CComponent {
                     ),
                 );
                 break;
+        }
+    }
+    
+    public static function getPriceFormat($member_id){
+        $currency = MemberSetting::model()->findByAttributes(array('member_id' => $member_id));
+        if(!empty($currency)){
+            $symbol = array('R', '$', 'P', 'E');
+            return $symbol[$currency->currency];
         }
     }
 

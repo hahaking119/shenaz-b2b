@@ -69,11 +69,10 @@ class ProductController extends Controller {
         $this->performAjaxValidation($model);
 
         if (isset($_POST['Product'])) {
-            echo '<pre>';
-            print_r($_POST);
-            die();
             $model->attributes = $_POST['Product'];
-            $model->slug = CommonClass::getSlug($model->title);
+            $model->slug = CommonClass::getSlug($model->name);
+            $model->category_id = null;
+            $model->custom_category_id = null;
             $model->created_at = new CDbExpression('NOW()');
             $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
@@ -82,7 +81,10 @@ class ProductController extends Controller {
                         $productCategory = new ProductCategory();
                         $productCategory->product_id = $model->product_id;
                         $productCategory->category_id = $value;
-                        $productCategory->save();
+                        if (!$productCategory->save()) {
+                            echo '<pre>';
+                            print_r($productCategory->getErrors());
+                        }
                     }
                 }
                 if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
@@ -90,21 +92,25 @@ class ProductController extends Controller {
                         $productCustomCategory = new ProductCustomCategory();
                         $productCustomCategory->product_id = $model->product_id;
                         $productCustomCategory->custom_category_id = $value;
+                        if (!$productCustomCategory->save()) {
+                            echo '<pre>';
+                            print_r($productCustomCategory->getErrors());
+                        }
                     }
                 }
                 if (isset($_POST['ProductImages']['image'])) {
                     foreach ($_POST['ProductImages']['image'] as $key => $value) {
                         $productImage = new ProductImage();
-                        $productImage->product_id = $model->id;
+                        $productImage->product_id = $model->product_id;
                         $productImage->image = $value;
                         $productImage->save();
-                        
+
                         $tempdir = Yii::app()->basePath . '/../uploads/temp/';
                         $realdir = Yii::app()->basePath . '/../uploads/product/';
                         $image = $value;
 
-                        @copy($tempdir . 'original/' . $image, $realdir . 'banner/original/' . $image);
-                        @copy($tempdir . 'thumbs/' . $image, $realdir . 'banner/thumbs/' . $image);
+                        @copy($tempdir . 'original/' . $image, $realdir . 'original/' . $image);
+                        @copy($tempdir . 'thumbs/' . $image, $realdir . 'thumbs/' . $image);
                         @unlink($tempdir . 'original/' . $image);
                         @unlink($tempdir . 'thumbs/' . $image);
                     }
@@ -133,18 +139,98 @@ class ProductController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
+        $companies = CompanyInformation::model()->findAllByAttributes(array('status' => 1, 'trash' => 0, 'company_id' => $model->company_id));
+        $categories = Category::model()->findAllByAttributes(array('status' => 1, 'trash' => 0));
+        $productImages = new ProductImage();
+        $productCategory = new ProductCategory();
+        $productCustomCategory = new ProductCustomCategory();
+        $productCategoryList = ProductCategory::model()->findAllByAttributes(array('product_id' => $id));
+        $productCustomCategoryList = ProductCustomCategory::model()->findAllByAttributes(array('product_id' => $id));
+        $productImageLists = ProductImage::model()->findAllByAttributes(array('product_id' => $id));
 
         // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+        $this->performAjaxValidation($model);
 
         if (isset($_POST['Product'])) {
             $model->attributes = $_POST['Product'];
-            if ($model->save())
+            $model->slug = CommonClass::getSlug($model->name);
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                if (isset($_POST['ProductCategory']['category_id'])) {
+                    foreach ($productCategoryList as $categoryList) {
+                        if (!in_array($categoryList->category_id, $_POST['ProductCategory']['category_id'])) {
+                            $categoryList->delete($categoryList->id);
+                        }
+                    }
+                    foreach ($_POST['ProductCategory']['category_id'] as $key => $value) {
+                        $productCategory = ProductCategory::model()->findByAttributes(array('category_id' => $value));
+                        if (!$productCategory) {
+                            $productCategory = new ProductCategory();
+                            $productCategory->product_id = $model->product_id;
+                            $productCategory->category_id = $value;
+                            $productCategory->save();
+                        }
+                    }
+                }
+                if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
+                    foreach ($productCustomCategoryList as $customCategoryList) {
+                        if (!in_array($customCategoryList->custom_category_id, $_POST['ProductCustomCategory']['custom_category_id'])) {
+                            $customCategoryList->delete($customCategoryList->id);
+                        }
+                    }
+                    foreach ($_POST['ProductCustomCategory']['custom_category_id'] as $key => $value) {
+                        $productCustomCategory = ProductCustomCategory::model()->findByAttributes(array('custom_category_id' => $value));
+                        if (!$productCustomCategory) {
+                            $productCustomCategory = new ProductCustomCategory();
+                            $productCustomCategory->product_id = $model->product_id;
+                            $productCustomCategory->custom_category_id = $value;
+                            $productCustomCategory->save();
+                        }
+                    }
+                }
+                if (isset($_POST['ProductImages']['image'])) {
+                    foreach ($productImageLists as $image) {
+
+                        if (!in_array($image->image, $_POST['ProductImages']['image'])) {
+                            $image->delete($image->id);
+                        }
+                    }
+                    foreach ($_POST['ProductImages']['image'] as $key => $value) {
+                        $productImage = ProductImage::model()->findByAttributes(array('image' => $value));
+                        if (!$productImage) {
+                            $productImage = new ProductImage();
+                            $productImage->product_id = $model->product_id;
+                            $productImage->image = $value;
+                            $productImage->save();
+
+                            $tempdir = Yii::app()->basePath . '/../uploads/temp/';
+                            $realdir = Yii::app()->basePath . '/../uploads/product/';
+                            $image = $value;
+
+                            @copy($tempdir . 'original/' . $image, $realdir . 'original/' . $image);
+                            @copy($tempdir . 'thumbs/' . $image, $realdir . 'thumbs/' . $image);
+                            @unlink($tempdir . 'original/' . $image);
+                            @unlink($tempdir . 'thumbs/' . $image);
+                        }
+                    }
+                }
+                Yii::app()->user->setFlash('success', '<strong>Updated!</strong> The product has been updated.');
                 $this->redirect(array('view', 'id' => $model->product_id));
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
         }
 
         $this->render('update', array(
             'model' => $model,
+            'companies' => $companies,
+            'categories' => $categories,
+            'productImages' => $productImages,
+            'productCategory' => $productCategory,
+            'productCustomCategory' => $productCustomCategory,
+            'productCategoryList' => $productCategoryList,
+            'productCustomCategoryList' => $productCustomCategoryList,
+            'productImageLists' => $productImageLists
         ));
     }
 
@@ -259,6 +345,19 @@ class ProductController extends Controller {
                 @unlink($realdir . 'thumbs/' . $image);
             echo 'success';
         }
+    }
+
+    public function actionTrash($id) {
+        $model = $this->loadModel($id);
+        $model->trash = 1;
+        $model->modified_at = new CDbExpression('NOW()');
+        $model->trashed_at = new CDbExpression('NOW()');
+        if ($model->save()) {
+            Yii::app()->user->setFlash('success', '<strong>Trashed!</strong> The product has been trashed.');
+        } else {
+            Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+        }
+        $this->redirect(array('admin'));
     }
 
 }

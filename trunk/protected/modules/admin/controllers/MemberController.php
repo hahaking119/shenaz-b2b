@@ -189,29 +189,29 @@ class MemberController extends Controller {
         if (isset($_POST['CompanyInformation'])) {
             if (Yii::app()->request->isAjaxRequest)
                 Yii::app()->end();
-            
+
             $prev_logo = $companyInformation->logo;
             $prev_banner = $companyInformation->banner_image;
-            
+
             $companyInformation->attributes = $_POST['CompanyInformation'];
-            
-            if(!empty($prev_logo) && $prev_logo !== $companyInformation->logo && !empty($companyInformation->logo)){
-                $logoPath = Yii::app()->basePath.'/../uploads/company/logo/';
-                if(file_exists($logoPath.'thumbs/'.$prev_logo))
-                    unlink ($logoPath.'thumbs/'.$prev_logo);
-                if(file_exists($logoPath.'original/'.$prev_logo))
-                    unlink ($logoPath.'original/'.$prev_logo);
+
+            if (!empty($prev_logo) && $prev_logo !== $companyInformation->logo && !empty($companyInformation->logo)) {
+                $logoPath = Yii::app()->basePath . '/../uploads/company/logo/';
+                if (file_exists($logoPath . 'thumbs/' . $prev_logo))
+                    unlink($logoPath . 'thumbs/' . $prev_logo);
+                if (file_exists($logoPath . 'original/' . $prev_logo))
+                    unlink($logoPath . 'original/' . $prev_logo);
             }
-            if(!empty($prev_banner) && $prev_banner !== $companyInformation->banner_image){
-                $bannerPath = Yii::app()->basePath.'/../uploads/company/banner/';
-                if(file_exists($bannerPath.'thumbs/'.$prev_banner))
-                    unlink ($bannerPath.'thumbs/'.$prev_banner);
-                if(file_exists($bannerPath.'original/'.$prev_banner))
-                    unlink ($bannerPath.'original/'.$prev_banner);
+            if (!empty($prev_banner) && $prev_banner !== $companyInformation->banner_image) {
+                $bannerPath = Yii::app()->basePath . '/../uploads/company/banner/';
+                if (file_exists($bannerPath . 'thumbs/' . $prev_banner))
+                    unlink($bannerPath . 'thumbs/' . $prev_banner);
+                if (file_exists($bannerPath . 'original/' . $prev_banner))
+                    unlink($bannerPath . 'original/' . $prev_banner);
             }
-            if($companyInformation->isNewRecord)
+            if ($companyInformation->isNewRecord)
                 $companyInformation->created_at = new CDbExpression('NOW()');
-            
+
             $companyInformation->modified_at = new CDbExpression('NOW()');
             if ($companyInformation->save()) {
                 $tempdir = Yii::app()->basePath . '/../uploads/temp/';
@@ -231,22 +231,22 @@ class MemberController extends Controller {
 
                 if (isset($_POST['DirectoryInformation'])) {
                     $prev_image = $model->image;
-                    
+
                     $model->attributes = $_POST['DirectoryInformation'];
-                    
-                    if(!empty($prev_image) && $prev_image !== $model->image){
-                        $imagePath = Yii::app()->basePath.'/../uploads/directory/image/';
-                        if(file_exists($imagePath.'thumbs/'.$prev_image))
-                            unlink ($imagePath.'thumbs/'.$prev_image);
-                        if(file_exists($imagePath.'original/'.$prev_image))
-                            unlink ($imagePath.'original/'.$prev_image);
+
+                    if (!empty($prev_image) && $prev_image !== $model->image) {
+                        $imagePath = Yii::app()->basePath . '/../uploads/directory/image/';
+                        if (file_exists($imagePath . 'thumbs/' . $prev_image))
+                            unlink($imagePath . 'thumbs/' . $prev_image);
+                        if (file_exists($imagePath . 'original/' . $prev_image))
+                            unlink($imagePath . 'original/' . $prev_image);
                     }
-                    
+
                     $model->company_id = $companyInformation->company_id;
 
-                    if($model->isNewRecord)
+                    if ($model->isNewRecord)
                         $model->created_at = new CDbExpression('NOW()');
-                    
+
                     $model->modified_at = new CDbExpression('NOW()');
 
                     if ($model->save()) {
@@ -300,60 +300,60 @@ class MemberController extends Controller {
         if (Yii::app()->request->isAjaxRequest) {
             $image = $_POST['image'];
             $id = $_POST['id'];
-            
+
             $tempdir = Yii::app()->basePath . '/../uploads/temp/';
             $realdir = Yii::app()->basePath . '/../uploads/company/';
-            
+
             $realdir2 = Yii::app()->basePath . '/../uploads/category/';
-            
+
             $directory_dir = Yii::app()->basePath . '/../uploads/directory/';
-            
+
             if (file_exists($tempdir . 'original/' . $image))
                 @unlink($tempdir . 'original/' . $image);
             if (file_exists($tempdir . 'thumbs/' . $image))
                 @unlink($tempdir . 'thumbs/' . $image);
             if (file_exists($realdir . 'logo/original/' . $image))
                 @unlink($realdir . 'logo/original/' . $image);
-            if (file_exists($realdir . 'logo/thumbs/' . $image)){
+            if (file_exists($realdir . 'logo/thumbs/' . $image)) {
                 $company = CompanyInformation::model()->findByPk($id);
                 $company->logo = "";
                 $company->modified_at = new CDbExpression('NOW()');
-                if($company->update())
+                if ($company->update())
                     @unlink($realdir . 'thumbs/' . $image);
             }
             if (file_exists($realdir . 'banner/original/' . $image))
                 @unlink($realdir . 'banner/original/' . $image);
-            if (file_exists($realdir . 'banner/thumbs/' . $image)){
+            if (file_exists($realdir . 'banner/thumbs/' . $image)) {
                 $company = CompanyInformation::model()->findByPk($id);
                 $company->banner_image = "";
                 $company->modified_at = new CDbExpression('NOW()');
-                if($company->save())
+                if ($company->save())
                     @unlink($realdir . 'banner/thumbs/' . $image);
             }
-            if (file_exists($realdir2 . 'banner/thumbs/' . $image)){
-                $banner = CategoryBanner::model()->findByAttributes(array('id'=>$id));
-                if($banner->delete())
+            if (file_exists($realdir2 . 'banner/thumbs/' . $image)) {
+                $banner = CategoryBanner::model()->findByAttributes(array('id' => $id));
+                if ($banner->delete())
                     @unlink($realdir2 . 'banner/thumbs/' . $image);
             }
             if (file_exists($realdir2 . 'banner/original/' . $image))
                 @unlink($realdir2 . 'banner/original/' . $image);
-            
-            if (file_exists($realdir2 . 'image/thumbs/' . $image)){
-                $category = Category::model()->findByAttributes(array('category_id'=>$id));
+
+            if (file_exists($realdir2 . 'image/thumbs/' . $image)) {
+                $category = Category::model()->findByAttributes(array('category_id' => $id));
                 $category->image = "";
                 $category->modified_at = new CDbExpression('NOW()');
-                if($category->save())
+                if ($category->save())
                     @unlink($realdir2 . 'image/thumbs/' . $image);
             }
             if (file_exists($realdir2 . 'image/original/' . $image))
                 @unlink($realdir2 . 'image/original/' . $image);
             if (file_exists($directory_dir . 'image/original/' . $image))
                 @unlink($directory_dir . 'image/original/' . $image);
-            if (file_exists($directory_dir . 'image/thumbs/' . $image)){
+            if (file_exists($directory_dir . 'image/thumbs/' . $image)) {
                 $directory = DirectoryInformation::model()->model()->findByPk($id);
                 $directory->image = "";
                 $directory->modified_at = new CDbExpression('NOW()');
-                if($directory->save())
+                if ($directory->save())
                     @unlink($directory_dir . 'image/thumbs/' . $image);
             }
             echo 'success';
@@ -384,6 +384,29 @@ class MemberController extends Controller {
             Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
         }
         $this->redirect(array('admin'));
+    }
+
+    public function actionSetting($id) {
+        $this->layout = '//layouts/column2';
+        $model = MemberSetting::model()->findByAttributes(array('member_id' => $id));
+        if (!$model) {
+            $model = new MemberSetting;
+        }
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'setting-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+        if (isset($_POST['MemberSetting'])) {
+            $model->attributes = $_POST['MemberSetting'];
+            $model->member_id = $id;
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                Yii::app()->user->setFlash('success', '<strong>Updated!</strong> The setting has been updated.');
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
+        }
+        $this->render('_setting', array('model' => $model));
     }
 
 }
