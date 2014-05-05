@@ -22,7 +22,7 @@
     <?php echo $form->textFieldRow($model, 'title', array('size' => 60, 'maxlength' => 255, 'placeholder' => 'Title')); ?>
 
     <?php
-    if (!$parentCategories->isNewRecord) {
+    if (isset($parentCategories)) {
         $Categories = CHtml::listData($parentCategories, 'category_id', 'title');
         if (!empty($Categories))
             $parentCategories = $Categories;
@@ -93,7 +93,7 @@
                 if (!$model->isNewRecord && !empty($model->image)) {
                         static $i = 1;
                         echo '<li style="list-style-type: none;" id="thumbs_' . $i . '" class="preview_' . $i . '">';
-                        echo CHtml::hiddenField('CategoryBanner[banner][]', $image->image);
+                        echo CHtml::hiddenField('CategoryBanner[banner][]', $model->image);
                         echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/category/image/thumbs/' . $model->image), $model->image, array('class' => 'thumbnail span2'));
                         echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $model->image . '\',\''.'image\''.',\''.$model->category_id.'\')" class="btn btn-danger">Remove</a>';
                         echo '</li>';

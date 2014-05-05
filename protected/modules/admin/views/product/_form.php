@@ -19,13 +19,19 @@
     <?php echo $form->errorSummary($model); ?>
 
     <?php
+    if (!$model->isNewRecord) {
+        $disabled = 'disabled';
+    } else {
+        $disabled = '';
+    }
     echo $form->dropDownListRow($model, 'company_id', CHtml::listData($companies, 'company_id', 'company_name'), array('prompt' => '--- Select Company ---',
         'ajax' => array(
             'type' => 'POST',
             'url' => CController::createUrl('customCategory'),
             'update' => '#ProductCustomCategory_custom_category_id',
             'data' => array('company_id' => 'js:this.value'),
-        )
+        ),
+        'disabled' => $disabled
     ));
     ?>
 
@@ -33,12 +39,18 @@
 
     <?php echo $form->textFieldRow($model, 'sku', array('size' => 60, 'maxlength' => 255, 'placeholder' => 'SKU')); ?>
 
-    <?php echo $form->radioButtonListRow($model, 'category_id', array('Category', 'Custom Category', 'both'), array('separator' => '', 'onclick' => 'showCategoryList($(this).val())', 'id' => 'categoryList')); ?>
-
+    <?php echo $form->radioButtonListRow($model, 'category_type', array('Main Category', 'Self Defined Category', 'Both'), array('separator' => '', 'onclick' => 'showCategoryList($(this).val())', 'id' => 'categoryList')); ?>
+    <span class="hint">The main category is the category defined by the system admin. The self defined category is the category defined by members to meet their product category.</span>
     <div class="category">
         <?php
         if (isset($_POST['ProductCategory']['category_id'])) {
             $productCategory->category_id = implode(', ', $_POST['ProductCategory']['category_id']);
+        }
+        if (isset($productCategoryList)) {
+            foreach ($productCategoryList as $list) {
+                $categoryListArray[] = $list->category_id;
+            }
+            $productCategory->category_id = $categoryListArray;
         }
         ?>
         <?php echo $form->dropDownListRow($productCategory, 'category_id', CHtml::listData($categories, 'category_id', 'title'), array('prompt' => '--- Select Category ---', 'multiple' => 'multiple')); ?>
@@ -52,7 +64,7 @@
             $parents = CustomCategory::model()->findAll('company_id = ' . $_POST['Product']['company_id'] . ' and parent_id = 0 and status = 1');
             foreach ($parents as $parent) {
                 $children = CustomCategory::model()->findAll('company_id =' . $_POST['Product']['company_id'] . ' and parent_id = ' . $parent->id . ' and status = 1');
-                $data[$parent->id]= $parent->title;
+                $data[$parent->id] = $parent->title;
                 foreach ($children as $child) {
                     $data[$child->id] = $child->title;
                 }
@@ -60,14 +72,26 @@
         } else {
             $data = array();
         }
+        if (isset($productCustomCategoryList)) {
+            foreach ($productCustomCategoryList as $customCategoryList) {
+                $customCategoryListArray[] = $customCategoryList->custom_category_id;
+            }
+            $productCustomCategory->custom_category_id = $customCategoryListArray;
+        }
+        if (!$model->isNewRecord) {
+            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $model->company_id)), 'id', 'title');
+        }
         ?>
-        <?php echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---', 'multiple' => 'multiple')); ?>
+        <?php
+        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---', 'multiple' => 'multiple',
+        ));
+        ?>
     </div>
     <?php echo $form->textAreaRow($model, 'description', array('rows' => 6, 'cols' => 50, 'placeholder' => 'Product Description')); ?>
 
     <?php echo $form->textFieldRow($model, 'price', array('placeholder' => 'Price')); ?>
 
-    <?php echo $form->textFieldRow($model, 'price_type', array('size' => 60, 'maxlength' => 255, 'placeholder' => 'Currency')); ?>
+    <?php // echo $form->textFieldRow($model, 'price_type', array('size' => 60, 'maxlength' => 255, 'placeholder' => 'Currency')); ?>
 
     <?php echo $form->textFieldRow($model, 'minimum_quantitiy', array('maxlength' => 10, 'placeholder' => 'Minimum Order Quantity')); ?>
 
@@ -132,18 +156,17 @@
             <div class="clearfix"></div>
             <ul id="thumbs_list">
                 <?php
-//                if (!$model->isNewRecord && is_array($image_list)) {
-//                    foreach ($image_list as $image) {
-//                        static $i = 1;
-//                        echo '<li id="thumbs_' . $i . '" class="preview_' . $i . ' pull-left">';
-//                        echo CHtml::hiddenField('ProductImages[image][]', $image->image);
-//                        echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/products/thumbs/' . $image->image), $image->image, array('class' => 'thumbnail span2'));
-//                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $image->image . '\')" class="btn btn-danger">Remove</a>';
-//                        echo '</li>';
-////                        echo '<div class="clearfix"></div>';
-//                        $i++;
-//                    }
-//                }
+                if (!$model->isNewRecord && is_array($productImageLists)) {
+                    foreach ($productImageLists as $image) {
+                        static $i = 1;
+                        echo '<li id="thumbs_' . $i . '" class="preview_' . $i . ' pull-left">';
+                        echo CHtml::hiddenField('ProductImages[image][]', $image->image);
+                        echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/product/thumbs/' . $image->image), $image->image, array('class' => 'thumbnail span2'));
+                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $image->image . '\')" class="btn btn-danger">Remove</a>';
+                        echo '</li>';
+                        $i++;
+                    }
+                }
                 ?>
             </ul>
         </div>
@@ -157,6 +180,22 @@
         <?php if ($model->isNewRecord) echo CHtml::resetButton('Reset', array('class' => 'btn')); ?>
     </div>
 
+    <?php if (!$model->isNewRecord) { ?>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $.ajax({
+                    type: 'post',
+                    url: '<?php echo Yii::app()->createAbsoluteUrl('admin/product/customCategory'); ?>',
+                    data: {company_id: <?php echo $model->company_id; ?>},
+                    success: function(html){
+                        update('#ProductCustomCategory_custom_category_id', html);
+                    }
+                                                
+                });
+            })
+        </script>
+    <?php } ?>
+
     <?php $this->endWidget(); ?>
 
 </div><!-- form -->
@@ -164,8 +203,7 @@
     $(document).ready(function(){
         $('.category').hide();
         $('.custom-category').hide();
-        alert($('#Product[category_id]').val());
-        showCategoryList($('#categoryList').val());
+        showCategoryList(<?php echo (!$model->isNewRecord) ? $model->category_type : ''; ?>);
     });
     
     function showCategoryList(val){
@@ -180,4 +218,24 @@
             $('.category').show();
         }
     }
+    
+    function getRemove(index, image) {
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo Yii::app()->createAbsoluteUrl("admin/product/remove_image"); ?>',
+            data: {image: image},
+            success: function(data) {
+                if (data === 'success') {
+                    $('#thumbs_list .preview_' + index).remove();
+                    $('#thumbs_list #thumbs_'+index).remove();
+                    
+                    var message = '<div class="alert alert-success"><span class="close" data-dismiss="alert">×</span>Image removed.</div>';
+                    $("#msg").html(message).fadeIn().animate({opacity: 1.0}, 4000).fadeOut("slow");
+                }
+            }
+        });
+    }
+    $(function() {
+        $('.qq-upload-list').remove();
+    });
 </script>
