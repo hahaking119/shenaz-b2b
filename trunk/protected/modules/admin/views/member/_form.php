@@ -13,7 +13,7 @@
         'htmlOptions' => array('enctype' => 'multipart/form-data'),
         'enableAjaxValidation' => true,
         'clientOptions' => array('validateOnSubmit' => true),
-    ));
+            ));
     ?>
 
     <?php echo $form->errorSummary($model); ?>
@@ -41,6 +41,13 @@
     <?php echo $form->textFieldRow($model, 'phone', array('size' => 60, 'maxlength' => 60, 'placeholder' => 'Phone')); ?>
 
     <?php echo $form->radioButtonListRow($model, 'business_type', array(2 => 'Buyer', 1 => 'Seller', 0 => 'Both'), array('separator' => '')); ?>
+
+    <?php
+    if (!$subscriber->isNewRecord) {
+        $subscriber->id = 1;
+    }
+    echo $form->radioButtonListRow($subscriber, 'id', array(1 => 'Yes', 0 => 'Later'));
+    ?>
 
     <?php echo $form->dropDownListRow($model, 'status', array(0 => 'Inactive', 1 => 'Active'), array('prompt' => '--- Select Status ---')); ?>
 

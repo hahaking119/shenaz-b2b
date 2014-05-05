@@ -59,6 +59,7 @@ class MemberController extends Controller {
      */
     public function actionCreate() {
         $model = new Member('register');
+        $subscriber = new NewsletterSubscriber();
 
         // Uncomment the following line if AJAX validation is needed
         $this->performAjaxValidation($model);
@@ -70,6 +71,14 @@ class MemberController extends Controller {
             $model->created_at = new CDbExpression('NOW()');
             $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
+                if (isset($_POST['NewsletterSubscriber'])) {
+                    if ($_POST['NewsletterSubscriber']['id'] == 1) {
+                        $subscriber = new NewsletterSubscriber();
+                        $subscriber->member_id = $model->member_id;
+                        $subscriber->email = $model->email;
+                        $subscriber->save();
+                    }
+                }
                 Yii::app()->user->setFlash('success', '<strong>Success!</strong> New member has been added.');
                 $this->redirect(array('view', 'id' => $model->member_id));
             } else {
@@ -79,6 +88,7 @@ class MemberController extends Controller {
 
         $this->render('create', array(
             'model' => $model,
+            'subscriber' => $subscriber
         ));
     }
 
@@ -90,6 +100,10 @@ class MemberController extends Controller {
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
         $model->db_password_text = $model->password_text;
+        $subscriber = NewsletterSubscriber::model()->findByAttributes(array('member_id' => $id));
+        if (!$subscriber) {
+            $subscriber = new NewsletterSubscriber();
+        }
 
         // Uncomment the following line if AJAX validation is needed
         $this->performAjaxValidation($model);
@@ -98,6 +112,19 @@ class MemberController extends Controller {
             $model->attributes = $_POST['Member'];
             $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
+                if (isset($_POST['NewsletterSubscriber'])) {
+                    if ($_POST['NewsletterSubscriber']['id'] == 1) {
+                        $subscriber = NewsletterSubscriber::model()->findByAttributes(array('member_id' => $model->member_id));
+                        if (!$subscriber) {
+                            $subscriber = new NewsletterSubscriber();
+                            $subscriber->member_id = $model->member_id;
+                            $subscriber->email = $model->email;
+                            $subscriber->save();
+                        }
+                    }else{
+                        $subscriber->delete($subscriber->id);
+                    }
+                }
                 Yii::app()->user->setFlash('success', '<strong>Added!</strong> A member has been added.');
                 $this->redirect(array('view', 'id' => $model->member_id));
             } else {
@@ -107,6 +134,7 @@ class MemberController extends Controller {
 
         $this->render('update', array(
             'model' => $model,
+            'subscriber' => $subscriber
         ));
     }
 
@@ -407,6 +435,56 @@ class MemberController extends Controller {
             }
         }
         $this->render('_setting', array('model' => $model));
+    }
+
+    public function actionCustom_category($id = '') {
+        $model = new CustomCategory;
+        $customCategory = CustomCategory::model()->findAllByAttributes(array('company_id' => $id, 'parent_id' => 0));
+        if (!$customCategory) {
+            $customCategory = array();
+        }
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'custom-category-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+        if (isset($_POST['CustomCategory']) && !empty($_POST['CustomCategory']['title'])) {
+            $model->attributes = $_POST['CustomCategory'];
+            $model->company_id = $id;
+            $model->slug = CommonClass::getSlug($model->title);
+            $model->created_at = new CDbExpression('NOW()');
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                Yii::app()->user->setFlash('success', '<strong>Added!</strong> The new category has been added.');
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
+            $this->redirect(Yii::app()->createAbsoluteUrl('admin/member/custom_category/id/' . $id));
+        }
+        $this->render('_custom_category', array('model' => $model, 'customCategory' => $customCategory));
+    }
+
+    public function actionupdate_custom_category($id) {
+        $model = CustomCategory::model()->findByPk($id);
+        $customCategory = CustomCategory::model()->findAll('company_id = ' . $model->company_id . ' and parent_id = 0 and id != ' . $id);
+        if (!$customCategory) {
+            $customCategory = array();
+        }
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'custom-category-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+        if (isset($_POST['CustomCategory']) && !empty($_POST['CustomCategory']['title'])) {
+            $model->attributes = $_POST['CustomCategory'];
+            $model->slug = CommonClass::getSlug($model->title);
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                Yii::app()->user->setFlash('success', '<strong>Updated!</strong> The category has been updated.');
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
+            $this->redirect(Yii::app()->createAbsoluteUrl('admin/member/custom_category/id/' . $model->company_id));
+        }
+        $this->render('_custom_category_form', array('model' => $model, 'customCategory' => $customCategory));
     }
 
 }

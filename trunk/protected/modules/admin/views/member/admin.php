@@ -47,7 +47,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         array(
             'class' => 'bootstrap.widgets.TbButtonColumn',
             'htmlOptions' => array('style' => 'width: 60px'),
-            'template' => '{view}{update}{add}{edit}{setting}{trash}',
+            'template' => '{view}{update}{add}{edit}{custom_category}{setting}{trash}',
             'buttons' => array(
                 'add' => array(
                     'label' => 'Add Company/Directory Information',
@@ -60,6 +60,11 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                     'icon' => 'icon-edit',
                     'url' => 'Yii::app()->createAbsoluteUrl("admin/member/add_directory_company_info", array("id"=>$data->member_id))',
                     'visible' => '($data->companyInformations !="")? 1:0'
+                ),
+                'custom_category' => array(
+                    'label' => 'Customize Category',
+                    'icon' => 'icon-list',
+                    'url' => 'Yii::app()->createAbsoluteUrl("admin/member/custom_category", array("id" => $data->companyInformations->company_id))',
                 ),
                 'setting' => array(
                     'label' => 'Setting',
