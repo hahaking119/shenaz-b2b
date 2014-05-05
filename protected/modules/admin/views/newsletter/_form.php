@@ -6,73 +6,31 @@
 
 <div class="form">
 
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'newsletter-form',
-	'enableAjaxValidation'=>false,
-)); ?>
+    <?php
+    $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
+        'id' => 'newsletter-form',
+        'type' => 'horizontal',
+        'htmlOptions' => array('enctype' => 'multipart/form-data'),
+        'enableAjaxValidation' => true,
+        'clientOptions' => array('validateOnSubmit' => true),
+            ));
+    ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+    <?php echo $form->errorSummary($model); ?>
 
-	<?php echo $form->errorSummary($model); ?>
+    <?php echo $form->dropDownListRow($model, 'business_type', array('All', 'Buyer', 'Seller'), array('prompt' => '--- Select Send to ---')); ?>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'business_type'); ?>
-		<?php echo $form->textField($model,'business_type'); ?>
-		<?php echo $form->error($model,'business_type'); ?>
-	</div>
+    <?php echo $form->textFieldRow($model, 'title', array('size' => 60, 'maxlength' => 255, 'placeholder' => 'Title')); ?>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'title'); ?>
-		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'title'); ?>
-	</div>
+    <?php echo $form->textAreaRow($model, 'description', array('rows' => 6, 'cols' => 50, 'placeholder' => 'Write something here...')); ?>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'description'); ?>
-		<?php echo $form->textArea($model,'description',array('rows'=>6, 'cols'=>50)); ?>
-		<?php echo $form->error($model,'description'); ?>
-	</div>
+    <?php echo $form->dropDownListRow($model, 'status', array('Publish', 'Draft')); ?>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'attachment'); ?>
-		<?php echo $form->textField($model,'attachment',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'attachment'); ?>
-	</div>
+    <div class="form-actions">
+        <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Update', array('class' => 'btn btn-success')); ?>
+        <?php if ($model->isNewRecord) echo CHtml::resetButton('Reset', array('class' => 'btn')); ?>
+    </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'status'); ?>
-		<?php echo $form->textField($model,'status'); ?>
-		<?php echo $form->error($model,'status'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'trash'); ?>
-		<?php echo $form->textField($model,'trash'); ?>
-		<?php echo $form->error($model,'trash'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'created_at'); ?>
-		<?php echo $form->textField($model,'created_at'); ?>
-		<?php echo $form->error($model,'created_at'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'modified_at'); ?>
-		<?php echo $form->textField($model,'modified_at'); ?>
-		<?php echo $form->error($model,'modified_at'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'trashed_at'); ?>
-		<?php echo $form->textField($model,'trashed_at'); ?>
-		<?php echo $form->error($model,'trashed_at'); ?>
-	</div>
-
-	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
-	</div>
-
-<?php $this->endWidget(); ?>
+    <?php $this->endWidget(); ?>
 
 </div><!-- form -->

@@ -47,14 +47,14 @@ class AdminLeftColumn extends CWidget {
                         'itemOptions' => array('class' => ($controller == 'administrator' && $action == 'create') ? 'child-menu active' : 'child-menu')),
                 )
             ),
-            array('label' => 'Newsletters', 'url' => 'javascript:void(0)',
-                'itemOptions' => array('class' => ($controller == 'newsletters') ? 'parent-menu active ' . $controller : 'parent-menu'),
-                'items' => array(
-                    array('label' => 'Manage Newsletters', 'url' => array('Newsletters/admin'),
-                        'itemOptions' => array('class' => ($controller == 'newsletters' && $action == 'admin') ? 'child-menu active' : 'child-menu')),
-                    array('label' => 'Create Newsletter', 'url' => array('Newsletters/create'),
-                        'itemOptions' => array('class' => ($controller == 'newsletters' && $action == 'create') ? 'child-menu active' : 'child-menu')),
-                )
+            array('label' => 'Newsletter Subscribers', 'url' => array('newsletter/subscriber_list'),
+                'itemOptions' => array('class' => ($action == 'subscriber_list') ? 'parent-menu active ' . $controller : 'parent-menu'),
+//                'items' => array(
+//                    array('label' => 'Manage Newsletters', 'url' => array('newsletter/subscriber_list'),
+//                        'itemOptions' => array('class' => ($controller == 'newsletter' && $action == 'subscriber_list') ? 'child-menu active' : 'child-menu')),
+//                    array('label' => 'Create Newsletter', 'url' => array('newsletter/create'),
+//                        'itemOptions' => array('class' => ($controller == 'newsletter' && $action == 'create') ? 'child-menu active' : 'child-menu')),
+//                )
             ),
             array('label' => 'Membership', 'url' => 'javascript:void(0)',
                 'itemOptions' => array('class' => ($controller == 'membership') ? 'parent-menu active ' . $controller : 'parent-menu'),
