@@ -161,4 +161,10 @@ class CompanyInformation extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+        
+        public function getName($id) {
+        $model = CompanyInformation::model()->findByPk($id);
+        $name = $model->company_name;
+        return $name;
+    }
 }

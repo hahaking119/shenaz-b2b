@@ -388,7 +388,7 @@ class MemberController extends Controller {
         }
     }
 
-    public function actionupdateStatus($id) {
+    public function actionUpdateStatus($id) {
         $model = $this->loadModel($id);
         if (isset($_POST['status'])) {
             $model->status = $_POST['status'];
