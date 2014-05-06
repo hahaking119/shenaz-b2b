@@ -17,10 +17,11 @@ class AdminModule extends CWebModule {
                 'errorAction' => 'admin/default/error'),
             'user' => array(
                 'class' => 'CWebUser',
-                'stateKeyPrefix' => '_b2b_admin',
+                'stateKeyPrefix' => '_admin',
                 'loginUrl' => Yii::app()->createUrl('admin/login'),
             )
         ), false);
+        Yii::app()->user->setStateKeyPrefix('_admin');
     }
 
     public function beforeControllerAction($controller, $action) {

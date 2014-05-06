@@ -70,7 +70,6 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                     'label' => 'Setting',
                     'icon' => 'icon-lock',
                     'url' => 'Yii::app()->createAbsoluteUrl("admin/member/setting", array("id" => $data->member_id))',
-                    'visible' => '($data->companyInformations !="")? 1:0'
                 ),
                 'trash' => array(
                     'label' => 'Trash',

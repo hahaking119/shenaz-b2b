@@ -3,16 +3,16 @@
 /* @var $model Membership */
 
 $this->breadcrumbs=array(
-	'Memberships'=>array('index'),
+	'Membership Option'=>array('index'),
 	'Create',
 );
 
 $this->menu=array(
-	array('label'=>'List Membership', 'url'=>array('index')),
-	array('label'=>'Manage Membership', 'url'=>array('admin')),
+	array('label'=>'List Membership Options', 'url'=>array('index')),
+	array('label'=>'Manage Membership Options', 'url'=>array('admin')),
 );
 ?>
 
-<h1>Create Membership</h1>
+<h1>Create Membership Option</h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

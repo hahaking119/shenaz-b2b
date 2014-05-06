@@ -15,10 +15,11 @@ class SellerModule extends CWebModule {
                 'errorAction' => 'seller/default/error'),
             'user' => array(
                 'class' => 'CWebUser',
-                'stateKeyPrefix' => '_b2b_seller',
+                'stateKeyPrefix' => '_seller',
                 'loginUrl' => Yii::app()->createUrl('seller/login'),
             )
         ), false);
+        Yii::app()->user->setStateKeyPrefix('_seller');
     }
 
     public function beforeControllerAction($controller, $action) {

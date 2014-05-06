@@ -79,6 +79,20 @@ class MemberController extends Controller {
                         $subscriber->save();
                     }
                 }
+
+                /*
+                 * Creates the default member setting.
+                 */
+                $memberSetting = new MemberSetting();
+                $memberSetting->member_id = $model->member_id;
+                $memberSetting->membership_id = 1;
+                $memberSetting->created_at = new CDbExpression('NOW()');
+                $memberSetting->modified_at = new cdbexpression('NOW()');
+                if(!$memberSetting->save()){
+                    echo '<pre>';
+                    print_r($memberSetting->getErrors());
+                    die();
+                }
                 Yii::app()->user->setFlash('success', '<strong>Success!</strong> New member has been added.');
                 $this->redirect(array('view', 'id' => $model->member_id));
             } else {
@@ -121,7 +135,7 @@ class MemberController extends Controller {
                             $subscriber->email = $model->email;
                             $subscriber->save();
                         }
-                    }else{
+                    } else {
                         $subscriber->delete($subscriber->id);
                     }
                 }
@@ -420,6 +434,7 @@ class MemberController extends Controller {
         if (!$model) {
             $model = new MemberSetting;
         }
+        $membership = Membership::model()->findAllByAttributes(array('status' => 1, 'trash' => 0));
         if (isset($_POST['ajax']) && $_POST['ajax'] === 'setting-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
@@ -434,7 +449,7 @@ class MemberController extends Controller {
                 Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
             }
         }
-        $this->render('_setting', array('model' => $model));
+        $this->render('_setting', array('model' => $model, 'membership' => $membership));
     }
 
     public function actionCustom_category($id = '') {

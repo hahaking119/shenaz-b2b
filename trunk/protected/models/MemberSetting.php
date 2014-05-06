@@ -39,8 +39,8 @@ class MemberSetting extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('member_id, theme, currency', 'required'),
-            array('member_id', 'numerical', 'integerOnly' => true),
+            array('member_id, membership_id', 'required'),
+            array('member_id, membership_id', 'numerical', 'integerOnly' => true),
             array('theme, currency', 'length', 'max' => 255),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -55,6 +55,7 @@ class MemberSetting extends CActiveRecord {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'membership' => array(self::BELONGS_TO, 'Membership', 'membership_id'),
             'member' => array(self::BELONGS_TO, 'Member', 'member_id'),
         );
     }
@@ -66,6 +67,7 @@ class MemberSetting extends CActiveRecord {
         return array(
             'id' => 'ID',
             'member_id' => 'Member',
+            'membership_id' => 'Account Type',
             'theme' => 'Theme',
             'currency' => 'Currency',
             'created_at' => 'Created At',
