@@ -50,7 +50,7 @@ class LoginController extends Controller {
     }
 
     public function actionLogout() {
-        Yii::app()->user->logout('false');
+        Yii::app()->user->logout(false);
         $this->redirect(Yii::app()->homeUrl);
     }
 
