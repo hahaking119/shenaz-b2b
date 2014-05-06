@@ -20,6 +20,16 @@ class SellerLeftColumn extends CWidget {
                         'itemOptions' => array('class' => ($controller == 'product' && $action == 'create') ? 'child-menu active' : 'child-menu')),
                 )
             ),
+            array('label' => 'Custom Categories', 'url' => 'javascript:void(0)',
+                'itemOptions' => array('class' => ($controller == 'custom categories') ? 'parent-menu active ' . $controller : 'parent-menu'),
+                'items' => array(
+                    array('label' => 'Manage Categories', 'url' => array('customCategory/admin'),
+                        'itemOptions' => array('class' => ($controller == 'custom categories' && $action == 'admin') ? 'child-menu active' : 'child-menu')),
+                    array('label' => 'Add Category', 'url' => array('customCategory/create'),
+                        'itemOptions' => array('class' => ($controller == 'custom categories' && $action == 'create') ? 'child-menu active' : 'child-menu')),
+                )
+            ),
+            array('label' => 'Edit Company and Directory Information', 'url' => array('directoryInformation/add_directory_company_info')),
             array('label' => 'Logout', 'url' => array('login/logout')),
         );
 

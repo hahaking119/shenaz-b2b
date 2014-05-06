@@ -114,4 +114,10 @@ class Category extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+        
+        public function getName($id) {
+            $model = Category::model()->findByPk($id);
+            $name = $model->title;
+            return $name;
+        }
 }
