@@ -16,7 +16,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>Update Product <?php echo $model->product_id; ?></h1>
+<h1>Update Product <?php echo $model->name; ?></h1>
 
 <?php echo $this->renderPartial('_form', array(
     'model' => $model,
