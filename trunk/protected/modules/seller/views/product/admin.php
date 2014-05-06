@@ -51,6 +51,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
             'name' => 'company_id',
             'type' => 'raw',
             'value' => 'CompanyInformation::model()->getName($data->company_id)',
+            'filter' => '',
         ),
         'name',
 //        'slug',

@@ -11,6 +11,7 @@ class SellerLeftColumn extends CWidget {
         $action = Yii::app()->controller->action->id;
         $arr = array(
             array('label' => 'Dashboard', 'url' => array('login/dashboard'), 'itemOptions' => array('class' => ($controller == 'login') ? 'active' : '')),
+            array('label' => 'Profile', 'url' => array('member/profile'), 'itemOptions' => array('class' => ($controller == 'login') ? 'active' : '')),
             array('label' => 'Products', 'url' => 'javascript:void(0)',
                 'itemOptions' => array('class' => ($controller == 'product') ? 'parent-menu active ' . $controller : 'parent-menu'),
                 'items' => array(
@@ -30,6 +31,7 @@ class SellerLeftColumn extends CWidget {
                 )
             ),
             array('label' => 'Edit Company and Directory Information', 'url' => array('directoryInformation/add_directory_company_info')),
+            array('label' => 'Setting', 'url' => array('member/setting')),
             array('label' => 'Logout', 'url' => array('login/logout')),
         );
 
