@@ -84,13 +84,32 @@ class CommonClass extends CComponent {
                 break;
         }
     }
-    
-    public static function getPriceFormat($member_id){
+
+    public static function getPriceFormat($member_id) {
         $currency = MemberSetting::model()->findByAttributes(array('member_id' => $member_id));
-        if(!empty($currency)){
+        if (!empty($currency)) {
             $symbol = array('R', '$', 'P', 'E');
             return $symbol[$currency->currency];
         }
+    }
+
+    public static function getShortDescription($string, $limit = '') {
+        if (empty($limit)) {
+            $limit = 60;
+        } else {
+            $limit = $limit;
+        }
+
+        if (strlen($string) < $limit) {
+            $string = strip_tags($string);
+        } else {
+            $text = strip_tags($string);
+            $cut_text = substr($text, 0, $limit);
+            $last_space = strrpos($cut_text, " ");
+            $short_text = substr($cut_text, 0, $last_space);
+            $string = $short_text . '...';
+        }
+        return $string = strip_tags($string);
     }
 
 }
