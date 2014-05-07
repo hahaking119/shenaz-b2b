@@ -20,9 +20,7 @@
  * @property Product[] $products
  */
 class CustomCategory extends CActiveRecord {
-    
-    public $subcategory_id;
-    
+
     public $subcategory_id;
 
     /**
