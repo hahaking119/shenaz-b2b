@@ -20,7 +20,9 @@
  * @property Product[] $products
  */
 class CustomCategory extends CActiveRecord {
-
+    
+    public $subcategory_id;
+    
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.
@@ -75,6 +77,7 @@ class CustomCategory extends CActiveRecord {
             'title' => 'Title',
             'slug' => 'Slug',
             'parent_id' => 'Parent',
+            'subcategory_id' => 'Sub Category',
             'status' => 'Status',
             'trash' => 'Trash',
             'created_at' => 'Created At',

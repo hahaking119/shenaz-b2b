@@ -32,7 +32,7 @@ class CustomCategoryController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','admin', 'updateStatus', 'trash'),
+				'actions'=>array('create','update','admin', 'updateStatus', 'trash', 'showSubCategory', 'listSubCategories'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -81,6 +81,7 @@ class CustomCategoryController extends Controller
 		{
 			$model->attributes=$_POST['CustomCategory'];
                         $model->slug = CommonClass::getSlug($model->title);
+                        $model->parent_id = $_POST['CustomCategory']['subcategory_id'];
                         $model->created_at = new CDbExpression('NOW()');
                         $model->modified_at = new CDbExpression('NOW()');
 			if($model->save())
@@ -120,6 +121,7 @@ class CustomCategoryController extends Controller
 		{
 			$model->attributes=$_POST['CustomCategory'];
                         $model->slug = CommonClass::getSlug($model->title);
+                        $model->parent_id = $_POST['CustomCategory']['subcategory_id'];
                         $model->modified_at = new CDbExpression('NOW()');
 			if($model->save())
 				$this->redirect(array('admin','id'=>$model->id));
@@ -161,6 +163,7 @@ class CustomCategoryController extends Controller
 	 */
 	public function actionAdmin()
 	{
+            $this->layout = '//layouts/column3';
 		$model=new CustomCategory('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['CustomCategory']))
@@ -222,4 +225,15 @@ class CustomCategoryController extends Controller
             }
             $this->redirect(array('admin'));
         }
+        
+        public function actionListSubCategories() {
+        if (isset($_POST['id'])) {
+            echo "<option value=''>--- Select Sub Category ---</option>";
+            if ($_POST['id'] != 0) {
+                $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => (int) $_POST['id'])), 'category_id', 'title');
+                foreach ($data as $value => $name)
+                    echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+            }
+        }
+    }
 }

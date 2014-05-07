@@ -21,7 +21,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
     'type' => 'striped bordered condensed',
     'dataProvider' => $model->search(array('condition' => 'trash = 0')),
 //    'filter' => $model,
-    'template' => "{items}",
+//    'template' => "{items}",
     'columns' => array(
         array(
             'header' => '#',

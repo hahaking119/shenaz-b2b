@@ -24,9 +24,9 @@ class SellerLeftColumn extends CWidget {
             array('label' => 'Custom Categories', 'url' => 'javascript:void(0)',
                 'itemOptions' => array('class' => ($controller == 'custom categories') ? 'parent-menu active ' . $controller : 'parent-menu'),
                 'items' => array(
-                    array('label' => 'Manage Categories', 'url' => array('customCategory/admin'),
+                    array('label' => 'Manage Custom Categories', 'url' => array('customCategory/admin'),
                         'itemOptions' => array('class' => ($controller == 'custom categories' && $action == 'admin') ? 'child-menu active' : 'child-menu')),
-                    array('label' => 'Add Category', 'url' => array('customCategory/create'),
+                    array('label' => 'Add Custom Category', 'url' => array('customCategory/create'),
                         'itemOptions' => array('class' => ($controller == 'custom categories' && $action == 'create') ? 'child-menu active' : 'child-menu')),
                 )
             ),
