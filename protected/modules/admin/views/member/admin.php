@@ -64,7 +64,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
                 'custom_category' => array(
                     'label' => 'Customize Category',
                     'icon' => 'icon-list',
-                    'url' => 'Yii::app()->createAbsoluteUrl("admin/member/custom_category", array("id" => $data->companyInformations->company_id))',
+                    'url' => 'Yii::app()->createAbsoluteUrl("admin/customCategory/admin", array("id" => $data->companyInformations->company_id))',
                 ),
                 'setting' => array(
                     'label' => 'Setting',

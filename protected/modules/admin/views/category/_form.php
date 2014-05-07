@@ -53,8 +53,7 @@
         )
     ));
     ?>
-    <div id="subcategory" style="display: <?php echo $display;
-    s ?>"><?php echo $form->dropDownListRow($model, 'subcategory_id', $data, array('style' => '')); ?></div>
+    <div id="subcategory" style="display: <?php echo $display; ?>"><?php echo $form->dropDownListRow($model, 'subcategory_id', $data, array('style' => '')); ?></div>
 
     <div class="control-group">
         <div class="control-label"><?php echo $form->labelEx($model, 'image'); ?></div>
@@ -126,7 +125,7 @@
                 ?>
             </ul>
             <div class="clearfix"></div>
-<?php echo $form->error($model, 'image'); ?>
+            <?php echo $form->error($model, 'image'); ?>
         </div>
     </div>
     <div class="control-group">
@@ -202,18 +201,18 @@
                 ?>
             </ul>
             <div class="clearfix"></div>
-<?php echo $form->error($categoryBanner, 'banner'); ?>
+            <?php echo $form->error($categoryBanner, 'banner'); ?>
         </div>
     </div>
 
-<?php echo $form->dropDownListRow($model, 'status', array(0 => 'Draft', 1 => 'Publish'), array('prompt' => '--- Select Status ---')); ?>
+    <?php echo $form->dropDownListRow($model, 'status', array(0 => 'Draft', 1 => 'Publish'), array('prompt' => '--- Select Status ---')); ?>
 
     <div class="form-actions">
         <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Update', array('class' => 'btn btn-success')); ?>
-<?php if ($model->isNewRecord) echo CHtml::resetButton('Reset', array('class' => 'btn')); ?>
+        <?php if ($model->isNewRecord) echo CHtml::resetButton('Reset', array('class' => 'btn')); ?>
     </div>
 
-<?php $this->endWidget(); ?>
+    <?php $this->endWidget(); ?>
 
 </div><!-- form -->
 <script>

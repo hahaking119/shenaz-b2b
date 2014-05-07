@@ -60,7 +60,7 @@ class ProductController extends Controller {
     public function actionCreate() {
         $model = new Product;
         $companies = CompanyInformation::model()->findAllByAttributes(array('status' => 1, 'trash' => 0));
-        $categories = Category::model()->findAllByAttributes(array('status' => 1, 'trash' => 0));
+        $categories = Category::model()->findAllByAttributes(array('parent_id' => 0, 'status' => 1, 'trash' => 0));
         $productImages = new ProductImage();
         $productCategory = new ProductCategory();
         $productCustomCategory = new ProductCustomCategory();

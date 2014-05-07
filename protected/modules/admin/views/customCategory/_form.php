@@ -6,73 +6,62 @@
 
 <div class="form">
 
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'custom-category-form',
-	'enableAjaxValidation'=>false,
-)); ?>
+    <?php
+    $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
+        'id' => 'custom-category-form',
+        'type' => 'horizontal',
+        'htmlOptions' => array('enctype' => 'multipart/form-data'),
+        'enableAjaxValidation' => true,
+        'clientOptions' => array('validateOnSubmit' => true),
+            ));
+    ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+    <?php echo $form->errorSummary($model); ?>
 
-	<?php echo $form->errorSummary($model); ?>
+    <?php echo $form->textFieldRow($model, 'title', array('size' => 60, 'maxlength' => 255)); ?>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'company_id'); ?>
-		<?php echo $form->textField($model,'company_id'); ?>
-		<?php echo $form->error($model,'company_id'); ?>
-	</div>
+    <?php
+    if (isset($parentCategories)) {
+        $Categories = CHtml::listData($parentCategories, 'id', 'title');
+        if (!empty($Categories))
+            $parentCategories = $Categories;
+    } else {
+        $parentCategories = array();
+    }
+    if (!$model->isNewRecord) {
+        $isParent = CustomCategory::model()->findByPk($model->parent_id);
+        if ($isParent->parent_id != 0) {
+            $model->subcategory_id = $model->parent_id;
+            $model->parent_id = $isParent->parent_id;
+            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $isParent->parent_id)), 'category_id', 'title');
+            $display = 'block';
+        } else {
+            $display = 'none';
+        }
+    } else {
+        $data = array();
+        $display = 'none';
+    }
+    echo $form->dropDownListRow($model, 'parent_id', array(0 => 'Parent Category') + $parentCategories, array('prompt' => '--- Select Parent Category ---',
+        'ajax' => array(
+            'type' => 'POST',
+            'url' => CController::createUrl('listSubCategories'),
+            'update' => '#CustomCategory_subcategory_id',
+            'complete' => '$("#subcategory").css("display","block")',
+            'data' => array('id' => 'js:this.value'),
+        )
+    ));
+    ?>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'title'); ?>
-		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'title'); ?>
-	</div>
+    <div id="subcategory" style="display: <?php echo $display; ?>"><?php echo $form->dropDownListRow($model, 'subcategory_id', $data, array('style' => '')); ?></div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'slug'); ?>
-		<?php echo $form->textField($model,'slug',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'slug'); ?>
-	</div>
+    <?php echo $form->dropDownListRow($model, 'status', array('Draft', 'Publish'), array('prompt' => '--- Select Status ---')); ?>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'parent_id'); ?>
-		<?php echo $form->textField($model,'parent_id'); ?>
-		<?php echo $form->error($model,'parent_id'); ?>
-	</div>
+    <div class="form-actions">
+        <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Update', array('class' => 'btn btn-success')); ?>
+        <?php if ($model->isNewRecord) echo CHtml::resetButton('Reset', array('class' => 'btn')); ?>
+    </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'status'); ?>
-		<?php echo $form->textField($model,'status'); ?>
-		<?php echo $form->error($model,'status'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'trash'); ?>
-		<?php echo $form->textField($model,'trash'); ?>
-		<?php echo $form->error($model,'trash'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'created_at'); ?>
-		<?php echo $form->textField($model,'created_at'); ?>
-		<?php echo $form->error($model,'created_at'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'modified_at'); ?>
-		<?php echo $form->textField($model,'modified_at'); ?>
-		<?php echo $form->error($model,'modified_at'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'trashed_at'); ?>
-		<?php echo $form->textField($model,'trashed_at'); ?>
-		<?php echo $form->error($model,'trashed_at'); ?>
-	</div>
-
-	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
-	</div>
-
-<?php $this->endWidget(); ?>
+    <?php $this->endWidget(); ?>
 
 </div><!-- form -->

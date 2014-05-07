@@ -13,6 +13,7 @@
  * @property Product $product
  */
 class ProductCategory extends CActiveRecord {
+    public $subcategory_id;
 
     /**
      * Returns the static model of the specified AR class.
