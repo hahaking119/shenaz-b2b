@@ -32,7 +32,7 @@ class CustomCategoryController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','admin', 'updateStatus', 'trash', 'showSubCategory', 'listSubCategories'),
+				'actions'=>array('create','update','admin', 'updateStatus', 'trash', 'listSubCategories'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -67,7 +67,7 @@ class CustomCategoryController extends Controller
                 $company = CompanyInformation::model()->findByAttributes(array('member_id' => $id));
                 $model->company_id = $company->company_id;
                 
-                $parentCategories = Category::model()->findAll('parent_id = 0',array('order'=>'title ASC'));
+                $parentCategories = Category::model()->findAll('parent_id = 0 AND trash = 0 AND status = 1',array('order'=>'title ASC'));
                 if (!$parentCategories) {
                     $parentCategories = array();
                 }
@@ -107,7 +107,7 @@ class CustomCategoryController extends Controller
                 $company = CompanyInformation::model()->findByAttributes(array('member_id' => $id));
                 $model->company_id = $company->company_id;
                 
-                $parentCategories = Category::model()->findAll('parent_id = 0',array('order'=>'title ASC'));
+                $parentCategories = Category::model()->findAll('parent_id = 0 AND trash = 0 AND status = 1',array('order'=>'title ASC'));
                 if (!$parentCategories) {
                     $parentCategories = array();
                 }
@@ -227,13 +227,13 @@ class CustomCategoryController extends Controller
         }
         
         public function actionListSubCategories() {
-        if (isset($_POST['id'])) {
-            echo "<option value=''>--- Select Sub Category ---</option>";
-            if ($_POST['id'] != 0) {
-                $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => (int) $_POST['id'])), 'category_id', 'title');
-                foreach ($data as $value => $name)
-                    echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+            if (isset($_POST['id'])) {
+                echo "<option value=''>--- Select Sub Category ---</option>";
+                if ($_POST['id'] != 0) {
+                    $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => (int) $_POST['id'], 'status' => 1, 'trash' => 0)), 'category_id', 'title');
+                    foreach ($data as $value => $name)
+                        echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+                }
             }
         }
-    }
 }

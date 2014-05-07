@@ -30,17 +30,39 @@
     <span class="hint">The main category is the category defined by the system admin. The self defined category is the category defined by members to meet their product category.</span>
     <div class="category">
         <?php
-        if (isset($_POST['ProductCategory']['category_id'])) {
-            $productCategory->category_id = implode(', ', $_POST['ProductCategory']['category_id']);
+//        if (isset($_POST['ProductCategory']['category_id'])) {
+//            $productCategory->category_id = implode(', ', $_POST['ProductCategory']['category_id']);
+//        }
+//        if (isset($productCategoryList)) {
+//            foreach ($productCategoryList as $list) {
+//                $categoryListArray[] = $list->category_id;
+//            }
+//            $productCategory->category_id = $categoryListArray;
+//        }
+        if(!$model->isNewRecord){
+            $productCategory->subcategory_id = $productCategory->category_id;
+            $sub_category = Category::model()->findByPk($productCategory->category_id);
+            $parent_category = Category::model()->findByPk($sub_category->parent_id);
+            $productCategory->category_id = $parent_category->category_id;
+            $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id'=>$parent_category->category_id)),'category_id','title');
         }
-        if (isset($productCategoryList)) {
-            foreach ($productCategoryList as $list) {
-                $categoryListArray[] = $list->category_id;
-            }
-            $productCategory->category_id = $categoryListArray;
+        else{ 
+            $data = array();
+            $display = 'none';
         }
         ?>
-        <?php echo $form->dropDownListRow($productCategory, 'category_id', CHtml::listData($categories, 'category_id', 'title'), array('prompt' => '--- Select Category ---', 'multiple' => 'multiple')); ?>
+        <?php echo $form->dropDownListRow($productCategory, 'category_id', CHtml::listData($categories, 'category_id', 'title'), array('prompt' => '--- Select Category ---',
+            'ajax' => array(
+            'type' => 'POST',
+            'url' => CController::createUrl('listSubCategories'),
+            'update' => '#ProductCategory_subcategory_id',
+            'complete' => '$("#subcategory").css("display","block")',
+            'data' => array('id' => 'js:this.value'),
+        )
+            )); ?>
+    </div>
+    <div id="subcategory" style="display: <?php echo $display; ?>">
+        <?php echo $form->dropDownListRow($productCategory, 'subcategory_id', $data, array('style' => '')); ?>
     </div>
     <div class="custom-category">
         <?php
@@ -73,7 +95,7 @@
         }
         ?>
         <?php
-        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---', 'multiple' => 'multiple',
+        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---',
         ));
         ?>
     </div>
