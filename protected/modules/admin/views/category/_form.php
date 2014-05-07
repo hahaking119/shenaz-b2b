@@ -31,7 +31,7 @@
     }
     if (!$model->isNewRecord) {
         $isParent = Category::model()->findByPk($model->parent_id);
-        if ($isParent->parent_id != 0) {
+        if ($isParent->parent_id !== 0) {
             $model->subcategory_id = $model->parent_id;
             $model->parent_id = $isParent->parent_id;
             $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $isParent->parent_id)), 'category_id', 'title');

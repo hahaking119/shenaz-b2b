@@ -133,6 +133,7 @@ class CustomCategoryController extends Controller
 	 */
 	public function actionAdmin()
 	{
+            $this->layout = '//layouts/column3';
 		$model=new CustomCategory('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['CustomCategory']))

@@ -64,7 +64,7 @@
                             array(
                         'id' => 'uploadFile',
                         'config' => array(
-                            'action' => Yii::app()->createAbsoluteUrl('admin/member/upload/type/logo'),
+                            'action' => Yii::app()->createAbsoluteUrl('seller/directoryInformation/upload/type/logo'),
                             'multiple' => false,
                             'debug' => false,
                             'allowedExtensions' => array("jpg", "jpeg", 'gif', 'png'), //array("jpg","jpeg","gif","exe","mov" and etc...
@@ -139,7 +139,7 @@
                             array(
                         'id' => 'bannerImage',
                         'config' => array(
-                            'action' => Yii::app()->createAbsoluteUrl('admin/member/upload/type/banner'),
+                            'action' => Yii::app()->createAbsoluteUrl('seller/directoryInformation/upload/type/banner'),
                             'multiple' => false,
                             'debug' => false,
                             'allowedExtensions' => array("jpg", "jpeg", 'gif', 'png'), //array("jpg","jpeg","gif","exe","mov" and etc...
@@ -224,7 +224,7 @@
                             array(
                         'id' => 'directoryImage',
                         'config' => array(
-                            'action' => Yii::app()->createAbsoluteUrl('admin/member/upload/type/profile'),
+                            'action' => Yii::app()->createAbsoluteUrl('seller/directoryInformation/upload/type/profile'),
                             'multiple' => false,
                             'debug' => false,
                             'allowedExtensions' => array("jpg", "jpeg", 'gif', 'png'), //array("jpg","jpeg","gif","exe","mov" and etc...

@@ -4,6 +4,14 @@ class DirectoryInformationController extends Controller
 {
     public $layout = "//layouts/column2";
     
+    public function filters()
+	{
+		return array(
+			'accessControl', // perform access control for CRUD operations
+			'postOnly + delete', // we only allow deletion via POST request
+		);
+	}
+    
     public function accessRules() {
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
@@ -163,6 +171,29 @@ class DirectoryInformationController extends Controller
         }
 
             $this->render('add_company_and_directory_info', array('model' => $model, 'companyInformation' => $companyInformation));
+    }
+    
+    public function actionUpload($type) {
+        Yii::import("ext.EAjaxUpload.qqFileUploader");
+
+        $folder = Yii::app()->basePath . '/../uploads/temp/original/'; // folder for uploaded files
+        $allowedExtensions = array("jpg", "jpeg", "gif", "png"); //array("jpg","jpeg","gif","exe","mov" and etc...
+        $sizeLimit = 2 * 1024 * 1024; // maximum file size in bytes
+        $uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
+        $result = $uploader->handleUpload($folder);
+        if ($result['success']) {
+            $img = Yii::app()->simpleImage->load($folder . $result['filename']);
+            $uploadDetail = CommonClass::getImageResizeDetails($type);
+            $function = $uploadDetail["thumbs"]["function"];
+            $img->$function($uploadDetail["thumbs"]["width"], $uploadDetail["thumbs"]["height"]);
+            $img->save(Yii::app()->basePath . "/../uploads/temp/thumbs/" . $result['filename'], NULL);
+
+            $result['imageThumb'] = Yii::app()->baseUrl . '/uploads/temp/thumbs/' . $result['filename'];
+        }
+
+        $return = htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+
+        echo $return; // it's array
     }
     
     public function actionRemove_image() {
