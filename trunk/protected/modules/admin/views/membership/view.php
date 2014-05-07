@@ -2,34 +2,35 @@
 /* @var $this MembershipController */
 /* @var $model Membership */
 
-$this->breadcrumbs=array(
-	'Memberships'=>array('index'),
-	$model->title,
+$this->breadcrumbs = array(
+    'Memberships' => array('index'),
+    $model->title,
 );
 
-$this->menu=array(
-	array('label'=>'List Membership', 'url'=>array('index')),
-	array('label'=>'Create Membership', 'url'=>array('create')),
-	array('label'=>'Update Membership', 'url'=>array('update', 'id'=>$model->membership_id)),
-	array('label'=>'Delete Membership', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->membership_id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage Membership', 'url'=>array('admin')),
+$this->menu = array(
+    array('label' => 'List Membership Options', 'url' => array('index')),
+    array('label' => 'Create Membership Option', 'url' => array('create')),
+    array('label' => 'Update Membership Option', 'url' => array('update', 'id' => $model->membership_id)),
+    array('label' => 'Trash Membership Option', 'url' => '#', 'linkOptions' => array('submit' => array('trash', 'id' => $model->membership_id), 'confirm' => 'Are you sure you want to trash this item?')),
+    array('label' => 'Manage Membership Options', 'url' => array('admin')),
 );
 ?>
 
-<h1>View Membership #<?php echo $model->membership_id; ?></h1>
+<h1>View Membership Option - <?php echo $model->title; ?></h1>
 
-<?php $this->widget('zii.widgets.CDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-		'membership_id',
-		'title',
-		'description',
-		'shopfront_limit',
-		'product_limit',
-		'status',
-		'trash',
-		'created_at',
-		'modified_at',
-		'trashed_at',
-	),
-)); ?>
+<?php
+$this->widget('bootstrap.widgets.TbDetailView', array(
+    'data' => $model,
+    'attributes' => array(
+        'membership_id',
+        'title',
+        'description',
+        'shopfront_limit',
+        'product_limit',
+        array(
+            'name' => 'status',
+            'value' => ($model->status == 1)? 'Active' : 'Inactive'
+        )
+    ),
+));
+?>

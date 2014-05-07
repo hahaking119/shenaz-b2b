@@ -30,7 +30,7 @@ class CategoryController extends Controller {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('create', 'update', 'upload', 'remove', 'admin'),
+//                'actions' => array('create', 'update', 'upload', 'remove', 'admin'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -59,7 +59,7 @@ class CategoryController extends Controller {
      */
     public function actionCreate() {
         $model = new Category;
-        $parentCategories = Category::model()->findAll('parent_id = 0',array('order'=>'title ASC'));
+        $parentCategories = Category::model()->findAll('parent_id = 0', array('order' => 'title ASC'));
         if (!$parentCategories) {
             $parentCategories = new Category;
         }
@@ -69,11 +69,11 @@ class CategoryController extends Controller {
         $this->performAjaxValidation($model);
 
         if (isset($_POST['Category'])) {
-//            echo '<pre>';
-//            print_r($_POST);
-//            die();
             $model->attributes = $_POST['Category'];
             $model->slug = CommonClass::getSlug($model->title);
+            if (!empty($_POST['Category']['subcategory_id'])) {
+                $model->parent_id = $_POST['Category']['subcategory_id'];
+            }
             $model->created_at = new CDbExpression('NOW()');
             $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
@@ -125,20 +125,23 @@ class CategoryController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->loadModel($id);
-        $parentCategories = Category::model()->findAll(array('order'=>'title ASC','condition'=>'parent_id = 0 AND category_id!='.$id));
+        $parentCategories = Category::model()->findAll(array('order' => 'title ASC', 'condition' => 'parent_id = 0 AND category_id!=' . $id));
         if (!$parentCategories) {
             $parentCategories = new Category;
         }
-        
+
         $categoryBanner = new CategoryBanner;
-        $banners = CategoryBanner::model()->findAllByAttributes(array('category_id'=>$id));
+        $banners = CategoryBanner::model()->findAllByAttributes(array('category_id' => $id));
 
         // Uncomment the following line if AJAX validation is needed
-         $this->performAjaxValidation($model);
+        $this->performAjaxValidation($model);
 
         if (isset($_POST['Category'])) {
             $model->attributes = $_POST['Category'];
             $model->slug = CommonClass::getSlug($model->title);
+            if (!empty($_POST['Category']['subcategory_id'])) {
+                $model->parent_id = $_POST['Category']['subcategory_id'];
+            }
             $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
                 if (isset($model->image) && !empty($model->image)) {
@@ -179,7 +182,7 @@ class CategoryController extends Controller {
             'model' => $model,
             'parentCategories' => $parentCategories,
             'categoryBanner' => $categoryBanner,
-            'banners'=>$banners,
+            'banners' => $banners,
         ));
     }
 
@@ -285,6 +288,35 @@ class CategoryController extends Controller {
             if (file_exists($realdir . 'banner/thumbs/' . $image))
                 @unlink($realdir . 'banner/thumbs/' . $image);
             echo 'success';
+        }
+    }
+
+    public function actiontrash($id) {
+        $model = $this->loadModel($id);
+        $product = ProductCategory::model()->findByAttributes(array('category_id' => $id));
+        if (!$product) {
+            $model->trash = 1;
+            $model->modified_at = new CDbExpression('NOW()');
+            $model->trashed_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                Yii::app()->user->setFlash('success', '<strong>Trashed!</strong> The category has been trashed.');
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
+        } else {
+            Yii::app()->user->setFlash('warning', '<strong>Warning!</strong> The category has been assigned to product(s).');
+        }
+        $this->redirect(array('admin'));
+    }
+
+    public function actionlistSubCategories() {
+        if (isset($_POST['id'])) {
+            echo "<option value=''>--- Select Sub Category ---</option>";
+            if ($_POST['id'] != 0) {
+                $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => (int) $_POST['id'])), 'category_id', 'title');
+                foreach ($data as $value => $name)
+                    echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+            }
         }
     }
 

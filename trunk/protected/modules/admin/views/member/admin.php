@@ -34,7 +34,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         ),
         array(
             'name' => 'membership_id',
-            'header' => 'Membership',
+            'header' => 'Membership Type',
             'value' => 'Membership::model()->findByPk($data->membership_id)->title'
         ),
         array(

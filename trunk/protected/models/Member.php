@@ -169,7 +169,7 @@ class Member extends CActiveRecord {
     }
 
     public function getBusinessType($type) {
-        $array = array(0 => 'Both [B/S]', '1' => 'Buyer', 2 => 'Seller');
+        $array = array(0 => 'Both [Buyer/Seller]', '1' => 'Buyer', 2 => 'Seller');
         return ($array[$type]);
     }
 
