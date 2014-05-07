@@ -32,7 +32,7 @@ class ProductController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','admin','upload','remove_image','trash','updateStatus'),
+				'actions'=>array('create','update','admin','upload','remove_image','trash','updateStatus', 'listSubCategories'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -67,7 +67,7 @@ class ProductController extends Controller
             $company_id = CompanyInformation::model()->findByAttributes(array('member_id'=>$user_id))->company_id;
             $model->company_id = $company_id;
 
-            $categories = Category::model()->findAllByAttributes(array('status' => 1, 'trash' => 0));
+            $categories = Category::model()->findAllByAttributes(array('parent_id' => 0,'status' => 1, 'trash' => 0));
             $productImages = new ProductImage();
             $productCategory = new ProductCategory();
             $productCustomCategory = new ProductCustomCategory();
@@ -84,27 +84,23 @@ class ProductController extends Controller
                 $model->created_at = new CDbExpression('NOW()');
                 $model->modified_at = new CDbExpression('NOW()');
                 if ($model->save()) {
-                    if (isset($_POST['ProductCategory']['category_id'])) {
-                        foreach ($_POST['ProductCategory']['category_id'] as $key => $value) {
+                    if (isset($_POST['ProductCategory']['subcategory_id'])) {
                             $productCategory = new ProductCategory();
                             $productCategory->product_id = $model->product_id;
-                            $productCategory->category_id = $value;
+                            $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
                             if (!$productCategory->save()) {
                                 echo '<pre>';
                                 print_r($productCategory->getErrors());
                             }
                         }
-                    }
+                    
                     if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
-                        foreach ($_POST['ProductCustomCategory']['custom_category_id'] as $key => $value) {
-                            $productCustomCategory = new ProductCustomCategory();
                             $productCustomCategory->product_id = $model->product_id;
-                            $productCustomCategory->custom_category_id = $value;
+                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
                             if (!$productCustomCategory->save()) {
                                 echo '<pre>';
                                 print_r($productCustomCategory->getErrors());
                             }
-                        }
                     }
                     if (isset($_POST['ProductImages']['image'])) {
                         foreach ($_POST['ProductImages']['image'] as $key => $value) {
@@ -154,10 +150,10 @@ class ProductController extends Controller
             $company_id = CompanyInformation::model()->findByAttributes(array('member_id'=>$user_id))->company_id;
             $model->company_id = $company_id;
             
-            $categories = Category::model()->findAllByAttributes(array('status' => 1, 'trash' => 0));
+            $categories = Category::model()->findAllByAttributes(array('parent_id' => 0,'status' => 1, 'trash' => 0));
             $productImages = new ProductImage();
-            $productCategory = new ProductCategory();
-            $productCustomCategory = new ProductCustomCategory();
+            $productCategory = ProductCategory::model()->findByAttributes(array('product_id'=>$id));
+            $productCustomCategory = ProductCustomCategory::model()->findByAttributes(array('product_id'=>$id));
             $productCategoryList = ProductCategory::model()->findAllByAttributes(array('product_id' => $id));
             $productCustomCategoryList = ProductCustomCategory::model()->findAllByAttributes(array('product_id' => $id));
             $productImageLists = ProductImage::model()->findAllByAttributes(array('product_id' => $id));
@@ -170,38 +166,24 @@ class ProductController extends Controller
                 $model->slug = CommonClass::getSlug($model->name);
                 $model->modified_at = new CDbExpression('NOW()');
                 if ($model->save()) {
-                    if (isset($_POST['ProductCategory']['category_id'])) {
-                        foreach ($productCategoryList as $categoryList) {
-                            if (!in_array($categoryList->category_id, $_POST['ProductCategory']['category_id'])) {
-                                $categoryList->delete($categoryList->id);
+                    if (isset($_POST['ProductCategory']['subcategory_id'])) {
+                            $productCategory->product_id = $model->product_id;
+                            $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
+                            if (!$productCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCategory->getErrors());
                             }
                         }
-                        foreach ($_POST['ProductCategory']['category_id'] as $key => $value) {
-                            $productCategory = ProductCategory::model()->findByAttributes(array('category_id' => $value));
-                            if (!$productCategory) {
-                                $productCategory = new ProductCategory();
-                                $productCategory->product_id = $model->product_id;
-                                $productCategory->category_id = $value;
-                                $productCategory->save();
-                            }
-                        }
-                    }
+                    
                     if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
-                        foreach ($productCustomCategoryList as $customCategoryList) {
-                            if (!in_array($customCategoryList->custom_category_id, $_POST['ProductCustomCategory']['custom_category_id'])) {
-                                $customCategoryList->delete($customCategoryList->id);
+                            $productCustomCategory->product_id = $model->product_id;
+                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
+                            if (!$productCustomCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCustomCategory->getErrors());
                             }
-                        }
-                        foreach ($_POST['ProductCustomCategory']['custom_category_id'] as $key => $value) {
-                            $productCustomCategory = ProductCustomCategory::model()->findByAttributes(array('custom_category_id' => $value));
-                            if (!$productCustomCategory) {
-                                $productCustomCategory = new ProductCustomCategory();
-                                $productCustomCategory->product_id = $model->product_id;
-                                $productCustomCategory->custom_category_id = $value;
-                                $productCustomCategory->save();
-                            }
-                        }
                     }
+                    
                     if (isset($_POST['ProductImages']['image'])) {
                         foreach ($productImageLists as $image) {
 
@@ -233,8 +215,8 @@ class ProductController extends Controller
                 } else {
                     Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
                 }
+            
             }
-
             $this->render('update', array(
                 'model' => $model,
                 'companies' => $companies,
@@ -382,5 +364,16 @@ class ProductController extends Controller
                     echo 'success';
                 Yii::app()->end();
             }
-        }
+    }
+    
+    public function actionListSubCategories() {
+            if (isset($_POST['id'])) {
+                echo "<option value=''>--- Select Sub Category ---</option>";
+                if ($_POST['id'] != 0) {
+                    $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'category_id', 'title');
+                    foreach ($data as $value => $name)
+                        echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+                }
+            }
+    }
 }

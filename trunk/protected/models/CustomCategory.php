@@ -46,7 +46,7 @@ class CustomCategory extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('company_id, title, slug, parent_id, status', 'required'),
+            array('company_id, title, slug, subcategory_id, parent_id, status', 'required'),
             array('company_id, parent_id, status, trash', 'numerical', 'integerOnly' => true),
             array('title, slug', 'length', 'max' => 255),
             // The following rule is used by search().
