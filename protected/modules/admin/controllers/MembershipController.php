@@ -169,4 +169,41 @@ class MembershipController extends Controller {
         }
     }
 
+    public function actionTrash($id) {
+        $model = $this->loadModel($id);
+        $assigned = MemberSetting::model()->findByAttributes(array('membership_id' => $id));
+        if (!$assigned) {
+            $model->trash = 1;
+            $model->modified_at = new CDbExpression('NOW()');
+            $model->trashed_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                Yii::app()->user->setFlash('success', '<strong>Trashed!</strong> The membership option has been trashed.');
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
+        } else {
+            Yii::app()->user->setFlash('warning', '<strong>Assigned!</strong> The membership option has been assigned to members.');
+        }
+        $this->redirect(array('admin'));
+    }
+
+    public function actionupdateStatus($id) {
+        if (isset($_POST['status'])) {
+            $model = $this->loadModel($id);
+            $assigned = MemberSetting::model()->findByAttributes(array('membership_id' => $id));
+            if (!$assigned) {
+                $model->status = $_POST['status'];
+                $model->modified_at = new CDbExpression('NOW()');
+                if ($model->save()) {
+                    Yii::app()->user->setFlash('success', '<strong>Updated!</strong> The membership option has been updated.');
+                } else {
+                    Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+                }
+            } else {
+                Yii::app()->user->setFlash('warning', '<strong>Assigned!</strong> The membership option has been assigned to members.');
+            }
+        }
+        $this->redirect(array('admin'));
+    }
+
 }

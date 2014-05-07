@@ -26,7 +26,7 @@ $this->menu = array(
 //");
 ?>
 
-<h1>Manage Memberships</h1>
+<h1>Manage Membership Options</h1>
 
 <?php // echo CHtml::link('Advanced Search', '#', array('class' => 'search-button')); ?>
 <div class="search-form" style="display:none">
@@ -40,7 +40,7 @@ $this->menu = array(
 <?php
 $this->widget('bootstrap.widgets.TbGridView', array(
     'id' => 'membership-grid',
-    'dataProvider' => $model->search(),
+    'dataProvider' => $model->search(array('condition' => 'trash = 0')),
     'filter' => $model,
     'columns' => array(
         'membership_id',
@@ -56,7 +56,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         array(
             'name' => 'status',
             'type' => 'raw',
-            'value' => 'CHtml::dropDownList("Membership[status]", $data->status, array("Draft", "Publish"))',
+            'value' => 'CHtml::dropDownList("Membership[status]", $data->status, array("Draft", "Publish"), array("onchange" => "updateStatus($data->membership_id, $(this).val())"))',
             'filter' => array('' => 'All', 0 => 'Draft', 1 => 'Publish'),
         ),
         array(
@@ -75,3 +75,18 @@ $this->widget('bootstrap.widgets.TbGridView', array(
     ),
 ));
 ?>
+<script type="text/javascript">
+    function updateStatus(id, value){
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo Yii::app()->createAbsoluteUrl("admin/membership/updateStatus/id"); ?>'+'/'+id,
+            data: {status: value},
+            success: function(data) {
+                if (data == 'success') {
+                    var message = '<div class="alert alert-success"><span class="close" data-dismiss="alert">×</span><strong>Updated!</strong> Status has been updated.</div>';
+                    $("#msg").html(message).fadeIn().animate({opacity: 1.0}, 4000).fadeOut("slow");
+                }
+            }
+        });
+    }
+</script>

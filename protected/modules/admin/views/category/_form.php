@@ -13,7 +13,7 @@
         'htmlOptions' => array('enctype' => 'multipart/form-data'),
         'enableAjaxValidation' => true,
         'clientOptions' => array('validateOnSubmit' => true),
-    ));
+            ));
     ?>
 
     <?php echo $form->errorSummary($model); ?>
@@ -29,8 +29,32 @@
     } else {
         $parentCategories = array();
     }
-    echo $form->dropDownListRow($model, 'parent_id', array(0 => 'Parent Category') + $parentCategories, array('prompt' => '--- Select Parent Category ---'));
+    if (!$model->isNewRecord) {
+        $isParent = Category::model()->findByPk($model->parent_id);
+        if ($isParent->parent_id != 0) {
+            $model->subcategory_id = $model->parent_id;
+            $model->parent_id = $isParent->parent_id;
+            $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $isParent->parent_id)), 'category_id', 'title');
+            $display = 'block';
+        } else {
+            $display = 'none';
+        }
+    } else {
+        $data = array();
+        $display = 'none';
+    }
+    echo $form->dropDownListRow($model, 'parent_id', array(0 => 'Parent Category') + $parentCategories, array('prompt' => '--- Select Parent Category ---',
+        'ajax' => array(
+            'type' => 'POST',
+            'url' => CController::createUrl('listSubCategories'),
+            'update' => '#Category_subcategory_id',
+            'complete' => '$("#subcategory").css("display","block")',
+            'data' => array('id' => 'js:this.value'),
+        )
+    ));
     ?>
+    <div id="subcategory" style="display: <?php echo $display;
+    s ?>"><?php echo $form->dropDownListRow($model, 'subcategory_id', $data, array('style' => '')); ?></div>
 
     <div class="control-group">
         <div class="control-label"><?php echo $form->labelEx($model, 'image'); ?></div>
@@ -91,18 +115,18 @@
             <ul id="cat-image">
                 <?php
                 if (!$model->isNewRecord && !empty($model->image)) {
-                        static $i = 1;
-                        echo '<li style="list-style-type: none;" id="thumbs_' . $i . '" class="preview_' . $i . '">';
-                        echo CHtml::hiddenField('CategoryBanner[banner][]', $model->image);
-                        echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/category/image/thumbs/' . $model->image), $model->image, array('class' => 'thumbnail span2'));
-                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $model->image . '\',\''.'image\''.',\''.$model->category_id.'\')" class="btn btn-danger">Remove</a>';
-                        echo '</li>';
-                        echo '<div class="clearfix"></div>';
-                    }
+                    static $i = 1;
+                    echo '<li style="list-style-type: none;" id="thumbs_' . $i . '" class="preview_' . $i . '">';
+                    echo CHtml::hiddenField('CategoryBanner[banner][]', $model->image);
+                    echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/category/image/thumbs/' . $model->image), $model->image, array('class' => 'thumbnail span2'));
+                    echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $model->image . '\',\'' . 'image\'' . ',\'' . $model->category_id . '\')" class="btn btn-danger">Remove</a>';
+                    echo '</li>';
+                    echo '<div class="clearfix"></div>';
+                }
                 ?>
             </ul>
             <div class="clearfix"></div>
-            <?php echo $form->error($model, 'image'); ?>
+<?php echo $form->error($model, 'image'); ?>
         </div>
     </div>
     <div class="control-group">
@@ -162,14 +186,14 @@
             ?>
             <div class="clearfix"></div>
             <ul id="thumbs_list">
-                <?php                            
+                <?php
                 if (!$model->isNewRecord && is_array($banners)) {//die();
                     foreach ($banners as $image) {
                         static $i = 1;
                         echo '<li style="list-style-type: none;" id="thumbs_' . $i . '" class="preview_' . $i . '">';
                         echo CHtml::hiddenField('CategoryBanner[banner][]', $image->banner);
                         echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/category/banner/thumbs/' . $image->banner), $image->banner, array('class' => 'thumbnail span2'));
-                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $image->banner . '\',\''.'banner\''.',\''.$image->id.'\')" class="btn btn-danger">Remove</a>';
+                        echo '<a href="javascript:void(0);" onClick="getRemove(' . $i . ',\'' . $image->banner . '\',\'' . 'banner\'' . ',\'' . $image->id . '\')" class="btn btn-danger">Remove</a>';
                         echo '</li>';
                         echo '<div class="clearfix"></div>';
                         $i++;
@@ -178,18 +202,18 @@
                 ?>
             </ul>
             <div class="clearfix"></div>
-            <?php echo $form->error($categoryBanner, 'banner'); ?>
+<?php echo $form->error($categoryBanner, 'banner'); ?>
         </div>
     </div>
 
-    <?php echo $form->dropDownListRow($model, 'status', array(0 => 'Draft', 1 => 'Publish'), array('prompt' => '--- Select Status ---')); ?>
+<?php echo $form->dropDownListRow($model, 'status', array(0 => 'Draft', 1 => 'Publish'), array('prompt' => '--- Select Status ---')); ?>
 
     <div class="form-actions">
         <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Update', array('class' => 'btn btn-success')); ?>
-        <?php if ($model->isNewRecord) echo CHtml::resetButton('Reset', array('class' => 'btn')); ?>
+<?php if ($model->isNewRecord) echo CHtml::resetButton('Reset', array('class' => 'btn')); ?>
     </div>
 
-    <?php $this->endWidget(); ?>
+<?php $this->endWidget(); ?>
 
 </div><!-- form -->
 <script>
@@ -206,8 +230,8 @@
                         $('#thumbs_list #thumbs_'+index).remove();
                     }
                     else{
-                    $('#cat-image .preview_' + index).remove();
-                    $('#cat-image #thumbs_'+index).remove();
+                        $('#cat-image .preview_' + index).remove();
+                        $('#cat-image #thumbs_'+index).remove();
                     }
                     var message = '<div class="alert alert-success"><span class="close" data-dismiss="alert">×</span>Image removed.</div>';
                     $("#msg").html(message).fadeIn().animate({opacity: 1.0}, 4000).fadeOut("slow");

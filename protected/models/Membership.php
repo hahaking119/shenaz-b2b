@@ -85,11 +85,11 @@ class Membership extends CActiveRecord {
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
-    public function search() {
+    public function search($params = array()) {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
 
-        $criteria = new CDbCriteria;
+        $criteria = new CDbCriteria($params);
 
         $criteria->compare('membership_id', $this->membership_id);
         $criteria->compare('title', $this->title, true);
@@ -104,6 +104,9 @@ class Membership extends CActiveRecord {
 
         return new CActiveDataProvider($this, array(
                     'criteria' => $criteria,
+                    'sort' => array(
+                        'defaultOrder' => 't.membership_id DESC',
+                    ),
                 ));
     }
 
