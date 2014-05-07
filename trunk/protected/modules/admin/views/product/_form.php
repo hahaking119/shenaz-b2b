@@ -43,17 +43,43 @@
     <span class="hint">The main category is the category defined by the system admin. The self defined category is the category defined by members to meet their product category.</span>
     <div class="category">
         <?php
-        if (isset($_POST['ProductCategory']['category_id'])) {
-            $productCategory->category_id = implode(', ', $_POST['ProductCategory']['category_id']);
-        }
-        if (isset($productCategoryList)) {
-            foreach ($productCategoryList as $list) {
-                $categoryListArray[] = $list->category_id;
+//        if (isset($_POST['ProductCategory']['category_id'])) {
+//            $productCategory->category_id = implode(', ', $_POST['ProductCategory']['category_id']);
+//        }
+//        if (isset($productCategoryList)) {
+//            foreach ($productCategoryList as $list) {
+//                $categoryListArray[] = $list->category_id;
+//            }
+//            $productCategory->category_id = $categoryListArray;
+//        }
+        if (!$model->isNewRecord) {
+            $isParent = Category::model()->findByPk($productCategoryList->category_id);
+            if ($isParent->parent_id != 0) {
+                $productCategory->subcategory_id = $isParent->category_id;
+                $productCategory->category_id = $isParent->parent_id;
+                $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $isParent->parent_id)), 'category_id', 'title');
+                $display = 'block';
+            } else {
+                $productCategory->category_id = $isParent->category_id;
+                $display = 'none';
             }
-            $productCategory->category_id = $categoryListArray;
+        } else {
+            $data = array();
+            $display = 'none';
         }
         ?>
-        <?php echo $form->dropDownListRow($productCategory, 'category_id', CHtml::listData($categories, 'category_id', 'title'), array('prompt' => '--- Select Category ---', 'multiple' => 'multiple')); ?>
+        <?php
+        echo $form->dropDownListRow($productCategory, 'category_id', CHtml::listData($categories, 'category_id', 'title'), array('prompt' => '--- Select Category ---',
+            'ajax' => array(
+                'type' => 'POST',
+                'url' => CController::createUrl('subCategoryList'),
+                'update' => '#ProductCategory_subcategory_id',
+                'complete' => '$("#subcategory").css("display","block")',
+                'data' => array('parent_id' => 'js:this.value'),
+            )
+        ));
+        ?>
+        <div id="subcategory" style="display: <?php echo $disaplay; ?>"><?php echo $form->dropDownListRow($productCategory, 'subcategory_id', $data, array('prompt' => '--- Select Subcategory ---')); ?></div>
     </div>
     <div class="custom-category">
         <?php
@@ -83,15 +109,13 @@
         }
         ?>
         <?php
-        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---', 'multiple' => 'multiple',
-        ));
-        ?>
+        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---', 'name' => 'ProductCustomCategory[custom_category_id][]'));?>
     </div>
     <?php echo $form->textAreaRow($model, 'description', array('rows' => 6, 'cols' => 50, 'placeholder' => 'Product Description')); ?>
 
     <?php echo $form->textFieldRow($model, 'price', array('placeholder' => 'Price')); ?>
 
-    <?php // echo $form->textFieldRow($model, 'price_type', array('size' => 60, 'maxlength' => 255, 'placeholder' => 'Currency')); ?>
+    <?php // echo $form->textFieldRow($model, 'price_type', array('size' => 60, 'maxlength' => 255, 'placeholder' => 'Currency'));  ?>
 
     <?php echo $form->textFieldRow($model, 'minimum_quantitiy', array('maxlength' => 10, 'placeholder' => 'Minimum Order Quantity')); ?>
 
@@ -190,7 +214,7 @@
                     success: function(html){
                         update('#ProductCustomCategory_custom_category_id', html);
                     }
-                                                
+                                                                                
                 });
             })
         </script>
@@ -203,7 +227,7 @@
     $(document).ready(function(){
         $('.category').hide();
         $('.custom-category').hide();
-//        showCategoryList(<?php // echo (!$model->isNewRecord) ? $model->category_type : '0'; ?>);
+        showCategoryList(<?php echo (!$model->isNewRecord) ? $model->category_type : '0'; ?>);
     });
     
     function showCategoryList(val){

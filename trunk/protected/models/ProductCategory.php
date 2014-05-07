@@ -66,6 +66,7 @@ class ProductCategory extends CActiveRecord {
             'id' => 'ID',
             'product_id' => 'Product',
             'category_id' => 'Category',
+            'subcategory_id' => 'Subcategory'
         );
     }
 
