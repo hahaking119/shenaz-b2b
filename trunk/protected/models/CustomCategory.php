@@ -23,6 +23,8 @@ class CustomCategory extends CActiveRecord {
     
     public $subcategory_id;
     
+    public $subcategory_id;
+
     /**
      * Returns the static model of the specified AR class.
      * @param string $className active record class name.

@@ -203,7 +203,7 @@
     $(document).ready(function(){
         $('.category').hide();
         $('.custom-category').hide();
-        showCategoryList(<?php echo (!$model->isNewRecord) ? $model->category_type : ''; ?>);
+//        showCategoryList(<?php // echo (!$model->isNewRecord) ? $model->category_type : '0'; ?>);
     });
     
     function showCategoryList(val){
