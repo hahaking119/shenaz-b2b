@@ -14,6 +14,7 @@
  */
 class ProductCategory extends CActiveRecord {
     public $subcategory_id;
+    public $level2;
 
     /**
      * Returns the static model of the specified AR class.
@@ -66,7 +67,8 @@ class ProductCategory extends CActiveRecord {
             'id' => 'ID',
             'product_id' => 'Product',
             'category_id' => 'Category',
-            'subcategory_id' => 'Subcategory'
+            'subcategory_id' => 'Subcategory',
+            'level2' => 'level 2',
         );
     }
 
