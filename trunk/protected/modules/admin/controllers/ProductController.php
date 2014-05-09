@@ -34,7 +34,7 @@ class ProductController extends Controller {
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions' => array('admin', 'delete'),
+                'actions' => array('admin', 'delete', 'listLevel2Categories'),
                 'users' => array('admin'),
             ),
             array('deny', // deny all users
@@ -79,36 +79,69 @@ class ProductController extends Controller {
             $model->created_at = new CDbExpression('NOW()');
             $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
-                if (isset($_POST['ProductCategory']['category_id'])) {
-//                    foreach ($_POST['ProductCategory']['category_id'] as $key => $value) {
-//                        $productCategory = new ProductCategory();
-//                        $productCategory->product_id = $model->product_id;
-//                        $productCategory->category_id = $value;
-//                        if (!$productCategory->save()) {
-//                            echo '<pre>';
-//                            print_r($productCategory->getErrors());
-//                        }
-//                    }
-
-                    if (!empty($_POST['ProductCategory']['subcategory_id'])) {
-                        $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
-                    } else {
-                        $productCategory->category_id = $_POST['ProductCategory']['category_id'];
-                    }
+                if(!empty($_POST['ProductCategory']['category_id'])){
+                            $productCategory->product_id = $model->product_id;
+                            $productCategory->category_id = $_POST['ProductCategory']['category_id'];
+                            if (!$productCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCategory->getErrors());
+                            }
+                        
+                        if(!empty($_POST['ProductCategory']['subcategory_id'])){
+                            $productCategory->product_id = $model->product_id;
+                            $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
+                            if (!$productCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCategory->getErrors());
+                            }
+                        }
+                    if (!empty($_POST['ProductCategory']['level2'])) {
+                            $productCategory->product_id = $model->product_id;
+                            $productCategory->category_id = $_POST['ProductCategory']['level2'];
+                            if (!$productCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCategory->getErrors());
+                            }
+                        }
+                }
+                else{
                     $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = "";
                     $productCategory->save();
                 }
-                if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
-                    foreach ($_POST['ProductCustomCategory']['custom_category_id'] as $key => $value) {
-                        $productCustomCategory = new ProductCustomCategory();
-                        $productCustomCategory->product_id = $model->product_id;
-                        $productCustomCategory->custom_category_id = $value;
-                        if (!$productCustomCategory->save()) {
-                            echo '<pre>';
-                            print_r($productCustomCategory->getErrors());
-                        }
+                
+                if (!empty($_POST['ProductCustomCategory']['custom_category_id'])) {
+                            $productCustomCategory->product_id = $model->product_id;
+                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
+                            if (!$productCustomCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCustomCategory->getErrors());
+                            }
+                                        
+                    if (!empty($_POST['ProductCustomCategory']['level1'])) {
+                            $productCustomCategory->product_id = $model->product_id;
+                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level1'];
+                            if (!$productCustomCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCustomCategory->getErrors());
+                            }
+                    }
+                    
+                    if (!empty($_POST['ProductCustomCategory']['level2'])) {
+                            $productCustomCategory->product_id = $model->product_id;
+                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level2'];
+                            if (!$productCustomCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCustomCategory->getErrors());
+                            }
                     }
                 }
+                else{
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = "";
+                    $productCustomCategory->save();
+                }
+                
                 if (isset($_POST['ProductImages']['image'])) {
                     foreach ($_POST['ProductImages']['image'] as $key => $value) {
                         $productImage = new ProductImage();
@@ -153,8 +186,8 @@ class ProductController extends Controller {
         $companies = CompanyInformation::model()->findAllByAttributes(array('status' => 1, 'trash' => 0, 'company_id' => $model->company_id));
         $categories = Category::model()->findAllByAttributes(array('parent_id' => 0, 'status' => 1, 'trash' => 0));
         $productImages = new ProductImage();
-        $productCategory = new ProductCategory();
-        $productCustomCategory = new ProductCustomCategory();
+        $productCategory = ProductCategory::model()->findByAttributes(array('product_id' => $id));
+        $productCustomCategory = ProductCustomCategory::model()->findByAttributes(array('product_id' => $id));
         $productCategoryList = ProductCategory::model()->findByAttributes(array('product_id' => $id));
         $productCustomCategoryList = ProductCustomCategory::model()->findAllByAttributes(array('product_id' => $id));
         $productImageLists = ProductImage::model()->findAllByAttributes(array('product_id' => $id));
@@ -170,46 +203,69 @@ class ProductController extends Controller {
             $model->slug = CommonClass::getSlug($model->name);
             $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
-                if (isset($_POST['ProductCategory']['category_id'])) {
-//                    foreach ($productCategoryList as $categoryList) {
-//                        if (!in_array($categoryList->category_id, $_POST['ProductCategory']['category_id'])) {
-//                            $categoryList->delete($categoryList->id);
-//                        }
-//                    }
-//                    foreach ($_POST['ProductCategory']['category_id'] as $key => $value) {
-//                        $productCategory = ProductCategory::model()->findByAttributes(array('category_id' => $value));
-//                        if (!$productCategory) {
-//                            $productCategory = new ProductCategory();
-//                            $productCategory->product_id = $model->product_id;
-//                            $productCategory->category_id = $value;
-//                            $productCategory->save();
-//                        }
-//                    }
-                    if (!empty($_POST['ProductCategory']['subcategory_id'])) {
-                        $productCategoryList->category_id = $_POST['ProductCategory']['subcategory_id'];
-                    } else {
-                        $productCategoryList->category_id = $_POST['ProductCategory']['category_id'];
-                    }
-                    $productCategoryList->save();
-                }
-                if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
-                    foreach ($productCustomCategoryList as $customCategoryList) {
-                        if (!in_array($customCategoryList->custom_category_id, $_POST['ProductCustomCategory']['custom_category_id'])) {
-                            $customCategoryList->delete($customCategoryList->id);
-                        }
-                    }
-                    foreach ($_POST['ProductCustomCategory']['custom_category_id'] as $key => $value) {
-                        $productCustomCategory = ProductCustomCategory::model()->findByAttributes(array('custom_category_id' => $value));
-                        if (!$productCustomCategory) {
-                            $productCustomCategory = new ProductCustomCategory();
-                            $productCustomCategory->product_id = $model->product_id;
-                            $productCustomCategory->custom_category_id = $value;
-                            if(!$productCustomCategory->save()){
-                                print_r($productCustomCategory->getErrors());
-                                die();
+                if(!empty($_POST['ProductCategory']['category_id'])){
+                            $productCategory->product_id = $model->product_id;
+                            $productCategory->category_id = $_POST['ProductCategory']['category_id'];
+                            if (!$productCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCategory->getErrors());
+                            }
+                        
+                        if(!empty($_POST['ProductCategory']['subcategory_id'])){
+                            $productCategory->product_id = $model->product_id;
+                            $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
+                            if (!$productCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCategory->getErrors());
                             }
                         }
+                    if (!empty($_POST['ProductCategory']['level2'])) {
+                            $productCategory->product_id = $model->product_id;
+                            $productCategory->category_id = $_POST['ProductCategory']['level2'];
+                            if (!$productCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCategory->getErrors());
+                            }
+                        }
+                }
+                else
+                {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = "";
+                    $productCategory->save();
+                }
+                
+                if (!empty($_POST['ProductCustomCategory']['custom_category_id'])) {
+                            $productCustomCategory->product_id = $model->product_id;
+                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
+                            if (!$productCustomCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCustomCategory->getErrors());
+                            }
+                    
+                    
+                    if (!empty($_POST['ProductCustomCategory']['level1'])) {
+                            $productCustomCategory->product_id = $model->product_id;
+                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level1'];
+                            if (!$productCustomCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCustomCategory->getErrors());
+                            }
                     }
+                    
+                    if (!empty($_POST['ProductCustomCategory']['level2'])) {
+                            $productCustomCategory->product_id = $model->product_id;
+                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level2'];
+                            if (!$productCustomCategory->save()) {
+                                echo '<pre>';
+                                print_r($productCustomCategory->getErrors());
+                            }
+                    }
+                }
+                else{
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = "";
+                    $productCustomCategory->save();
                 }
                 if (isset($_POST['ProductImages']['image'])) {
                     foreach ($productImageLists as $image) {
@@ -319,18 +375,6 @@ class ProductController extends Controller {
         }
     }
 
-    public function actioncustomCategory() {
-        $parents = CustomCategory::model()->findAll('company_id = ' . $_POST['company_id'] . ' and parent_id = 0 and status = 1');
-        echo "<option value=''>--- Select Custom Category ---</option>";
-        foreach ($parents as $parent) {
-            $children = CustomCategory::model()->findAll('company_id =' . $_POST['company_id'] . ' and parent_id = ' . $parent->id . ' and status = 1');
-            echo CHtml::tag('option', array('value' => $parent->id), CHtml::encode($parent->title), true);
-            foreach ($children as $child) {
-                echo CHtml::tag('option', array('value' => $child->id), CHtml::encode('- ' . $child->title), true);
-            }
-        }
-    }
-
     public function actionUpload() {
         Yii::import("ext.EAjaxUpload.qqFileUploader");
 
@@ -382,6 +426,14 @@ class ProductController extends Controller {
         }
         $this->redirect(array('admin'));
     }
+    
+    public function actioncustomCategory() {
+        $parents = CustomCategory::model()->findAll('company_id = ' . $_POST['company_id'] . ' and parent_id = 0 and status = 1 AND trash = 0');
+        echo "<option value=''>--- Select Custom Category ---</option>";
+        foreach ($parents as $parent) {
+            echo CHtml::tag('option', array('value' => $parent->id), CHtml::encode($parent->title), true);
+        }
+    }
 
     public function actionsubCategoryList() {
         if (isset($_POST['parent_id'])) {
@@ -393,5 +445,31 @@ class ProductController extends Controller {
             }
         }
     }
-
+    
+    public function actionListLevel2Categories(){
+        if(isset($_POST['id'])){
+            echo "<option value=''>--- Select Sub Category ---</option>";
+            $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'category_id', 'title');
+            foreach ($data as $value => $name)
+                echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+        }
+    }
+    
+    public function actionListLevel1CustomCategories(){
+        if (isset($_POST['id'])) {
+            echo "<option value=''>--- Select Sub Category ---</option>";
+            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'id', 'title');
+            foreach ($data as $value => $name)
+                echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+        }
+    }
+    
+    public function actionListLevel2CustomCategories(){
+        if (isset($_POST['id'])) {
+            echo "<option value=''>--- Select Sub Category ---</option>";
+            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'id', 'title');
+            foreach ($data as $value => $name)
+                echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+        }
+    }
 }

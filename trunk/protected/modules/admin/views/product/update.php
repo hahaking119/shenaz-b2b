@@ -28,6 +28,7 @@ echo $this->renderPartial('_form', array(
     'productCustomCategory' => $productCustomCategory,
     'productCategoryList' => $productCategoryList,
     'productCustomCategoryList' => $productCustomCategoryList,
-    'productImageLists' => $productImageLists
+    'productImageLists' => $productImageLists,
+//    'company_id' => $company_id,
 ));
 ?>

@@ -40,6 +40,7 @@ $this->menu=array(
 <?php
 $this->widget('bootstrap.widgets.TbGridView', array(
     'id' => 'product-grid',
+    'type' => 'striped bordered condensed',
     'dataProvider' => $model->search(array('condition' => 'trash = 0')),
     'filter' => $model,
     'columns' => array(

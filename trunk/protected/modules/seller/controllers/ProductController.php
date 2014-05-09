@@ -51,6 +51,7 @@ class ProductController extends Controller
 	 */
 	public function actionView($id)
 	{
+            $this->layout = '//layouts/column3';
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 		));
@@ -109,6 +110,12 @@ class ProductController extends Controller
                             }
                         }
                         
+                    if (empty($_POST['ProductCategory']['level2']) && empty($_POST['ProductCategory']['subcategory_id']) && empty($_POST['ProductCategory']['category_id'])) {
+                        $productCategory->product_id = $model->product_id;
+                        $productCategory->category_id = "";
+                        $productCategory->save();
+                    }
+                        
                     if (!empty($_POST['ProductCustomCategory']['custom_category_id'])) {
                             $productCustomCategory->product_id = $model->product_id;
                             $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
@@ -134,6 +141,12 @@ class ProductController extends Controller
                                 echo '<pre>';
                                 print_r($productCustomCategory->getErrors());
                             }
+                    }
+                    
+                    if (empty($_POST['ProductCustomCategory']['level2']) && empty($_POST['ProductCustomCategory']['level1']) && empty($_POST['ProductCustomCategory']['custom_category_id'])) {
+                        $productCustomCategory->product_id = $model->product_id;
+                        $productCustomCategory->custom_category_id = "";
+                        $productCustomCategory->save();
                     }
                     
                     if (isset($_POST['ProductImages']['image'])) {
@@ -225,6 +238,11 @@ class ProductController extends Controller
                                 print_r($productCategory->getErrors());
                             }
                         }
+                    if (empty($_POST['ProductCategory']['level2']) && empty($_POST['ProductCategory']['subcategory_id']) && empty($_POST['ProductCategory']['category_id'])) {
+                        $productCategory->product_id = $model->product_id;
+                        $productCategory->category_id = "";
+                        $productCategory->save();
+                    }
                         
                     if (!empty($_POST['ProductCustomCategory']['custom_category_id'])) {
                             $productCustomCategory->product_id = $model->product_id;
@@ -253,6 +271,11 @@ class ProductController extends Controller
                             }
                     }
                     
+                    if (empty($_POST['ProductCustomCategory']['level2']) && empty($_POST['ProductCustomCategory']['level1']) && empty($_POST['ProductCustomCategory']['custom_category_id'])) {
+                        $productCustomCategory->product_id = $model->product_id;
+                        $productCustomCategory->custom_category_id = "";
+                        $productCustomCategory->save();
+                    }
                     
                     
                     if (isset($_POST['ProductImages']['image'])) {
@@ -332,6 +355,7 @@ class ProductController extends Controller
 	 */
 	public function actionAdmin()
 	{
+            $this->layout = '//layouts/column3';
 		$model=new Product('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['Product']))

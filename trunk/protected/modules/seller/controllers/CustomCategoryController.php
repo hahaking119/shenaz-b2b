@@ -51,6 +51,7 @@ class CustomCategoryController extends Controller
 	 */
 	public function actionView($id)
 	{
+            $this->layout = '//layouts/column3';
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 		));

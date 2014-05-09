@@ -67,6 +67,8 @@
             $data = array();
             $display = 'none';
         }
+        if(empty($data))
+            $data = array();
         ?>
         <?php
         echo $form->dropDownListRow($productCategory, 'category_id', CHtml::listData($categories, 'category_id', 'title'), array('prompt' => '--- Select Category ---',
@@ -79,37 +81,79 @@
             )
         ));
         ?>
-        <div id="subcategory" style="display: <?php echo $disaplay; ?>"><?php echo $form->dropDownListRow($productCategory, 'subcategory_id', $data, array('prompt' => '--- Select Subcategory ---')); ?></div>
+        <div id="subcategory" style="display: <?php echo $disaplay; ?>">
+            <?php echo $form->dropDownListRow($productCategory, 'subcategory_id', $data, array(
+                'prompt' => '--- Select Subcategory ---',
+                'ajax' => array(
+                'type' => 'POST',
+                'url' => CController::createUrl('listLevel2Categories'),
+                'update' => '#ProductCategory_level2',
+                'complete' => '$("#level_2_cat").css("display","block")',
+                'data' => array('id' => 'js:this.value'),
+                )
+                )); ?>
+        </div>
+        <div id="level_2_cat" style="display: <?php echo $display; ?>">
+        <?php echo $form->dropDownListRow($productCategory, 'level2', $data, array('prompt'=>'--Select Level 2 Category')); ?>
+        </div>
     </div>
     <div class="custom-category">
         <?php
-        if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
-            $productCustomCategory->custom_category_id = implode(', ', $_POST['ProductCustomCategory']['custom_category_id']);
-        }
-        if (isset($_POST['Product']['company_id'])) {
-            $parents = CustomCategory::model()->findAll('company_id = ' . $_POST['Product']['company_id'] . ' and parent_id = 0 and status = 1');
-            foreach ($parents as $parent) {
-                $children = CustomCategory::model()->findAll('company_id =' . $_POST['Product']['company_id'] . ' and parent_id = ' . $parent->id . ' and status = 1');
-                $data[$parent->id] = $parent->title;
-                foreach ($children as $child) {
-                    $data[$child->id] = $child->title;
-                }
-            }
-        } else {
-            $data = array();
-        }
-        if (isset($productCustomCategoryList)) {
-            foreach ($productCustomCategoryList as $customCategoryList) {
-                $customCategoryListArray[] = $customCategoryList->custom_category_id;
-            }
-            $productCustomCategory->custom_category_id = $customCategoryListArray;
-        }
+//        if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
+//            $productCustomCategory->custom_category_id = implode(', ', $_POST['ProductCustomCategory']['custom_category_id']);
+//        }
+//        if (isset($_POST['Product']['company_id'])) {
+//            $parents = CustomCategory::model()->findAll('company_id = ' . $_POST['Product']['company_id'] . ' and parent_id = 0 and status = 1');
+//            foreach ($parents as $parent) {
+//                $children = CustomCategory::model()->findAll('company_id =' . $_POST['Product']['company_id'] . ' and parent_id = ' . $parent->id . ' and status = 1');
+//                $data[$parent->id] = $parent->title;
+//                foreach ($children as $child) {
+//                    $data[$child->id] = $child->title;
+//                }
+//            }
+//        } else {
+//            $data = array();
+//        }
+//        
+//        if (isset($productCustomCategoryList)) {
+//            foreach ($productCustomCategoryList as $customCategoryList) {
+//                $customCategoryListArray[] = $customCategoryList->custom_category_id;
+//            }
+//            $productCustomCategory->custom_category_id = $customCategoryListArray;
+//        }
         if (!$model->isNewRecord) {
-            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $model->company_id)), 'id', 'title');
+            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $model->company_id, 'parent_id' => 0, 'status' => 1, 'trash' => 0)), 'id', 'title');
         }
         ?>
         <?php
-        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---', 'name' => 'ProductCustomCategory[custom_category_id][]'));?>
+        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array(
+            'prompt' => '--- Select Custom Category ---',
+            //  Ajax Request
+            'ajax' => array(
+            'type' => 'POST',
+            'url' => CController::createUrl('listLevel1CustomCategories'),
+            'update' => '#ProductCustomCategory_level1',
+            'complete' => '$("#custom_cat_level_1").css("display","block")',
+            'data' => array('id' => 'js:this.value'),
+        ),
+            ));?>
+        
+        <div id="custom_cat_level_1" style="display: <?php echo $display; ?>">
+            <?php echo $form->dropDownListRow($productCustomCategory, 'level1', array(), array('prompt'=>'--Select Level 2 Category',
+                'ajax' => array(
+                'type' => 'POST',
+                'url' => CController::createUrl('listLevel2CustomCategories'),
+                'update' => '#ProductCustomCategory_level2',
+                'complete' => '$("#custom_cat_level_2").css("display","block")',
+                'data' => array('id' => 'js:this.value'),
+                )
+                )); ?>
+        </div>
+        
+        <div id="custom_cat_level_2" style="display: <?php echo $display; ?>">
+            <?php echo $form->dropDownListRow($productCustomCategory, 'level2', array(), array('prompt'=>'--Select Level 2 Category')); ?>
+        </div>
+        
     </div>
     <?php echo $form->textAreaRow($model, 'description', array('rows' => 6, 'cols' => 50, 'placeholder' => 'Product Description')); ?>
 
