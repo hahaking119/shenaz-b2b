@@ -23,18 +23,18 @@
 
     <?php
     if (isset($parentCategories)) {
-        $Categories = CHtml::listData($parentCategories, 'category_id', 'title');
+        $Categories = CHtml::listData($parentCategories, 'id', 'title');
         if (!empty($Categories))
             $parentCategories = $Categories;
     } else {
         $parentCategories = array();
     }
     if (!$model->isNewRecord) {
-        $parent_category = Category::model()->findByPk($model->parent_id);
+        $parent_category = CustomCategory::model()->findByAttributes(array('id'=>$model->parent_id));
         if ($parent_category->parent_id !== 0) {
             $model->subcategory_id = $model->parent_id;
             $model->parent_id = $parent_category->parent_id;
-            $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $parent_category->parent_id)), 'category_id', 'title');
+            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $parent_category->parent_id)), 'id', 'title');
             $display = 'block';
         } else {
             $display = 'none';
@@ -43,7 +43,7 @@
         $data = array();
         $display = 'none';
     }
-    echo $form->dropDownListRow($model, 'parent_id', $parentCategories, array('prompt' => '--- Select Parent Category ---',
+    echo $form->dropDownListRow($model, 'parent_id', array(0=>'Parent Category') + $parentCategories, array('prompt' => '--- Select Parent Category ---',
         'ajax' => array(
             'type' => 'POST',
             'url' => CController::createUrl('listSubCategories'),
@@ -54,7 +54,8 @@
         ));
     ?>
     <div id="subcategory" style="display: <?php echo $display; ?>">
-        <?php echo $form->dropDownListRow($model, 'subcategory_id', $data, array('style' => '')); ?></div>
+        <?php echo $form->dropDownListRow($model, 'subcategory_id', $data, array('style' => '')); ?>
+    </div>
 
     <?php echo $form->dropDownListRow($model, 'status', array(0 => 'Draft', 1 => 'Publish'), array('prompt' => '--- Select Status ---')); ?>
 

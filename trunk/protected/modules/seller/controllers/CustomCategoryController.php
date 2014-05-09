@@ -67,7 +67,7 @@ class CustomCategoryController extends Controller
                 $company = CompanyInformation::model()->findByAttributes(array('member_id' => $id));
                 $model->company_id = $company->company_id;
                 
-                $parentCategories = Category::model()->findAll('parent_id = 0 AND trash = 0 AND status = 1',array('order'=>'title ASC'));
+                $parentCategories = CustomCategory::model()->findAll('parent_id = 0 AND trash = 0 AND status = 1',array('order'=>'title ASC'));
                 if (!$parentCategories) {
                     $parentCategories = array();
                 }
@@ -81,7 +81,12 @@ class CustomCategoryController extends Controller
 		{
 			$model->attributes=$_POST['CustomCategory'];
                         $model->slug = CommonClass::getSlug($model->title);
-                        $model->parent_id = $_POST['CustomCategory']['subcategory_id'];
+                        if($_POST['CustomCategory']['subcategory_id']== ""){
+                            $model->parent_id = $_POST['CustomCategory']['parent_id'];
+                        }
+                        else{
+                            $model->parent_id = $_POST['CustomCategory']['subcategory_id'];
+                        }
                         $model->created_at = new CDbExpression('NOW()');
                         $model->modified_at = new CDbExpression('NOW()');
 			if($model->save())
@@ -103,11 +108,11 @@ class CustomCategoryController extends Controller
 	{
 		$model=$this->loadModel($id);
                 
-                $id = Yii::app()->user->getId();
-                $company = CompanyInformation::model()->findByAttributes(array('member_id' => $id));
+                $user_id = Yii::app()->user->getId();
+                $company = CompanyInformation::model()->findByAttributes(array('member_id' => $user_id));
                 $model->company_id = $company->company_id;
                 
-                $parentCategories = Category::model()->findAll('parent_id = 0 AND trash = 0 AND status = 1',array('order'=>'title ASC'));
+                $parentCategories = CustomCategory::model()->findAll('parent_id = 0 AND trash = 0 AND status = 1 AND id !='.$id,array('order'=>'title ASC'));
                 if (!$parentCategories) {
                     $parentCategories = array();
                 }
@@ -120,8 +125,15 @@ class CustomCategoryController extends Controller
 		if(isset($_POST['CustomCategory']))
 		{
 			$model->attributes=$_POST['CustomCategory'];
+                        
+                        if($_POST['CustomCategory']['subcategory_id']== ""){
+                            $model->parent_id = $_POST['CustomCategory']['parent_id'];
+                        }
+                        else{
+                            $model->parent_id = $_POST['CustomCategory']['subcategory_id'];
+                        }
+                        
                         $model->slug = CommonClass::getSlug($model->title);
-                        $model->parent_id = $_POST['CustomCategory']['subcategory_id'];
                         $model->modified_at = new CDbExpression('NOW()');
 			if($model->save())
 				$this->redirect(array('admin','id'=>$model->id));
@@ -230,7 +242,7 @@ class CustomCategoryController extends Controller
             if (isset($_POST['id'])) {
                 echo "<option value=''>--- Select Sub Category ---</option>";
                 if ($_POST['id'] != 0) {
-                    $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => (int) $_POST['id'], 'status' => 1, 'trash' => 0)), 'category_id', 'title');
+                    $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => (int) $_POST['id'], 'status' => 1, 'trash' => 0)), 'id', 'title');
                     foreach ($data as $value => $name)
                         echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
                 }
