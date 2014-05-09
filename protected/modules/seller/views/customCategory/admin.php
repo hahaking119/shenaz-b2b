@@ -36,7 +36,7 @@ $this->widget('bootstrap.widgets.TbGridView', array(
         array(
             'name' => 'parent_id',
             'type' => 'raw',
-            'value' => 'Category::model()->getName($data->parent_id)',
+            'value' => 'CustomCategory::model()->getName($data->parent_id)? CustomCategory::model()->getName($data->parent_id):"Parent"',
         ),
         array(
             'name' => 'status',

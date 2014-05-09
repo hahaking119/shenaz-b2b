@@ -23,4 +23,5 @@ $this->menu=array(
     'productCategory' => $productCategory,
     'productCustomCategory' => $productCustomCategory,
     'customCategoryList' => $customCategoryList,
+    'company_id' => $company_id,
     )); ?>
