@@ -17,27 +17,30 @@ $this->menu=array(
 ?>
 
 <h1>View Product #<?php echo $model->product_id; ?></h1>
-
-<?php $this->widget('zii.widgets.CDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-		'product_id',
-		'company_id',
-		'name',
-		'slug',
-		'sku',
-		'category_type',
-		'category_id',
-		'custom_category_id',
-		'description',
-		'price',
-		'price_type',
-		'minimum_quantitiy',
-		'stock',
-		'status',
-		'trash',
-		'created_at',
-		'modified_at',
-		'trashed_at',
-	),
-)); ?>
+ 
+<?php
+$this->widget('bootstrap.widgets.TbDetailView', array(
+    'data' => $model,
+    'attributes' => array(
+        'product_id',
+        'name',
+        'sku',
+        array(
+            'name' => 'Company',
+            'type' => 'raw',
+            'value' => $model->company->company_name
+        ),
+//        'category_id',
+//        'custom_category_id',
+        'description',
+        array(
+            'name' => 'Price',
+            'type' => 'raw',
+            'value' => CommonClass::getPriceFormat($model->company->member_id) . ' ' . $model->price
+        ),
+        'minimum_quantitiy',
+        'stock',
+        'status',
+    ),
+));
+?>

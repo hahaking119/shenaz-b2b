@@ -18,7 +18,8 @@ $this->menu=array(
 
 <h1>View CustomCategory #<?php echo $model->id; ?></h1>
 
-<?php $this->widget('zii.widgets.CDetailView', array(
+<?php /*
+$this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
 		'id',
@@ -32,4 +33,28 @@ $this->menu=array(
 		'modified_at',
 		'trashed_at',
 	),
-)); ?>
+)); 
+ * 
+ */ 
+?>
+ 
+<?php
+$this->widget('bootstrap.widgets.TbDetailView', array(
+    'data' => $model,
+    'attributes' => array(
+        'id',
+        array(
+            'name' => 'company_id',
+            'type' => 'raw',
+            'value' => CompanyInformation::model()->getName($model->company_id),
+            ),
+        'title',
+        array(
+            'name' => 'parent_id',
+            'type' => 'raw',
+            'value' => CustomCategory::model()->getName($model->parent_id)? CustomCategory::model()->getName($model->parent_id):"Parent",
+        ),
+        'status',
+    ),
+));
+?>
