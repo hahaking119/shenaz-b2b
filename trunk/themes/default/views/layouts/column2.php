@@ -1,8 +1,14 @@
-<?php
+<?php $this->beginContent('//layouts/main'); ?>
+<div class="container">
+    <div class="row">
+        <div class="span2">
+            <?php // $this->widget('application.modules.admin.components.AdminLeftColumn'); ?>
+        </div>
+        <div class="span10">
+            <div id="msg"><?php $this->widget('bootstrap.widgets.TbAlert'); ?></div>
+            <?php echo $content; ?>
+        </div>
+    </div>
+</div>
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
+<?php $this->endContent(); ?>
