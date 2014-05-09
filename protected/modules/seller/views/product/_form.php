@@ -125,8 +125,6 @@
             $data = array(''=>'empty');
         ?>
         <?php
-        //print_r($data); die();
-///////////////// place of error......        
         echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---',
             'ajax' => array(
             'type' => 'POST',
