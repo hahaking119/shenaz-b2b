@@ -40,28 +40,41 @@
 //            $productCategory->category_id = $categoryListArray;
 //        }
         if(!$model->isNewRecord){
-            $cat_id = $productCategory->category_id;
-            $check = Category::model()->findByPk($productCategory->category_id);
-            if($check->parent_id !== 0){
-                $check2 = Category::model()->findByPk($check->parent_id);
-                $productCategory->category_id = $check2->category_id;
-                $productCategory->subcategory_id = $check->category_id;
-                $productCategory->level2 = $cat_id;
+            $category_id = $productCategory->category_id;
+            // Fetch the selected Category.
+            $category = Category::model()->findByPk($productCategory->category_id);
+            if($category->parent_id != 0){
+                $category2 = Category::model()->findByPk($category->parent_id);
+                if($category2->parent_id != 0){
+                    $category3 = Category::model()->findByPk($category2->parent_id);
+                    $productCategory->category_id = $category3->category_id;
+                    $productCategory->subcategory_id = $category2->category_id;
+                    $productCategory->level2 = $category_id;
                 }
                 else{
-                    $productCategory->subcategory_id = $productCategory->category_id;
-                    $productCategory->category_id = $check->category_id;
-                    $productCategory->level2 = "";
+                    $category2 = Category::model()->findByPk($category->parent_id);
+                    $productCategory->category_id = $category2->category_id;
+                    $productCategory->subcategory_id = $category_id;
                 }
+            }
+            else{
+                $productCategory->category_id = $category_id;
+                $productCategory->subcategory_id = "";
+                $productCategory->level2 = "";
+            }
             
-//            $productCategory->subcategory_id = $productCategory->category_id;
-//            $sub_category = Category::model()->findByPk($productCategory->category_id);
-//            $parent_category = Category::model()->findByPk($sub_category->parent_id);
-//            $productCategory->category_id = $parent_category->category_id;
-            $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id'=>$productCategory->category_id)),'category_id','title');
+            $data1 = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id'=>$productCategory->category_id, 'trash' => 0, 'status' => 1)),'category_id','title');
+            if(empty($data1)){
+                $data1 = array();
+            }
+            $data2 = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id'=>$productCategory->subcategory_id, 'trash' => 0, 'status' => 1)), 'category_id', 'title');
+            if(empty($data2)){
+                $data2 = array();
+            }
         }
         else{ 
-            $data = array();
+            $data1 = array();
+            $data2 = array();
             $display = 'none';
         }
         ?>
@@ -76,7 +89,8 @@
             )); ?>
     </div>
     <div id="subcategory" style="display: <?php echo $display; ?>">
-        <?php echo $form->dropDownListRow($productCategory, 'subcategory_id', $data, array(
+        <?php echo $form->dropDownListRow($productCategory, 'subcategory_id', $data1, array(
+            'prompt' => '--- Select Sub Category ---',
             'style' => '',
             'ajax' => array(
             'type' => 'POST',
@@ -89,34 +103,47 @@
     </div>
     
     <div id="level_2_cat" style="display: <?php echo $display; ?>">
-        <?php echo $form->dropDownListRow($productCategory, 'level2', $data, array('prompt'=>'--Select Level 2 Category')); ?>
+        <?php echo $form->dropDownListRow($productCategory, 'level2', $data2, array('prompt'=>'--- Select Level 2 Category ---')); ?>
     </div>
     
     <div class="custom-category">
         <?php
-//        if (isset($_POST['ProductCustomCategory']['custom_category_id'])) {
-//            $productCustomCategory->custom_category_id = implode(', ', $_POST['ProductCustomCategory']['custom_category_id']);
-//        }
-//        if (isset($_POST['Product']['company_id'])) {
-//            $parents = CustomCategory::model()->findAll('company_id = ' . $_POST['Product']['company_id'] . ' and parent_id = 0 and status = 1');
-//            foreach ($parents as $parent) {
-//                $children = CustomCategory::model()->findAll('company_id =' . $_POST['Product']['company_id'] . ' and parent_id = ' . $parent->id . ' and status = 1');
-//                $data[$parent->id] = $parent->title;
-//                foreach ($children as $child) {
-//                    $data[$child->id] = $child->title;
-//                }
+//        if (isset($productCustomCategoryList)) {
+//            foreach ($productCustomCategoryList as $customCategoryList) {
+//                $customCategoryListArray[] = $customCategoryList->custom_category_id;
 //            }
-//        } else {
-//            $data = array();
+//            $productCustomCategory->custom_category_id = $customCategoryListArray;
 //        }
-        if (isset($productCustomCategoryList)) {
-            foreach ($productCustomCategoryList as $customCategoryList) {
-                $customCategoryListArray[] = $customCategoryList->custom_category_id;
-            }
-            $productCustomCategory->custom_category_id = $customCategoryListArray;
-        }
         if (!$model->isNewRecord) {
-            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $model->company_id, 'parent_id'=>0, 'status'=>1, 'trash'=>0)), 'id', 'title');
+            $custom_category_id = $productCustomCategory->custom_category_id;
+            // Fetch the selected Custom Category.
+            $custom_category = CustomCategory::model()->findByPk($productCustomCategory->custom_category_id);
+            if($custom_category->parent_id != 0){
+                $custom_category2 = CustomCategory::model()->findByPk($custom_category->parent_id);
+                if($custom_category2->parent_id != 0){
+                    $custom_category3 = CustomCategory::model()->findByPk($custom_category2->parent_id);
+                    $productCustomCategory->custom_category_id = $custom_category3->id;
+                    $productCustomCategory->level1 = $custom_category2->id;
+                    $productCustomCategory->level2 = $custom_category_id;
+                }
+                else{
+                    $custom_category2 = CustomCategory::model()->findByPk($custom_category->parent_id);
+                    $productCustomCategory->custom_category_id = $custom_category2->id;
+                    $productCustomCategory->level1 = $custom_category_id;
+                }
+            }
+            else{
+                $productCustomCategory->custom_category_id = $custom_category_id;
+            }
+                        
+            $level_1_data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id'=>$productCustomCategory->custom_category_id, 'trash' => 0, 'status' => 1)),'id','title');
+            if(empty($level_1_data)){
+                $level_1_data = array();
+            }
+            $level_2_data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id'=>$productCustomCategory->level1, 'trash' => 0, 'status' => 1)), 'id', 'title');
+            if(empty($level_2_data)){
+                $level_2_data = array();
+            }
         }
         else{
             $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $company_id, 'parent_id'=>0, 'status'=>1, 'trash'=>0)), 'id', 'title');
@@ -125,7 +152,7 @@
             $data = array(''=>'empty');
         ?>
         <?php
-        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', $data, array('prompt' => '--- Select Custom Category ---',
+        echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $model->company_id, 'parent_id'=>0, 'status'=>1, 'trash'=>0)), 'id', 'title'), array('prompt' => '--- Select Custom Category ---',
             'ajax' => array(
             'type' => 'POST',
             'url' => CController::createUrl('listLevel1CustomCategories'),
@@ -136,7 +163,7 @@
             ));
         ?>
         <div id="custom_cat_level_1" style="display: <?php echo $display; ?>">
-            <?php echo $form->dropDownListRow($productCustomCategory, 'level1', array(), array('prompt'=>'--Select Level 2 Category',
+            <?php echo $form->dropDownListRow($productCustomCategory, 'level1', $level_1_data, array('prompt'=>'Select Level 1 Custom Category',
                 'ajax' => array(
                 'type' => 'POST',
                 'url' => CController::createUrl('listLevel2CustomCategories'),
@@ -147,7 +174,7 @@
                 )); ?>
         </div>
         <div id="custom_cat_level_2" style="display: <?php echo $display; ?>">
-            <?php echo $form->dropDownListRow($productCustomCategory, 'level2', array(), array('prompt'=>'--Select Level 2 Category')); ?>
+            <?php echo $form->dropDownListRow($productCustomCategory, 'level2', $level_2_data, array('prompt'=>'Select Level 2 Custom Category')); ?>
         </div>
     </div>
     <?php echo $form->textAreaRow($model, 'description', array('rows' => 6, 'cols' => 50, 'placeholder' => 'Product Description')); ?>
