@@ -63,12 +63,16 @@
                 $productCategory->level2 = "";
             }
             
-            $data1 = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id'=>$productCategory->category_id, 'trash' => 0, 'status' => 1)),'category_id','title');
-            if(empty($data1)){
+            if(!empty($productCategory->category_id)){
+                $data1 = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id'=>$productCategory->category_id, 'trash' => 0, 'status' => 1)),'category_id','title');
+            }
+            else{
                 $data1 = array();
             }
-            $data2 = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id'=>$productCategory->subcategory_id, 'trash' => 0, 'status' => 1)), 'category_id', 'title');
-            if(empty($data2)){
+            if(!empty($productCategory->subcategory_id)){
+                $data2 = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id'=>$productCategory->subcategory_id, 'trash' => 0, 'status' => 1)), 'category_id', 'title');
+            }
+            else{
                 $data2 = array();
             }
         }
@@ -149,7 +153,7 @@
             $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $company_id, 'parent_id'=>0, 'status'=>1, 'trash'=>0)), 'id', 'title');
         }
         if(empty($data))
-            $data = array(''=>'empty');
+            $data = array();
         ?>
         <?php
         echo $form->dropDownListRow($productCustomCategory, 'custom_category_id', CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $model->company_id, 'parent_id'=>0, 'status'=>1, 'trash'=>0)), 'id', 'title'), array('prompt' => '--- Select Custom Category ---',
