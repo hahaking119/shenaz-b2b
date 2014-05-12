@@ -436,7 +436,7 @@ class ProductController extends Controller {
     }
 
     public function actionsubCategoryList() {
-        if (isset($_POST['parent_id'])) {
+        if (isset($_POST['parent_id']) && !empty($_POST['parent_id'])) {
             echo "<option value=''>--- Select Sub Category ---</option>";
             if ($_POST['parent_id'] != 0) {
                 $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => (int) $_POST['parent_id'])), 'category_id', 'title');
@@ -444,32 +444,44 @@ class ProductController extends Controller {
                     echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
             }
         }
+        else{
+            echo "<option value=''>--- Select Sub Category ---</option>";
+        }
     }
     
     public function actionListLevel2Categories(){
-        if(isset($_POST['id'])){
-            echo "<option value=''>--- Select Sub Category ---</option>";
+        if(isset($_POST['id']) && !empty($_POST['id'])){
+            echo "<option value=''>--- Select Level 2 Category ---</option>";
             $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'category_id', 'title');
             foreach ($data as $value => $name)
                 echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
         }
+        else{
+            echo "<option value=''>--- Select Level 2 Category ---</option>";
+        }
     }
     
     public function actionListLevel1CustomCategories(){
-        if (isset($_POST['id'])) {
-            echo "<option value=''>--- Select Sub Category ---</option>";
+        if (isset($_POST['id']) && !empty($_POST['id'])) {
+            echo "<option value=''>Select Level 1 Custom Category</option>";
             $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'id', 'title');
             foreach ($data as $value => $name)
                 echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
         }
+        else{
+            echo "<option value=''>Select Level 1 Custom Category</option>";
+        }
     }
     
     public function actionListLevel2CustomCategories(){
-        if (isset($_POST['id'])) {
-            echo "<option value=''>--- Select Sub Category ---</option>";
+        if (isset($_POST['id']) && !empty($_POST['id'])) {
+            echo "<option value=''>Select Level 2 Custom Category</option>";
             $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'id', 'title');
             foreach ($data as $value => $name)
                 echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
+        }
+        else{
+            echo "<option value=''>Select Level 2 Custom Category</option>";
         }
     }
 }
