@@ -113,7 +113,7 @@ input[class="search-button"]{
     background: url("../images/top-header-sprite.png?t=ee445e01_0") no-repeat scroll -212px -92px rgba(0, 0, 0, 0);
 }
 .nav-wishlist{
-    width: 90px!important;
+    width: 93px!important;
     float: left;
     margin-left: 30px;
 }
@@ -138,7 +138,7 @@ input[class="search-button"]{
     background: none repeat scroll 0 0 #5A5959;
     height: 44px;
     margin-right: 0 !important;
-    padding-right: 10px;
+    padding-right: 5px;
     color: #FFFFFF;
 }
 .dropdown-login-box a, .dropdown-login-box a:hover{
@@ -151,7 +151,7 @@ input[class="search-button"]{
     margin-top: 20px;
 }
 .left-nav{
-    width: 219px !important;
+    /*width: 219px !important;*/
 }
 .left-nav > ul{
     padding: 0;
