@@ -1,10 +1,10 @@
 <?php $this->beginContent('//layouts/main'); ?>
 <div class="container">
     <div class="row">
-        <div class="span2">
-            <?php // $this->widget('application.modules.admin.components.AdminLeftColumn'); ?>
+        <div class="span3">
+            <?php $this->widget('LeftMenu'); ?>
         </div>
-        <div class="span10">
+        <div class="span9">
             <div id="msg"><?php $this->widget('bootstrap.widgets.TbAlert'); ?></div>
             <?php echo $content; ?>
         </div>
