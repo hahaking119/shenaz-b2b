@@ -28,17 +28,26 @@
     } else {
         $parentCategories = array();
     }
-    if (!$model->isNewRecord) {
-        $isParent = CustomCategory::model()->findByPk($model->parent_id);
-        if ($isParent->parent_id != 0) {
-            $model->subcategory_id = $model->parent_id;
-            $model->parent_id = $isParent->parent_id;
-            $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $isParent->parent_id)), 'category_id', 'title');
-            $display = 'block';
-        } else {
-            $display = 'none';
+    if (!$model->isNewRecord){
+        if($model->parent_id != 0){
+            $parent_category = CustomCategory::model()->findByAttributes(array('id'=>$model->parent_id));
+            if ($parent_category->parent_id != 0) {
+                $parent_category2 = CustomCategory::model()->findByPk($parent_category->parent_id);
+                $model->subcategory_id = $parent_category->id;
+                $model->parent_id = $parent_category2->id;
+                $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $parent_category->parent_id, 'status' => 1, 'trash' => 0)), 'id', 'title');
+                $display = 'block';
+            } else {
+                $model->parent_id = $parent_category->id;
+                $data = CHtml::listData(CustomCategory::model()->findAll('parent_id ='.$parent_category->id.' AND id!='.$model->id.' AND trash = 0 AND status = 1'), 'id', 'title');
+//                $display = 'none';
+            }
         }
-    } else {
+        else{
+            $data = array();
+        }
+    }
+    else {
         $data = array();
         $display = 'none';
     }
@@ -53,7 +62,9 @@
     ));
     ?>
 
-    <div id="subcategory" style="display: <?php echo $display; ?>"><?php echo $form->dropDownListRow($model, 'subcategory_id', $data, array('style' => '')); ?></div>
+    <div id="subcategory" style="display: <?php echo $display; ?>">
+        <?php echo $form->dropDownListRow($model, 'subcategory_id', $data, array('style' => '', 'prompt' => '--- Select Subcategory ---')); ?>
+    </div>
 
     <?php echo $form->dropDownListRow($model, 'status', array('Draft', 'Publish'), array('prompt' => '--- Select Status ---')); ?>
 
