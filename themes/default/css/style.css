@@ -218,7 +218,7 @@ input[class="search-button"]{
 .new-arrivals > ul > li{
     margin: 0 0 10px 7px;
     float: left;
-    width: 24%;
+    width: 19%;
 }
 .new-arrivals > ul > li:first-child, .best-selling-items > ul > li:nth-child(4n+1){
     margin-left: 3px !important;
@@ -387,4 +387,60 @@ input[class="search-button"]{
     padding: 10px;
     font-size: 12px;
     color: #BBBBBB;
+}
+
+ul.categories_list li{
+    max-height: 20px;
+}
+ul.categories_list li a{
+    color: #333333;
+}
+ul.categories_list li a:hover{
+    color: #0088cc;
+    text-decoration: none;
+}
+.categories_list .subcategory{
+    display: none;
+    position: relative;
+    left: 102%;
+    top:-24px;
+    border: 1px solid #CCCCCC;
+    width: auto;
+    min-width: 10px;
+}
+ul.categories_list li:hover div.subcategory{
+    display: block;
+    background-color: #F2F2F2;
+    width: auto;
+    min-width: 10px;
+}
+div.subcategory dl{
+    margin: 10px;
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    /*padding-right: 20px;*/
+    z-index: 1;
+}
+.categories_list .subcategory .level_2_category a{
+    font-size: 12px;
+    display: block;
+}
+.categories_list .subcategory dd.level_2_category{
+    margin: 0;
+}
+.recent_products ul li{
+    display: inline;
+    float: left;
+    width: 18%;
+    background: none repeat scroll 0 0 #F2F2F2;
+    margin: 0 0 10px 7px;
+}
+.item > h3{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    margin: 5px 0;
+    color: #333333;
 }
