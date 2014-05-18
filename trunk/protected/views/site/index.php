@@ -5,7 +5,7 @@ $this->pageTitle = Yii::app()->name;
 ?>
 
 <!-- jQuery library (served from Google) -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>-->
 <!-- bxSlider Javascript file -->
 <script src="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/jquery.bxslider/jquery.bxslider.min.js'); ?>"></script>
 <!-- bxSlider CSS file -->
@@ -58,7 +58,7 @@ $(document).ready(function(){
       slideWidth: 163,
       slideMargin: 10,
       ticker: true,
-      speed: 30000
+      speed: 50000,
       });
 });
 
