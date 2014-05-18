@@ -58,7 +58,7 @@ $(document).ready(function(){
       slideWidth: 163,
       slideMargin: 10,
       ticker: true,
-      speed: 12000
+      speed: 30000
       });
 });
 
