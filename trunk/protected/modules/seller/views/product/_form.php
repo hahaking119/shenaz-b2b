@@ -151,6 +151,8 @@
         }
         else{
             $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('company_id' => $company_id, 'parent_id'=>0, 'status'=>1, 'trash'=>0)), 'id', 'title');
+            $level_1_data = array();
+            $level_2_data = array();
         }
         if(empty($data))
             $data = array();
