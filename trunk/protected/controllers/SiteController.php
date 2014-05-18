@@ -108,4 +108,32 @@ class SiteController extends Controller {
         $this->redirect(Yii::app()->homeUrl);
     }
 
+    public function actionmenu($view) {
+        $category = Category::model()->findByAttributes(array('slug' => $view));
+        $dataProvider = new CActiveDataProvider('ProductCategory', array(
+                    'criteria' => array(
+//                        'condition' => 'status=1 and trash=0',
+                        'condition' => 'category_id=' . $category->category_id,
+                        'order' => 'product_id DESC'
+                    ),
+                    'pagination' => array(
+                        'pageSize' => 12,
+                    ),
+                ));
+        $this->render('view', array('dataProvider' => $dataProvider));
+    }
+
+    public function actionproduct($view) {
+        $product = Product::model()->findByAttributes(array('slug' => $view));
+        $companyInformation = CompanyInformation::model()->findByPk($product->company_id);
+        $directoryInformation = DirectoryInformation::model()->findByAttributes(array('company_id' => $companyInformation->company_id));
+        $images = ProductImage::model()->findAllByAttributes(array('product_id' => $product->product_id));
+        $this->render('_viewproduct', array(
+            'product' => $product,
+            'images' => $images,
+            'companyInformation' => $companyInformation,
+            'directoryInformation' => $directoryInformation
+        ));
+    }
+
 }

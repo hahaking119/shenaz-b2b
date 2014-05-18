@@ -8,11 +8,11 @@
             ?>
             <li>
                 <?php
-                echo CHtml::link($category->title, "#");
+                echo CHtml::link($category->title, Yii::app()->createAbsoluteUrl('site/menu/view/'.$category->slug));
                 $subCategories = Category::model()->findAllByAttributes(array('parent_id' => $category->category_id, 'trash' => 0, 'status' => 1), array('order' => 'title ASC'));
                 if (!empty($subCategories)) {
                     ?>
-                    <span class = 'pull-right'>>></span>
+                <span class = 'pull-right'><i class="icon-chevron-right"></i></span>
                     <div class = "subcategory">
                         <?php
                         foreach ($subCategories as $subCategory) {

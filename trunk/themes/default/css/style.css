@@ -32,10 +32,10 @@ h1{
 
 }
 h2{
-    font-size: 24px;
+    font-size: 24px !important;
 }
 h3{
-    font-size: 14px;
+    font-size: 14px !important;
 }
 .caret{
     margin-top: 7px;
@@ -201,7 +201,7 @@ input[class="search-button"]{
 .best-selling-items > ul > li:first-child{
     margin-left: 3px !important;
 }
-.best-selling-items h3, .new-arrivals h3, .gallery h3{
+.best-selling-items h3, .new-arrivals h3, .gallery h3, .items h3{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -241,6 +241,11 @@ input[class="search-button"]{
     text-align: center;
     width: 25px;
 }
+.item .image, .items .image{
+    height: 150px;
+    overflow: hidden;
+    background: none repeat scroll 0 0 #FFFFFF;
+}
 .item > img{
     width: 100%;
 }
@@ -262,11 +267,16 @@ input[class="search-button"]{
     text-align: center;
     padding: 10px 0;
 }
-.gallery{
-    margin-top: 10px;
-    margin-bottom: 10px;
+.gallery, .items{
+    margin: 10px 0;
 }
-.gallery > ul > li{
+.list-view{
+    padding: 0 !important;
+}
+.items{
+    margin-top: 0 !important;
+}
+.gallery > ul > li, .items > ul > li{
     width: 18%;
     border: 1px solid #DDDDDD;
     margin: 0 auto;
@@ -275,16 +285,20 @@ input[class="search-button"]{
     float: left;
     position: relative;
 }
-.gallery > ul > li:first-child, .gallery > ul > li:nth-child(5n+1){
+.items > ul > li{
+    width: 22% !important;
+    margin: 0 0 18px 18px !important;
+}
+.gallery > ul > li:first-child, .gallery > ul > li:nth-child(5n+1), .items > ul > li:first-child, .items > ul > li:nth-child(4n+1){
     margin-left: 0 !important;
 }
-.gallery > ul > li:hover{
+.gallery > ul > li:hover, .items:hover > ul > li:hover{
     box-shadow: 0 0 4px 2px #DDDDDD;
 }
-.gallery img{
+.gallery img, .items img{
     transition: all 0.3s ease 0s;
 }
-.gallery img:hover{
+.gallery img:hover, .items img:hover{
     transform: scale(1.06);
     -webkit-transform: scale(1.06);
 }
