@@ -3,12 +3,18 @@
 
 $this->pageTitle = Yii::app()->name;
 ?>
-<link rel="text/javascript" href="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/jquery.cycle.lite.js'); ?>">
+
+<!-- jQuery library (served from Google) -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<!-- bxSlider Javascript file -->
+<script src="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/jquery.bxslider/jquery.bxslider.min.js'); ?>"></script>
+<!-- bxSlider CSS file -->
+<link href="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/jquery.bxslider/jquery.bxslider.css'); ?>" rel="stylesheet" />
 
 <h1>Welcome to <i><?php echo CHtml::encode(Yii::app()->name); ?></i></h1>
 <div class="new-arrivals">
     <h2>New Arrivals</h2>
-    <ul>
+    <ul class="bxslider">
 
         <?php
         $i = 1;
@@ -42,3 +48,18 @@ $this->pageTitle = Yii::app()->name;
     </ul>
     <div class="clearfix"></div>
 </div>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+     $('.bxslider').bxSlider({
+      minSlides: 5,
+      maxSlides: 5,
+      slideWidth: 163,
+      slideMargin: 10,
+      ticker: true,
+      speed: 12000
+      });
+});
+
+</script>
