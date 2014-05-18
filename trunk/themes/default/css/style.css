@@ -388,7 +388,7 @@ input[class="search-button"]{
     font-size: 12px;
     color: #BBBBBB;
 }
-
+/*My CSS. Needs to be modified*/
 ul.categories_list li{
     max-height: 20px;
 }
@@ -413,6 +413,7 @@ ul.categories_list li:hover div.subcategory{
     background-color: #F2F2F2;
     width: auto;
     min-width: 10px;
+    z-index: 1;
 }
 div.subcategory dl{
     margin: 10px;
