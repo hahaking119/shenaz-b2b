@@ -2,30 +2,26 @@
     <div class="span3">
         <div class="image-box">
             <?php
-                if (is_array($images) && !empty($images)) {
-                    $this->widget(
-                    'ext.cloudzoom.CloudZoom',
-                    array(
-                        'width' => 10,
-                        )
-                    );
+            if (is_array($images) && !empty($images)) {
+                $this->widget(
+                        'ext.cloudzoom.CloudZoom', array()
+                );
                 ?>
-            <a href='<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/original/'.$images[0]->image); ?>' class='cloud-zoom' id='zoom1'
-       rel="adjustX: 10, adjustY:-4, softFocus:false, tint: false , tintOpacity: 0.5 , variableMagnification: true , zoomWidth:500 , position:'right'">
-        <img src="<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/thumbs/'.$images[0]->image); ?>" alt='' align="left"
-             title=""/>
-    </a>
-            <?php
-                foreach($images as $image){
+                <a href='<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/original/' . $images[0]->image); ?>' class='cloud-zoom' id='zoom1'
+                   rel="adjustX: 10, adjustY:-4, softFocus:false, tint: false , tintOpacity: 0.5 , variableMagnification: true , zoomWidth:500 , position:'right'">
+                    <img src="<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/thumbs/' . $images[0]->image); ?>" alt='' align="left"
+                         title=""/>
+                </a>
+                <?php
+                foreach ($images as $image) {
                     ?>
-            <a href="<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/original/'.$image->image); ?>" class='cloud-zoom-gallery'
-           title='' rel="useZoom: 'zoom1', smallImage: '<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/thumbs/'.$image->image); ?>' ">
-            <img src="<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/thumbs/'.$image->image); ?>" width="100px" alt=""/>
-        </a>
-            <?php
-                    }
+                    <a href="<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/original/' . $image->image); ?>" class='cloud-zoom-gallery'
+                       title='' rel="useZoom: 'zoom1', smallImage: '<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/thumbs/' . $image->image); ?>' ">
+                        <img src="<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/thumbs/' . $image->image); ?>" width="100px" alt=""/>
+                    </a>
+                    <?php
                 }
-            
+            }
             ?>
         </div>
     </div>
@@ -90,7 +86,7 @@
                             </div>
                             <div class="website">
                                 <b><?php echo CHtml::encode($companyInformation->getAttributeLabel('website')); ?>:</b>
-                                <?php echo CHtml::link($companyInformation->website, 'http://'.$companyInformation->website); ?>
+                                <?php echo CHtml::link($companyInformation->website, 'http://' . $companyInformation->website); ?>
                             </div>
                             <div class="established_at">
                                 <b><?php echo CHtml::encode($companyInformation->getAttributeLabel('established_at')); ?>:</b>
@@ -102,15 +98,14 @@
                             </div>
                             <div class="import_export">
                                 <b><?php echo CHtml::encode($companyInformation->getAttributeLabel('import_export')); ?>:</b>
-                                <?php 
-                                    if($companyInformation->import_export == 0){
-                                        echo "Both";                                    
-                                    }
-                                    elseif($companyInformation->import_export == 1){
-                                        echo "Export";                                    
-                                    }
-                                    else
-                                        echo "Import";
+                                <?php
+                                if ($companyInformation->import_export == 0) {
+                                    echo "Both";
+                                } elseif ($companyInformation->import_export == 1) {
+                                    echo "Export";
+                                }
+                                else
+                                    echo "Import";
                                 ?>
                             </div>
                             <div class="no_of_staffs">
@@ -119,7 +114,7 @@
                             </div>
                         </div>
                         <div class="span6 pull-right">
-                            <?php echo CHtml::image(Yii::app()->createAbsoluteUrl('/uploads/company/logo/thumbs/'.$companyInformation->logo), ''); ?>
+                            <?php echo CHtml::image(Yii::app()->createAbsoluteUrl('/uploads/company/logo/thumbs/' . $companyInformation->logo), ''); ?>
                         </div>
                     </div>
                 <?php } ?>
@@ -129,13 +124,12 @@
                     <div class="span3">
                         <div class="full_name">
                             <?php
-                                if(!empty($directoryInformation->middle_name)){
-                                    $full_name = $directoryInformation->first_name." ".$directoryInformation->middle_name." ".$directoryInformation->last_name;
-                                }
-                                else {
-                                    $full_name = $directoryInformation->first_name." ".$directoryInformation->last_name;
-                                }
-                                echo "<h3>".$full_name."</h3>";
+                            if (!empty($directoryInformation->middle_name)) {
+                                $full_name = $directoryInformation->first_name . " " . $directoryInformation->middle_name . " " . $directoryInformation->last_name;
+                            } else {
+                                $full_name = $directoryInformation->first_name . " " . $directoryInformation->last_name;
+                            }
+                            echo "<h3>" . $full_name . "</h3>";
                             ?>
                         </div>
                         <div class="job_title">
@@ -177,13 +171,13 @@
                     </div>
                     <div class="span6 pull-right">
                         <?php
-                            if(!empty($directoryInformation->image)){
-                                $img_path = Yii::app()->createAbsoluteUrl('/uploads/directory/image/thumbs/'.$directoryInformation->image);
+                        if (!empty($directoryInformation->image)) {
+                            $img_path = Yii::app()->createAbsoluteUrl('/uploads/directory/image/thumbs/' . $directoryInformation->image);
 //                                $img_path = Yii::app()->baseUrl.'/uploads/directory/image/thumbs/'.$directoryInformation->image;
 //                                if(file_exists($img_path)){
-                                    echo CHtml::image($img_path, '');
+                            echo CHtml::image($img_path, '');
 //                                }
-                            }
+                        }
                         ?>
                     </div>
                 </div>
@@ -193,8 +187,8 @@
     </div>
 </div>
 <script>
-    $(document).ready(function(){
-        $('#details a').click(function (e) {
+    $(document).ready(function() {
+        $('#details a').click(function(e) {
             e.preventDefault();
             $(this).tab('show');
         });
