@@ -11,14 +11,12 @@
                     );
                 ?>
             <a href='<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/original/'.$images[0]->image); ?>' class='cloud-zoom' id='zoom1'
-       rel="adjustX: 10, adjustY:-4, softFocus:true , zoomWidth:700 , position:'right'">
+       rel="adjustX: 10, adjustY:-4, softFocus:false, tint: false , tintOpacity: 0.5 , variableMagnification: true , zoomWidth:500 , position:'right'">
         <img src="<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/thumbs/'.$images[0]->image); ?>" alt='' align="left"
              title=""/>
     </a>
             <?php
                 foreach($images as $image){
-//                        echo CHtml::image(Yii::app()->baseUrl.'/uploads/product/thumbs/'.$image->image, '', array('title'=>''));
-//                        $img[] = $image->image;
                     ?>
             <a href="<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/original/'.$image->image); ?>" class='cloud-zoom-gallery'
            title='' rel="useZoom: 'zoom1', smallImage: '<?php echo Yii::app()->createAbsoluteUrl('/uploads/product/thumbs/'.$image->image); ?>' ">
@@ -62,7 +60,8 @@
                 </div>
                 <div class="price">
                     <b><?php echo CHtml::encode($product->getAttributeLabel('price')); ?>:</b>
-                    <?php echo $product->price; ?>
+                    <?php echo CommonClass::getPriceFormat($member_id) . ' ' . $product->price;
+                    ?> / per unit.
                 </div>
                 <div class="sku">
                     <b><?php echo CHtml::encode($product->getAttributeLabel('sku')); ?>:</b>
@@ -78,6 +77,9 @@
                     <div class="row">
                         <div class ="span3">
                             <h3><?php echo $companyInformation->company_name; ?></h3>
+                            <div class="description">
+                                <?php echo $companyInformation->description; ?>
+                            </div>
                             <div class="location">
                                 <b><?php echo CHtml::encode($companyInformation->getAttributeLabel('company_location')); ?>:</b>
                                 <?php echo $companyInformation->company_location; ?>
@@ -88,7 +90,7 @@
                             </div>
                             <div class="website">
                                 <b><?php echo CHtml::encode($companyInformation->getAttributeLabel('website')); ?>:</b>
-                                <?php echo $companyInformation->website; ?>
+                                <?php echo CHtml::link($companyInformation->website, 'http://'.$companyInformation->website); ?>
                             </div>
                             <div class="established_at">
                                 <b><?php echo CHtml::encode($companyInformation->getAttributeLabel('established_at')); ?>:</b>
@@ -115,10 +117,6 @@
                                 <b><?php echo CHtml::encode($companyInformation->getAttributeLabel('no_of_staffs')); ?>:</b>
                                 <?php echo $companyInformation->no_of_staffs; ?>
                             </div>
-                            <div class="description">
-                                <b><?php echo CHtml::encode($companyInformation->getAttributeLabel('description')); ?>:</b>
-                                <?php echo $companyInformation->description; ?>
-                            </div>
                         </div>
                         <div class="span6 pull-right">
                             <?php echo CHtml::image(Yii::app()->createAbsoluteUrl('/uploads/company/logo/thumbs/'.$companyInformation->logo), ''); ?>
@@ -144,22 +142,6 @@
                             <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('job_title')); ?>:</b>
                             <?php echo $directoryInformation->job_title; ?>
                         </div>
-                        <div class="email">
-                            <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('email')); ?>:</b>
-                            <?php echo $directoryInformation->email; ?>
-                        </div>
-                        <div class="phone">
-                            <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('phone')); ?>:</b>
-                            <?php echo $directoryInformation->phone; ?>
-                        </div>
-                        <div class="fax">
-                            <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('fax')); ?>:</b>
-                            <?php echo $directoryInformation->fax; ?>
-                        </div>
-                        <div class="zip_code">
-                            <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('zip_code')); ?>:</b>
-                            <?php echo $directoryInformation->zip_code; ?>
-                        </div>
                         <div class="address">
                             <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('address')); ?>:</b>
                             <?php echo $directoryInformation->address; ?>
@@ -175,6 +157,22 @@
                         <div class="country">
                             <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('country')); ?>:</b>
                             <?php echo $directoryInformation->country; ?>
+                        </div>
+                        <div class="phone">
+                            <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('phone')); ?>:</b>
+                            <?php echo $directoryInformation->phone; ?>
+                        </div>
+                        <div class="fax">
+                            <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('fax')); ?>:</b>
+                            <?php echo $directoryInformation->fax; ?>
+                        </div>
+                        <div class="zip_code">
+                            <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('zip_code')); ?>:</b>
+                            <?php echo $directoryInformation->zip_code; ?>
+                        </div>
+                        <div class="email">
+                            <b><?php echo CHtml::encode($directoryInformation->getAttributeLabel('email')); ?>:</b>
+                            <?php echo $directoryInformation->email; ?>
                         </div>
                     </div>
                     <div class="span6 pull-right">
@@ -201,18 +199,4 @@
             $(this).tab('show');
         });
     });
-    $.fn.CloudZoom.defaults = {
-        zoomWidth: 'auto',
-        zoomHeight: 'auto',
-        position: 'right',
-        tint: false,
-        tintOpacity: 0.5,
-        lensOpacity: 0.5,
-        softFocus: false,
-        smoothMove: 3,
-        showTitle: true,
-        titleOpacity: 0.5,
-        adjustX: 0,
-        adjustY: 0
-    };
 </script>
