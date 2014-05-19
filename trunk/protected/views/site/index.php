@@ -29,7 +29,7 @@ $this->pageTitle = Yii::app()->name;
                         <div class="item-order">3567 Orders</div>
                     </div>
                     <div class="image">
-                        <?php echo CHtml::image(Yii::app()->createAbsoluteUrl('uploads/product/thumbs/' . $productImage->image)); ?>
+                        <?php echo CHtml::link(CHtml::image(Yii::app()->createAbsoluteUrl('uploads/product/thumbs/' . $productImage->image)),array('/site/product/', 'view' => $product->slug)); ?>
                     </div>
                     <h3>Accessories fashion all-match personality cutout leaves multi-layer </h3>
                     <div class="cost">From <span class="price">US $<?php echo $product->price; ?></span> / Piece</div>
@@ -61,6 +61,7 @@ $(document).ready(function(){
       slideMargin: 10,
       ticker: true,
       speed: 50000,
+      autoDelay: 2000,
       });
 });
 
