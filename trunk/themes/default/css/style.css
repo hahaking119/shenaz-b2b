@@ -458,3 +458,7 @@ div.subcategory dl{
     margin: 5px 0;
     color: #333333;
 }
+.feedback-error, .email-error, .subject-error, .message-error, .verifyCode-error{
+    color: red;
+    font-size: 0.9em;
+}
