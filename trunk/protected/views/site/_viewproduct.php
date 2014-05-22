@@ -36,8 +36,8 @@
         </div>
         <div class="add-to-cart">
             <?php echo CHtml::form('', 'get') ?>
-            <?php echo CHtml::textField('qty','',array('placeholder' => 'Quantity', 'style' => 'width: 60px')); ?>
-            <?php echo CHtml::ajaxButton('Add to cart', '', '', array('class' => "btn btn-default", 'style'=>'margin-bottom: 10px')); ?>
+            <?php echo CHtml::textField('qty','',array('id' => 'quantity','placeholder' => 'Quantity', 'style' => 'width: 60px')); ?>
+            <?php echo CHtml::ajaxButton('Add to cart', array('site/add_to_cart', 'product_id' => $product->product_id, 'qty' => 'js:function(){$("#quantity").val();}'), '', array('class' => "btn btn-default", 'style'=>'margin-bottom: 10px')); ?>
             <?php echo CHtml::endForm() ?>
         </div>
         <div class="rating">
@@ -414,3 +414,7 @@
         });
     });
 </script>
+<?php
+    //This is the way to create session.
+    $session = Yii::app()->session['name']="sudeep";
+?>
