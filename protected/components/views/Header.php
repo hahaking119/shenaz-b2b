@@ -53,7 +53,18 @@
                         <a id="wish-list" rel="nofollow" href="javascript:void(0);">Wish List</a>
                     </li>
                     <li class="dropdown-login-box pull-right">
-                        <a href="javascript:void(0);">Sign In</a> | <a href="javascript:void(0);">Join</a><span class="caret"></span>
+                        <?php
+                            if(Yii::app()->user->isGuest){
+                        ?>
+                        <a href="<?php echo Yii::app()->createAbsoluteUrl('site/login'); ?>">Sign In</a>
+                        <?php 
+                            }
+                            else{
+                                ?>
+                        <a href="<?php echo Yii::app()->createAbsoluteUrl('site/logout'); ?>">Logout</a>
+                                    <?php
+                            }
+                        ?>| <a href="javascript:void(0);">Join</a><span class="caret"></span>
                     </li>
                 </ul>
             </div>
