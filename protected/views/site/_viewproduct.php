@@ -35,10 +35,149 @@
             ?> / per unit.
         </div>
         <div class="add-to-cart">
+            <?php echo CHtml::form('', 'get') ?>
+            <?php echo CHtml::textField('qty','',array('placeholder' => 'Quantity', 'style' => 'width: 60px')); ?>
+            <?php echo CHtml::ajaxButton('Add to cart', '', '', array('class' => "btn btn-default", 'style'=>'margin-bottom: 10px')); ?>
+            <?php echo CHtml::endForm() ?>
+        </div>
+        <div class="rating">
+            <?php $form=$this->beginWidget('CActiveForm', array(
+                    'id'=>'product-rating-form',
+                    'enableAjaxValidation'=>false,
+                )); ?>
 
+                        <?php
+                            if(!empty($totalRating)){
+                                $sum = 0;
+                                $vote_sum = 0;
+                                foreach($totalRating as $rate)
+                                {
+                                    $sum = $sum + $rate->rating;
+                                }
+                                foreach($rating as $vote){
+                                    $vote_sum = $vote_sum + $vote->rating;
+                                }
+                                $ratingPercentage = ($vote_sum/$sum)*100;
+                                $value = ($ratingPercentage/100)*5;
+                            }
+                                $this->widget('CStarRating',array(
+                                          'name'=>'star-rating',
+                                          'value'=>  round($value),
+                                          'minRating'=>1,
+                                          'maxRating'=>5,
+                                          'starCount'=>5,
+                                          'allowEmpty'=>FALSE,
+                                          'readOnly'=>Yii::app()->user->isGuest? TRUE : FALSE,
+                                          'callback'=>'function(){
+                                                        $.ajax({
+                                                            type: "POST",
+                                                            url: "'.CController::createUrl('rate').'",
+                                                            data: "rating=" + $(this).val()+"&product_id='.$product->product_id.'+&company_id='.$companyInformation->company_id.'",
+                                                            success: function(data){
+                                            }})}'
+
+                                        ));
+                                               ?>
+
+                <?php $this->endWidget(); ?>
+        </div>
+        <div class="quot">
+            <?php
+                $this->widget('application.extensions.fancybox.EFancyBox', array(
+                'target'=>'#rrr',
+                'config'=>array(),
+                    )
+                );
+            ?>
+            <?php echo CHtml::link('Quot', '#quot-form', array('id' => 'rrr')); ?>
+            <div id="quot-form" style="display: none;">
+                <?php echo CHtml::form('', 'post', array('id' => 'form_quot')) ?>
+                    Email:
+                    <?php
+                        if(!Yii::app()->user->isGuest){
+                            $member_id = UserIdentity::getMemberId();
+                            $member = Member::model()->findByPk($member_id);
+                            $email_value = $member->email;
+                        }
+                        else
+                            $email_value = ""
+                    ?>
+                    <?php echo CHtml::textField('email', $email_value, array('id'=> 'email-input', 'placeholder' => 'Email', 'readonly'=>$email_value? true : FALSE, 'type' => 'email')); ?>
+                    <div class="email-error"></div>
+                    <br/>
+                    <?php echo CHtml::hiddenField('to',$product->company->member_id); ?>
+                    Subject:
+                    <?php echo CHtml::textField('subject', '', array('id'=> 'subject-input', 'placeholder' => 'Subject')); ?>
+                    <div class="subject-error"></div>
+                    <br/>
+                    Message:
+                    <?php echo CHtml::textArea('message', '', array('id'=> 'message-input')); ?>
+                    <div class="message-error"></div>
+                    <br/>
+                    <?php $this->widget('CCaptcha'); ?>
+                    <?php echo CHtml::textField('verifyCode', '', array('id' => 'captcha-input')); ?>
+                    <div class="verifyCode-error"></div>
+                    <br/>
+                    <?php echo CHtml::ajaxSubmitButton('Send', array('site/quot'), array(
+                                               'type'=>'POST',
+//                                               'dataType'=>'json',
+                                               'beforeSend'=>'js:function(){
+                                                   var error = 0;
+                                                   var email = $("#email-input").val();
+                                                   if(email === ""){
+                                                       $(".email-error").html("Email cannot be blank");
+                                                       error = error + 1;
+                                                   }
+                                                   else{
+                                                       $(".email-error").html("");
+                                                   }
+                                                   var subject = $("#subject-input").val();
+                                                   if(subject === ""){
+                                                   $(".subject-error").html("Subject cannot be blank");
+                                                   error = error + 1;
+                                                   }
+                                                   else{
+                                                       $(".subject-error").html("");
+                                                   }
+                                                   var message = $("#message-input").val();
+                                                   if(message === ""){
+                                                   $(".message-error").html("Message cannot be blank");
+                                                   error = error + 1;
+                                                   }
+                                                   else{
+                                                       $(".message-error").html("");
+                                                   }
+                                                   var captcha = $("#captcha-input").val();
+                                                   if(captcha === ""){
+                                                   $(".verifyCode-error").html("Captcha cannot be blank");
+                                                   error = error + 1;
+                                                   }
+                                                   else{
+                                                       $(".verifyCode-error").html("");
+                                                   }
+                                                   if(error>0){
+                                                   return;
+                                                   }
+                                                }',
+                                               'complete'=>'js:function(data){
+                                                   }',
+                                               'success'=>'js:function(data){
+                                                   var text = JSON.parse(data);
+                                                   if(text.result==="success"){
+                                                      $.fancybox.close();
+                                                      $("#form_quot").trigger("reset");
+                                                   }
+                                                   else if(text.result === "incorrectCaptcha"){
+                                                     $(".verifyCode-error").html("Incorrect Captcha");
+                                                   }
+                                               }',
+                                            ), array('class' => "btn btn-default", 'style'=>'margin-bottom: 10px')); ?>
+                <?php echo CHtml::endForm() ?>
+            </div>
         </div>
     </div>
 </div>
+<br/>
 <div class="row">
     <div class="span9">
         <ul class="nav nav-tabs" id="details">
@@ -182,7 +321,88 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane" id="feedbacks">...</div>
+            <div class="tab-pane" id="feedbacks">
+                <div class="all-feedbacks">
+                    <h3><u>Feedbacks</u></h3>
+                    <hr style="margin-top: -10px">
+                    <?php
+                        foreach($allFeedbacks as $suggestion){
+                            ?>
+                    <div class="one-feedback">
+                    <?php
+                            echo "<font size='3px'>".$suggestion->feedback."</font><br/>";
+                            if (!empty($suggestion->member->middle_name)) {
+                                $full_name = $suggestion->member->first_name . " " . $suggestion->member->middle_name . " " . $suggestion->member->last_name;
+                            } else {
+                                $full_name = $suggestion->member->first_name . " " . $suggestion->member->last_name;
+                            }
+                            echo "<p align='right'><font size='1px'>".$full_name."</font></p><br/><hr>";
+                            ?>
+                        </div>
+                    <?php
+                        }
+                    ?>
+                </div>
+                <?php 
+                    if(!Yii::app()->user->isGuest){
+                        $this->widget('application.extensions.fancybox.EFancyBox', array(
+                            'target'=>'#feedback-link',
+                            'config'=>array(),
+                                )
+                            );
+                        echo CHtml::link('feed', '#feedback-form-div', array('id' => 'feedback-link'));
+                
+                        ?>
+                        <div  id="feedback-form-div" style="display: none;">
+                            <?php
+                                $form=$this->beginWidget('bootstrap.widgets.TbActiveForm', array(
+                                    'id'=>'feedback-form',
+                                    'action'=>'site/feedback',
+                                    'enableClientValidation'=>true,
+                                    'clientOptions'=>array(
+                                            'validateOnSubmit'=>true,
+                                    ),
+                                    )); ?>
+                                    <?php echo $form->hiddenField($feedback, 'product_id'); ?>
+                                    <?php echo $form->hiddenField($feedback, 'company_id'); ?>
+
+                                    <?php echo $form->textAreaRow($feedback,'feedback', array('id' => 'feedback-input')); ?>
+                                    <div class="feedback-error"></div>
+                                    <br/>
+
+                                    <?php echo CHtml::ajaxSubmitButton('Submit', array('site/feedback'), array(
+                                               'type'=>'POST',
+                                               'beforeSend'=>'js:function(){
+                                                   var feedback = $("#feedback-input").val();
+                                                   if(feedback === ""){
+                                                   $(".feedback-error").html("Feedback cannot be blank");
+                                                   return;
+                                                   }
+                                                }',
+                                               
+                                               'complete'=>'js:function(data){
+                                                   }',
+                                               'success'=>'js:function(data){
+                                                       $.fancybox.close();
+                                                       response = JSON.parse(data);
+                                                       if(response.status === "success"){
+                                                           var feedback = response.feedback;
+                                                           var proper_feedback = nl2br(feedback);
+                                                           $(".all-feedbacks").append("<font size=\"3px\">"+proper_feedback+"</font><br/>");
+                                                           $(".all-feedbacks").append("<p align=\"right\"><font size=\"1px\">"+response.member+"</font></p><br/>");
+                                                           $("#feedback-form").trigger("reset");
+                                                       }
+                                                   }',
+                                            ),
+                                            array('class' => 'btn btn-default')
+                                            ); 
+                                    ?>
+                            <?php $this->endWidget(); ?>
+                        </div><!-- form -->
+                    <?php
+                    }
+                    ?>
+            </div>
         </div>
     </div>
 </div>

@@ -31,7 +31,7 @@ $this->pageTitle = Yii::app()->name;
                     <div class="image">
                         <?php echo CHtml::link(CHtml::image(Yii::app()->createAbsoluteUrl('uploads/product/thumbs/' . $productImage->image)),array('/site/product/', 'view' => $product->slug)); ?>
                     </div>
-                    <h3>Accessories fashion all-match personality cutout leaves multi-layer </h3>
+                    <h3><?php echo $product->description; ?></h3>
                     <div class="cost">From <span class="price">US $<?php echo $product->price; ?></span> / Piece</div>
                     <div class="feedback">
                         <div class="rating">
@@ -49,6 +49,27 @@ $this->pageTitle = Yii::app()->name;
         ?>
     </ul>
     <div class="clearfix"></div>
+</div>
+
+<div class="all_products">
+    <?php
+$this->widget('bootstrap.widgets.TbThumbnails', array(
+    'dataProvider' => $dataProvider,
+    'ajaxUpdate' => false,
+    'itemView' => '_allproducts',
+    'summaryText' => '',
+    'template' => '{items}<br />{pager}',
+    'pagerCssClass' => 'pro-pagination',
+    'pager' => array(
+        'cssFile' => FALSE,
+        'header' => '',
+        'firstPageLabel' => '<<',
+        'prevPageLabel' => '<',
+        'nextPageLabel' => '>',
+        'lastPageLabel' => '>>',
+    ),
+));
+?>    
 </div>
 
 <script type="text/javascript">
