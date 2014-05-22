@@ -49,7 +49,7 @@ class Email extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('from, to, subject, message, attachment, status, trash, sent, created_at, modified_at, trashed_at, sent_at', 'required'),
+			array('from, to, subject, message, sent', 'required'),
 			array('to, status, trash', 'numerical', 'integerOnly'=>true),
 			array('from, subject, attachment', 'length', 'max'=>255),
 			// The following rule is used by search().
