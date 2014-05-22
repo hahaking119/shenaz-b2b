@@ -1,14 +1,17 @@
 <?php
 
 class SiteController extends Controller {
-
+    public $_id;
+    
     public function init() {
 
         parent::init();
         if (Yii::app()->user->isGuest)
             Yii::app()->theme = 'default';
-        else
-            Yii::app()->theme = 'classic';
+        else{
+//            Yii::app()->theme = 'classic';
+            Yii::app()->theme = 'default';
+        }
     }
 
     /**
@@ -37,9 +40,23 @@ class SiteController extends Controller {
      */
     public function actionIndex() {
         $recentProducts = Product::model()->findAll(array('order' => 'product_id DESC', 'limit' => 5));
+//        $allProducts = Product::model()->findAll('status = 1 and trash = 0', array('order' => 'name ASC'));
+        $dataProvider = new CActiveDataProvider('Product', array(
+                    'criteria' => array(
+                        'condition' => 'status=1 and trash=0',
+//                        'condition' => 'category_id=' . $category->category_id,
+                        'order' => 'product_id DESC'
+                    ),
+                    'pagination' => array(
+                        'pageSize' => 12,
+                    ),
+                ));
         // renders the view file 'protected/views/site/index.php'
         // using the default layout 'protected/views/layouts/main.php'
-        $this->render('index', array('recentProducts' => $recentProducts));
+        $this->render('index', array(
+            'recentProducts' => $recentProducts,
+            'dataProvider' => $dataProvider
+                ));
     }
 
     /**
@@ -128,12 +145,99 @@ class SiteController extends Controller {
         $companyInformation = CompanyInformation::model()->findByPk($product->company_id);
         $directoryInformation = DirectoryInformation::model()->findByAttributes(array('company_id' => $companyInformation->company_id));
         $images = ProductImage::model()->findAllByAttributes(array('product_id' => $product->product_id));
+        $allFeedbacks = Feedback::model()->findAll('product_id ='.$product->product_id.' and status = 1 and trash = 0', array('id ASC'));
+        $feedback = new Feedback;
+        $feedback->product_id = $product->product_id;
+        $feedback->company_id = $companyInformation->company_id;
+        if(!Yii::app()->user->isGuest){
+            $member_id = UserIdentity::getId();
+            $rating = Rating::model()->findAllByAttributes(array('product_id'=>$product->product_id));
+        if(empty($rating))
+            $rating  = new Rating;
+        }
+        else{
+            $rating = Rating::model()->findAllByAttributes(array('product_id'=>$product->product_id));
+            if(empty($rating))
+                $rating = new Rating;
+        }
+        $totalRating = Rating::model()->findAll();
         $this->render('_viewproduct', array(
             'product' => $product,
             'images' => $images,
             'companyInformation' => $companyInformation,
-            'directoryInformation' => $directoryInformation
+            'directoryInformation' => $directoryInformation,
+            'feedback' => $feedback,
+            'allFeedbacks' => $allFeedbacks,
+            'rating' => $rating,
+            'totalRating' => $totalRating
         ));
     }
+    
+    public function actionFeedback(){
+        $feedback = new Feedback;
+        $user_id = UserIdentity::getMemberId();
+        if(isset($_POST['Feedback'])){
+            $feedback->attributes = $_POST['Feedback'];
+            $feedback->member_id = $user_id;
+            $feedback->created_at = new CDbExpression('NOW()');
+            $feedback->modified_at = new CDbExpression('NOW()');
+            if($feedback->save()){
+                $result['feedback'] = $feedback->feedback;
+                if (!empty($feedback->member->middle_name)) {
+                    $full_name = $feedback->member->first_name . " " . $feedback->member->middle_name . " " . $feedback->member->last_name;
+                } else {
+                    $full_name = $feedback->member->first_name . " " . $feedback->member->last_name;
+                }
+                $result['member'] = $full_name;
+//                $result['created_at'] = $feedback->created_at;
+                $result['status'] = "success";
+                $return = htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+                echo $return;
+            }
+        }
+    }
+    
+    public function actionQuot(){
+            $captcha=Yii::app()->getController()->createAction("captcha");
+            $code = $captcha->verifyCode;
+            if($code === $_REQUEST['verifyCode']){
+                $model = new Email;
+                $model->from = $_POST['email'];
+                $model->to = $_POST['to'];
+                $model->subject = $_POST['subject'];
+                $model->message = $_POST['message'];
+                $model->sent = 0;
+                if($model->save()){
+                    $result['result'] = 'success';
+                    $return = htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+                    echo $return;
+                    Yii::app()->end();
+                }
+            }
+            else{
+                $result['result'] = 'incorrectCaptcha';
+                $return = htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+                echo $return;
+                Yii::app()->end();
+            }
+        }
+        
+        public function actionRate(){
+            $product_id = $_POST['product_id'];
+            $company_id = $_POST['company_id'];
+            $rating = $_POST['rating'];
+            $member_id = UserIdentity::getMemberId();
+            $rating = Rating::model()->findByAttributes(array('member_id'=>$member_id, 'product_id'=>$product_id, 'company_id'=>$company_id));
+            if(empty($rating)){
+                $rating = new Rating;
+            }
+            $rating->product_id = $_POST['product_id'];
+            $rating->company_id = $_POST['company_id'];
+            $rating->rating = $_POST['rating'];
+            $rating->member_id = UserIdentity::getMemberId();
+            if($rating->save())
+                echo 'rated';
+        }
+    
 
 }
