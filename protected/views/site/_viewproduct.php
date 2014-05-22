@@ -89,7 +89,7 @@
                     )
                 );
             ?>
-            <?php echo CHtml::link('Quot', '#quot-form', array('id' => 'rrr')); ?>
+            <?php echo CHtml::link('Contact Supplier', '#quot-form', array('id' => 'rrr')); ?>
             <div id="quot-form" style="display: none;">
                 <?php echo CHtml::form('', 'post', array('id' => 'form_quot')) ?>
                     Email:
@@ -350,7 +350,7 @@
                             'config'=>array(),
                                 )
                             );
-                        echo CHtml::link('feed', '#feedback-form-div', array('id' => 'feedback-link'));
+                        echo CHtml::link('Write Feedback', '#feedback-form-div', array('id' => 'feedback-link'));
                 
                         ?>
                         <div  id="feedback-form-div" style="display: none;">
