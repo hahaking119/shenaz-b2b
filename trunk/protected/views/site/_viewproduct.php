@@ -383,7 +383,6 @@
                                                'complete'=>'js:function(data){
                                                    }',
                                                'success'=>'js:function(data){
-                                                       $.fancybox.close();
                                                        response = JSON.parse(data);
                                                        if(response.status === "success"){
                                                            var feedback = response.feedback;
@@ -391,6 +390,7 @@
                                                            $(".all-feedbacks").append("<font size=\"3px\">"+proper_feedback+"</font><br/>");
                                                            $(".all-feedbacks").append("<p align=\"right\"><font size=\"1px\">"+response.member+"</font></p><br/>");
                                                            $("#feedback-form").trigger("reset");
+                                                           $.fancybox.close();
                                                        }
                                                    }',
                                             ),
