@@ -23,6 +23,7 @@ ul, ol{
 }
 a, a:hover, a:focus{
     text-decoration: none !important;
+    color: #333333!important;
 }
 h1, h2, h3{
     margin: 5px 0;
@@ -267,6 +268,9 @@ input[class="search-button"]{
     text-align: center;
     padding: 10px 0;
 }
+.all-products{
+    margin: 20px 0 0 0;
+}
 .gallery, .items{
     margin: 10px 0;
 }
@@ -461,4 +465,15 @@ div.subcategory dl{
 .feedback-error, .email-error, .subject-error, .message-error, .verifyCode-error{
     color: red;
     font-size: 0.9em;
+}
+
+/* --- Pagination --- */
+.pagination{
+    margin: 10px 0 !important;
+}
+.pagination.first, .pagination.previous{
+    display: block !important;
+}
+.first.hidden, .previous.hidden,.next.hidden, .last.hidden{    
+    visibility: visible !important;
 }

@@ -21,7 +21,8 @@
     <div class="container">
         <div class="row">
             <div class="span4">
-                <img src="<?php echo Yii::app()->createAbsoluteUrl(''); ?>" alt="b2b logo">
+                <!--<img src="<?php echo Yii::app()->createAbsoluteUrl(''); ?>" alt="b2b logo">-->
+                <a href="<?php echo Yii::app()->createAbsoluteUrl('site'); ?>">B2B Logo</a>
             </div>
             <div class="span8 search-bar pull-right">
                 <ul>
@@ -31,16 +32,6 @@
 
                             <span class="add-on">
                                 <?php echo chtml::dropDownList('Search[category]', '', array('' => 'All Categories') + CHtml::listData($categories, 'category_id', 'title')); ?>
-
-<!--                                All Categories
-                                <span class="caret"></span>
-                                <ul class="dropdown-menu pull-right" role="menu">
-                                    <li><a href="javascript:void(0);">Category 1</a></li>
-                                    <li><a href="javascript:void(0);">Category 2</a></li>
-                                    <li><a href="javascript:void(0);">Category 3</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="javascript:void(0);">Category 4</a></li>
-                                </ul>-->
                             </span>
                             <input class="search-button" type="submit" value="Search">
                         </div>
@@ -54,16 +45,15 @@
                     </li>
                     <li class="dropdown-login-box pull-right">
                         <?php
-                            if(Yii::app()->user->isGuest){
-                        ?>
-                        <a href="<?php echo Yii::app()->createAbsoluteUrl('site/login'); ?>">Sign In</a>
-                        <?php 
-                            }
-                            else{
-                                ?>
-                        <a href="<?php echo Yii::app()->createAbsoluteUrl('site/logout'); ?>">Logout</a>
-                                    <?php
-                            }
+                        if (Yii::app()->user->isGuest) {
+                            ?>
+                            <a href="<?php echo Yii::app()->createAbsoluteUrl('site/login'); ?>">Sign In</a>
+                            <?php
+                        } else {
+                            ?>
+                            <a href="<?php echo Yii::app()->createAbsoluteUrl('site/logout'); ?>">Logout</a>
+                            <?php
+                        }
                         ?>| <a href="javascript:void(0);">Join</a><span class="caret"></span>
                     </li>
                 </ul>

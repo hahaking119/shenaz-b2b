@@ -51,15 +51,15 @@ $this->pageTitle = Yii::app()->name;
     <div class="clearfix"></div>
 </div>
 
-<div class="all_products">
+<div class="all-products">
     <?php
 $this->widget('bootstrap.widgets.TbThumbnails', array(
     'dataProvider' => $dataProvider,
     'ajaxUpdate' => false,
     'itemView' => '_allproducts',
     'summaryText' => '',
-    'template' => '{items}<br />{pager}',
-    'pagerCssClass' => 'pro-pagination',
+    'template' => '{items}{pager}',
+    'pagerCssClass' => 'pagination',
     'pager' => array(
         'cssFile' => FALSE,
         'header' => '',

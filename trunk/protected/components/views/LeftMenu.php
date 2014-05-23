@@ -24,7 +24,7 @@
                                 if (!empty($level_2_categories)) {
                                     echo "<dd class = 'level_2_category'>";
                                     foreach ($level_2_categories as $level_2_category) {
-                                        echo CHtml::link($level_2_category->title, "#");
+                                        echo CHtml::link($level_2_category->title, Yii::app()->createAbsoluteUrl('site/menu/view/'.$level_2_category->slug));
                                     }
                                     echo "</dd>";
                                     ?>
