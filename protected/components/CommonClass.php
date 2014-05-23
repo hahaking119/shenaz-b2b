@@ -16,7 +16,7 @@ class CommonClass extends CComponent {
         $rep_string = str_replace(" ", "-", trim($new_string));
         $rep_string = preg_replace('/-+/', '-', $rep_string);
         $ret_string = preg_replace('/\'/', '', $rep_string);
-        return $ret_string . '-' . date('ymdhms');
+        return $ret_string;
     }
 
     public static function getImageResizeDetails($case) {

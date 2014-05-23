@@ -4,8 +4,8 @@ $this->widget('bootstrap.widgets.TbThumbnails', array(
     'ajaxUpdate' => false,
     'itemView' => '_gridview',
     'summaryText' => '',
-    'template' => '{items}<br />{pager}',
-    'pagerCssClass' => 'pro-pagination',
+    'template' => '{items}{pager}',
+    'pagerCssClass' => 'pagination',
     'pager' => array(
         'cssFile' => FALSE,
         'header' => '',

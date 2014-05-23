@@ -35,7 +35,9 @@
             <?php echo $content; ?>
         </div>
         <div id="footer">
-            Copyright &copy; <?php echo date('Y'); ?>. All rights reserved.
+            <div class="container">
+                Copyright &copy; <?php echo date('Y'); ?>. All rights reserved.
+            </div>
         </div>
         <script type="text/javascript">
             $(document).ready(function() {
