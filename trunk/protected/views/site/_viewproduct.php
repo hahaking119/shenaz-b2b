@@ -1,4 +1,4 @@
-<div class="statusMsg"></div>
+<div id="statusMsg"></div>
 <div class="row">
     <div class="span3">
         <div class="image-box">
@@ -431,7 +431,6 @@
             $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
             }else{
             $('#shopcart').load('<?php echo $this->createUrl("/site/getcart"); ?>');
-            $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
             }
             },
             complete: function(){
@@ -445,8 +444,3 @@
             });
     }
 </script>
-<?php
-    //This is the way to create session.
-//    Yii::app()->session['name']="sudeep";
-//    echo Yii::app()->session['name']
-?>
