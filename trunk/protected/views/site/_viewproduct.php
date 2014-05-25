@@ -1,3 +1,4 @@
+<div class="statusMsg"></div>
 <div class="row">
     <div class="span3">
         <div class="image-box">
@@ -35,9 +36,12 @@
             ?> / per unit.
         </div>
         <div class="add-to-cart">
-            <?php echo CHtml::form('', 'get') ?>
-            <?php echo CHtml::textField('qty','',array('id' => 'quantity','placeholder' => 'Quantity', 'style' => 'width: 60px')); ?>
-            <?php echo CHtml::ajaxButton('Add to cart', array('site/add_to_cart', 'product_id' => $product->product_id, 'qty' => 'js:function(){$("#quantity").val();}'), '', array('class' => "btn btn-default", 'style'=>'margin-bottom: 10px')); ?>
+            <?php echo CHtml::form('', 'post', array('id' => 'add-to-cart-form')) ?>
+            <?php // echo CHtml::textField('qty','',array('id' => 'quantity','placeholder' => 'Quantity', 'style' => 'width: 60px')); ?>
+            <?php echo CHtml::hiddenField('product_id', $product->product_id); ?>
+            <?php echo CHtml::numberField('qty', '1', array('id' => 'quantity', 'size' => 3, 'class' => 'span1 pull-left', 'name' => 'amount', 'min' => 1)); ?>
+            <?php // echo CHtml::ajaxButton('Add to cart', array('site/add_to_cart', 'product_id' => $product->product_id, 'qty' => 'js:function(){$("#quantity").val();}'), '', array('class' => "btn btn-default", 'style'=>'margin-bottom: 10px')); ?>
+            <?php echo CHtml::button('Add to cart', array('id' => 'add-btn', 'class' => "btn btn-default", 'style'=>'margin-bottom: 10px', 'onclick' => 'Add2Cart();')); ?>
             <?php echo CHtml::endForm() ?>
         </div>
         <div class="rating">
@@ -81,7 +85,7 @@
 
                 <?php $this->endWidget(); ?>
         </div>
-        <div class="quot">
+        <div class="contact">
             <?php
                 $this->widget('application.extensions.fancybox.EFancyBox', array(
                 'target'=>'#rrr',
@@ -89,9 +93,9 @@
                     )
                 );
             ?>
-            <?php echo CHtml::link('Contact Supplier', '#quot-form', array('id' => 'rrr')); ?>
-            <div id="quot-form" style="display: none;">
-                <?php echo CHtml::form('', 'post', array('id' => 'form_quot')) ?>
+            <?php echo CHtml::link('Contact Supplier', '#contact-form', array('id' => 'rrr')); ?>
+            <div id="contact-form" style="display: none;">
+                <?php echo CHtml::form('', 'post', array('id' => 'contact-form')) ?>
                     Email:
                     <?php
                         if(!Yii::app()->user->isGuest){
@@ -413,8 +417,40 @@
             $(this).tab('show');
         });
     });
+    
+    function Add2Cart(){
+        var data = $('#add-to-cart-form').serialize();
+        $('#add-btn').val('Adding ... ').attr('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo Yii::app()->createUrl("site/Add_to_cart"); ?>',
+            data: data,
+            success:function(data){
+            if(data == 'illegal'){
+            data = '<strong>Illegal quantity given.</strong>';
+            $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
+            } else if(data == 'product cannot be added'){
+            $('#statusMsg').html('Your cart contains offers. Please proceed to check out.');
+            $('#statusMsg').addClass("floating_msg alert alert-error");
+            alert('Your cart contains offers. Please proceed to check out.');
+            }else{
+//            $('#shopcart').load('<?php echo $this->createUrl("/shop/shoppingCart/getcart"); ?>');
+//            $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
+            }
+            },
+            complete: function(){
+            $('#add-btn').val('Add to Cart').attr('disabled', false);
+            },
+            error: function(data) { // if error occured
+            alert("Error occured.please try again");
+            },
+
+            dataType:'html'
+            });
+    }
 </script>
 <?php
     //This is the way to create session.
-    $session = Yii::app()->session['name']="sudeep";
+//    Yii::app()->session['name']="sudeep";
+//    echo Yii::app()->session['name']
 ?>
