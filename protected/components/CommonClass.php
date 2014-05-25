@@ -111,5 +111,13 @@ class CommonClass extends CComponent {
         }
         return $string = strip_tags($string);
     }
+    
+    public static function getTotalPriceFormat($price){
+        if(Yii::app()->user->isGuest){
+            return "R ".$price;
+        }else{
+            return $this->getPriceFormat(Yii::app()->user->id).$price;
+        }
+    }
 
 }

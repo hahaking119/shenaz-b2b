@@ -39,6 +39,9 @@
                     <li class="nav-cart span1">
                         <a id="shop-cart" rel="nofollow" href="javascript:void(0);">Cart</a>
                         <span id="nav-cart-num" style="display:none">0</span>
+                            <?php
+                            $this->widget('application.components.ShoppingCartWidget');
+                            ?>
                     </li>
                     <li class="nav-wishlist">
                         <a id="wish-list" rel="nofollow" href="javascript:void(0);">Wish List</a>
