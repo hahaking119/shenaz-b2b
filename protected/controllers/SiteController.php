@@ -283,4 +283,15 @@ class SiteController extends Controller {
                 print_r(Yii::app()->session['shopping_list']);
             }
         }
+        
+        public function actionGetcart(){
+            Yii::app()->clientScript->scriptMap['jquery.js'] = false;
+            Yii::app()->clientScript->scriptMap['jquery.yiiactiveform.js'] = false;
+            Yii::app()->clientScript->scriptMap['bootstrap-transition.js'] = false;
+            Yii::app()->clientScript->scriptMap['bootstrap-tooltip.js'] = false;
+            Yii::app()->clientScript->scriptMap['bootstrap-popover.js'] = false;
+            Yii::app()->clientScript->scriptMap['bootstrap-modal.js'] = false;
+            Yii::app()->clientScript->scriptMap['bootstrap-alert.js'] = false;
+            $this->renderPartial('cart', '', false, true);
+        }
 }
