@@ -138,5 +138,10 @@ class Product extends CActiveRecord {
                     'criteria' => $criteria,
                 ));
     }
+    
+    public function getPrice($id){
+        $model = Product::findByPk($id);
+        return $model->price;
+    }
 
 }
