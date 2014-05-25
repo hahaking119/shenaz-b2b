@@ -259,8 +259,6 @@ class SiteController extends Controller {
 
         
         public function actionAdd_to_cart(){
-//            $product_id = $_POST['product_id'];
-//            $quantity = $_POST['qty'];
             $cart = Yii::app()->session['shopping_list'];
             if (!is_numeric($_POST['qty']) || $_POST['qty'] <= 0) {
                 Yii::app()->user->setFlash('error', '<strong>Illegal quantity given.</strong>');
@@ -280,7 +278,6 @@ class SiteController extends Controller {
                     $cart[] = $_POST;                    
                 }
                 Yii::app()->session['shopping_list'] = $cart;
-                print_r(Yii::app()->session['shopping_list']);
             }
         }
         
