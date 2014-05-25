@@ -257,4 +257,30 @@ class SiteController extends Controller {
             echo 'rated';
     }
 
+        
+        public function actionAdd_to_cart(){
+//            $product_id = $_POST['product_id'];
+//            $quantity = $_POST['qty'];
+            $cart = Yii::app()->session['shopping_list'];
+            if (!is_numeric($_POST['qty']) || $_POST['qty'] <= 0) {
+                Yii::app()->user->setFlash('error', '<strong>Illegal quantity given.</strong>');
+                echo 'illegal';
+                Yii::app()->end();
+            }
+            if(Yii::app()->user->isGuest){
+                foreach ($cart as $key => $value) {
+                    if ($value['product_id'] == $_POST['product_id']) {
+                        $cart_index = $key;
+                    }
+                }
+                if (isset($cart_index)) {
+                    $cart[$cart_index]['qty'] += $_POST['qty'];
+                }
+                else{
+                    $cart[] = $_POST;                    
+                }
+                Yii::app()->session['shopping_list'] = $cart;
+                print_r(Yii::app()->session['shopping_list']);
+            }
+        }
 }
