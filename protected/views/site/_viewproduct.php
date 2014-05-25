@@ -429,13 +429,9 @@
             if(data == 'illegal'){
             data = '<strong>Illegal quantity given.</strong>';
             $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
-            } else if(data == 'product cannot be added'){
-            $('#statusMsg').html('Your cart contains offers. Please proceed to check out.');
-            $('#statusMsg').addClass("floating_msg alert alert-error");
-            alert('Your cart contains offers. Please proceed to check out.');
             }else{
-//            $('#shopcart').load('<?php echo $this->createUrl("/shop/shoppingCart/getcart"); ?>');
-//            $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
+            $('#shopcart').load('<?php echo $this->createUrl("/site/getcart"); ?>');
+            $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
             }
             },
             complete: function(){
