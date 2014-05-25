@@ -23,7 +23,7 @@ ul, ol{
 }
 a, a:hover, a:focus{
     text-decoration: none !important;
-    color: #333333!important;
+    color: #999999!important;
 }
 h1, h2, h3{
     margin: 5px 0;
@@ -107,10 +107,10 @@ input[class="search-button"]{
     padding-left: 6px;
     width: 52px !important;
 }
-.nav-cart a{
+.nav-cart a#shop-cart{
     margin-left: 43px;
 }
-.nav-cart a {
+.nav-cart a#shop-cart{
     background: url("../images/top-header-sprite.png?t=ee445e01_0") no-repeat scroll -212px -92px rgba(0, 0, 0, 0);
 }
 .nav-wishlist{
@@ -124,14 +124,15 @@ input[class="search-button"]{
 .nav-cart a, .nav-wishlist a {
     color: #FFFFFF;
     float: left;
-    height: 18px;
+    /*height: 18px;*/
     padding: 26px 15px 0;
+    /*background-color: #000000;*/
 }
-.nav-cart a:hover, .nav-wishlist a:hover {
+/*.nav-cart a:hover, .nav-wishlist a:hover {
     height: 18px;
     background-color: #000000;
     color: #FFFFFF;
-}
+}*/
 .nav-wishlist a:hover {
     width: 60px;
 }
@@ -466,6 +467,10 @@ div.subcategory dl{
     color: red;
     font-size: 0.9em;
 }
+.all-feedbacks{
+    height: 500px;
+    overflow: scroll;
+}
 
 /* --- Pagination --- */
 .pagination{
@@ -476,4 +481,25 @@ div.subcategory dl{
 }
 .first.hidden, .previous.hidden,.next.hidden, .last.hidden{    
     visibility: visible !important;
+}
+li.nav-cart div#shopcart{
+    display: none;
+}
+li.nav-cart:hover div#shopcart{
+    display: block;
+    position: relative;
+    top: 43px;
+    width: 300px;
+    z-index: 1;
+    /*border: 1px solid black;*/
+    box-shadow: 10px 10px 5px #888888;
+    background-color: #CCCCCC;
+}
+.basket{
+    border-top: 1px solid #666666;
+    text-align: right;
+}
+a#button, a#button:hover, a#button:focus{
+    color: #000000 !important;
+    margin-top: 5px !important;
 }
