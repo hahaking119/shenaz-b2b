@@ -502,5 +502,5 @@ li.nav-cart:hover div#shopcart{
     padding: 10px;
     width: 300px;
     position: relative;
-    background: none repeat scroll 0 0 rgb(237, 237, 237);
+    /*background: none repeat scroll 0 0 rgb(237, 237, 237);*/
 }

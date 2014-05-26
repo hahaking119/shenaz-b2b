@@ -2,29 +2,48 @@
 
 class ShoppingCartController extends CController {
 
-    public function actionAddToCart() {
-        if (isset(Yii::app()->session['shopping_list'])) {
-            $cart = Yii::app()->session['shopping_list'];
-        } else {
-            $cart = '';
+    public function init() {
+
+        parent::init();
+        if (Yii::app()->user->isGuest)
+            Yii::app()->theme = 'default';
+        else {
+//            Yii::app()->theme = 'classic';
+            Yii::app()->theme = 'default';
         }
+    }
+
+    public $layout = '//layouts/column2';
+
+    public function actionAddToCart() {
+        $cart = Yii::app()->session['shopping_list'];
 
         if (!is_numeric($_POST['qty']) || $_POST['qty'] <= 0) {
             Yii::app()->user->setFlash('error', '<strong>Illegal quantity given.</strong>');
             echo 'illegal';
             Yii::app()->end();
-        }
-        foreach ($cart as $key => $value) {
-            if ($value['product_id'] == $_POST['product_id']) {
-                $cart_index = $key;
-            }
-            if (isset($cart_index)) {
-                $cart[$cart_index]['qty'] += $_POST['qty'];
+        } else {
+            // remove potential clutter
+            if (isset($_POST['yt0']))
+                unset($_POST['yt0']);
+            if (isset($_POST['yt1']))
+                unset($_POST['yt1']);
+            if (!empty($cart)) {
+                foreach ($cart as $key => $value) {
+                    if ($value['product_id'] == $_POST['product_id']) {
+                        $cart_index = $key;
+                    }
+                }
+                if (isset($cart_index)) {
+                    $cart[$cart_index]['qty'] += $_POST['qty'];
+                } else {
+                    $cart[] = $_POST;
+                }
             } else {
                 $cart[] = $_POST;
             }
+            Yii::app()->session['shopping_list'] = $cart;
         }
-        Yii::app()->session['shopping_list'] = $cart;
     }
 
     public function actionGetCartItems() {
@@ -38,4 +57,22 @@ class ShoppingCartController extends CController {
         $this->renderPartial('cart', '', false, true);
     }
 
+    public function actionView() {
+        $products = Yii::app()->session['shopping_list'];
+        $this->render('view', array('products' => $products));
+    }
+
+    public function actionRemove(){
+        if(isset($_POST['product_id'])){
+            $cart = Yii::app()->session['shopping_list'];
+            foreach ($cart as $key => $value) {
+                    if ($value['product_id'] == $_POST['product_id']) {
+                        $cart_index = $key;
+                    }
+                }
+                if (isset($cart_index)) {
+                    unset($cart[$cart_index]);
+                }
+        }
+    }
 }
