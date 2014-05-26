@@ -123,6 +123,7 @@ class SiteController extends Controller {
      */
     public function actionLogout() {
         Yii::app()->user->logout(false);
+        unset(Yii::app()->session['shopping_list']);
         $this->redirect(Yii::app()->homeUrl);
     }
 
@@ -136,16 +137,21 @@ class SiteController extends Controller {
                 foreach ($child_categories as $child_category) {
                     $category_id[] = $child_category->category_id;
                     $sub_categories = Category::model()->findAllByAttributes(array('parent_id' => $child_category->category_id, 'status' => 1, 'trash' => 0));
-                    if(is_array($sub_categories)){
-                        foreach($sub_categories as $sub_category){
+                    if (is_array($sub_categories)) {
+                        foreach ($sub_categories as $sub_category) {
                             $category_id[] = $sub_category->category_id;
                         }
                     }
                 }
             }
-        }
-        else{
+            $banners = CategoryBanner::model()->findAllByAttributes(array('category_id' => $category->category_id));
+        } else {
             $category_id[] = $category->category_id;
+            $child_categories = Category::model()->findAllByAttributes(array('parent_id' => $category->category_id, 'status' => 1, 'trash' => 0));
+            foreach ($child_categories as $child_category) {
+                $category_id[] = $child_category->category_id;
+            }
+            $banners = array();
         }
         $crietria = new CDbCriteria();
         $crietria->addInCondition('category_id', $category_id);
@@ -156,7 +162,7 @@ class SiteController extends Controller {
                         'pageSize' => 12,
                     ),
                 ));
-        $this->render('view', array('dataProvider' => $dataProvider));
+        $this->render('view', array('dataProvider' => $dataProvider, 'banners' => $banners));
     }
 
     public function actionproduct($view) {
@@ -257,38 +263,9 @@ class SiteController extends Controller {
             echo 'rated';
     }
 
-        
-        public function actionAdd_to_cart(){
-            $cart = Yii::app()->session['shopping_list'];
-            if (!is_numeric($_POST['qty']) || $_POST['qty'] <= 0) {
-                Yii::app()->user->setFlash('error', '<strong>Illegal quantity given.</strong>');
-                echo 'illegal';
-                Yii::app()->end();
-            }
-            if(Yii::app()->user->isGuest){
-                foreach ($cart as $key => $value) {
-                    if ($value['product_id'] == $_POST['product_id']) {
-                        $cart_index = $key;
-                    }
-                }
-                if (isset($cart_index)) {
-                    $cart[$cart_index]['qty'] += $_POST['qty'];
-                }
-                else{
-                    $cart[] = $_POST;                    
-                }
-                Yii::app()->session['shopping_list'] = $cart;
-            }
-        }
-        
-        public function actionGetcart(){
-            Yii::app()->clientScript->scriptMap['jquery.js'] = false;
-            Yii::app()->clientScript->scriptMap['jquery.yiiactiveform.js'] = false;
-            Yii::app()->clientScript->scriptMap['bootstrap-transition.js'] = false;
-            Yii::app()->clientScript->scriptMap['bootstrap-tooltip.js'] = false;
-            Yii::app()->clientScript->scriptMap['bootstrap-popover.js'] = false;
-            Yii::app()->clientScript->scriptMap['bootstrap-modal.js'] = false;
-            Yii::app()->clientScript->scriptMap['bootstrap-alert.js'] = false;
-            $this->renderPartial('cart', '', false, true);
-        }
+    public function actionView_all() {
+        $categories = Category::model()->findAll('parent_id = 0 AND status = 1 AND trash = 0');
+        $this->render('_listcategories', array('categories' => $categories));
+    }
+
 }

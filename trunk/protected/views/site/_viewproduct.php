@@ -39,7 +39,7 @@
             <?php echo CHtml::form('', 'post', array('id' => 'add-to-cart-form')) ?>
             <?php // echo CHtml::textField('qty','',array('id' => 'quantity','placeholder' => 'Quantity', 'style' => 'width: 60px')); ?>
             <?php echo CHtml::hiddenField('product_id', $product->product_id); ?>
-            <?php echo CHtml::numberField('qty', '1', array('id' => 'quantity', 'size' => 3, 'class' => 'span1 pull-left', 'name' => 'amount', 'min' => 1)); ?>
+            <?php echo CHtml::textField('qty', '1', array('id' => 'quantity', 'size' => 3, 'class' => 'span1 pull-left', 'name' => 'amount', 'min' => 1, 'type'=> 'number')); ?>
             <?php // echo CHtml::ajaxButton('Add to cart', array('site/add_to_cart', 'product_id' => $product->product_id, 'qty' => 'js:function(){$("#quantity").val();}'), '', array('class' => "btn btn-default", 'style'=>'margin-bottom: 10px')); ?>
             <?php echo CHtml::button('Add to cart', array('id' => 'add-btn', 'class' => "btn btn-default", 'style'=>'margin-bottom: 10px', 'onclick' => 'Add2Cart();')); ?>
             <?php echo CHtml::endForm() ?>
@@ -423,14 +423,16 @@
         $('#add-btn').val('Adding ... ').attr('disabled', true);
         $.ajax({
             type: 'POST',
-            url: '<?php echo Yii::app()->createUrl("site/Add_to_cart"); ?>',
+            url: '<?php echo Yii::app()->createUrl("shoppingCart/addToCart"); ?>',
             data: data,
             success:function(data){
             if(data == 'illegal'){
             data = '<strong>Illegal quantity given.</strong>';
             $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
             }else{
-            $('#shopcart').load('<?php echo $this->createUrl("/site/getcart"); ?>');
+//            $('#shopcart').load('<?php echo $this->createUrl("/site/getcart"); ?>');
+            $('#shopcart').load('<?php echo $this->createUrl("shoppingCart/getCartItems"); ?>');
+//            $("#statusMsg").html(data).fadeIn().animate({opacity: 1.0}, 3000).fadeOut("slow");
             }
             },
             complete: function(){

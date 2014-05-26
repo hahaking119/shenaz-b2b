@@ -1,3 +1,4 @@
+<?php if($data->product->status == 1 && $data->product->trash == 0){ ?>
 <li>
     <a href="<?php echo Yii::app()->createAbsoluteUrl('site/product/view/' . $data->product->slug); ?>">
         <div class="image">
@@ -14,4 +15,5 @@
         </div>
     </a>
 </li>
+<?php } ?>
 
