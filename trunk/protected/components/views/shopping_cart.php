@@ -5,6 +5,8 @@
                 ''),array('id' => 'my-cart-link-text')) . '</h3><p>Your shopping cart is empty.</p>';
         } else {
             if (isset(Yii::app()->session['shopping_list']) && !empty(Yii::app()->session['shopping_list'])) {
+                echo '<h3 class="span4">' . CHtml::link('My Cart', array(
+                ''),array('id' => 'my-cart-link-text')) . '</h3>';
                 static $price = 0;
                 foreach ($products as $product) {
                     $item = Product::model()->findByAttributes(array('product_id' => $product['product_id']));
