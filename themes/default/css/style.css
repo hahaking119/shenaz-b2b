@@ -500,7 +500,39 @@ li.nav-cart:hover div#shopcart{
     display: block;
     margin-top: 44px;
     padding: 10px;
-    width: 300px;
+    width: 310px;
     position: relative;
-    /*background: none repeat scroll 0 0 rgb(237, 237, 237);*/
+    background: none repeat scroll 0 0 rgb(237, 237, 237);
+    z-index: 1;
+    box-shadow: 10px 10px 5px #888888;
+}
+div#shopcart #shopping-cart a#my-cart-link-text{
+    margin-top: -40px;
+    margin-left: 70px;
+    color: #0088cc !important;
+    font-size: 18px;
+}
+div#shopcart #shopping-cart a#my-cart-link-text:hover{
+    color: #005580 !important;
+}
+div#shopcart #shopping-cart p{
+    clear: both;
+    text-align: center;
+}
+.basket>.span2, .basket>.span1{
+    /*background: #FF6600;*/
+    border-top: 1px solid #666666;
+}
+.cart-buttons div a#button{
+    padding: 5px !important;
+    margin: 10px 5px 5px 5px !important;
+    color: #ffffff !important;
+}
+#owl-carousel .item{
+    height:  250px;
+    overflow: hidden;
+}
+#owl-carousel .item img{
+    display: block;
+    width: 100%;
 }
