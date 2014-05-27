@@ -501,27 +501,32 @@ li.nav-cart:hover div#shopcart{
     margin-top: 44px;
     padding: 10px;
     width: 310px;
+    border-top: 2px outset #F5F2F2;
     position: relative;
     background: none repeat scroll 0 0 rgb(237, 237, 237);
     z-index: 1;
-    box-shadow: 10px 10px 5px #888888;
+    box-shadow: 10px 10px 5px rgba(0,0,0,0.3);
 }
 div#shopcart #shopping-cart a#my-cart-link-text{
     margin-top: -40px;
-    margin-left: 70px;
+    margin-left: 100px;
     color: #0088cc !important;
     font-size: 18px;
 }
 div#shopcart #shopping-cart a#my-cart-link-text:hover{
     color: #005580 !important;
 }
+div#shopcart div#shopping-cart{
+    width:316px;
+}
 div#shopcart #shopping-cart p{
     clear: both;
     text-align: center;
 }
-.basket>.span2, .basket>.span1{
-    /*background: #FF6600;*/
+.list>.span2, .list>.span1, .basket>.span2, .basket>.span1{
     border-top: 1px solid #666666;
+    border-left: 1px dotted #DDDDDD;
+    border-right: 1px dotted #DDDDDD;
 }
 .cart-buttons div a#button{
     padding: 5px !important;
