@@ -124,6 +124,8 @@ class SiteController extends Controller {
     public function actionLogout() {
         Yii::app()->user->logout(false);
         unset(Yii::app()->session['shopping_list']);
+        unset(Yii::app()->session['billingInfo']);
+        unset(Yii::app()->session['shippingInfo']);
         $this->redirect(Yii::app()->homeUrl);
     }
 
@@ -267,4 +269,5 @@ class SiteController extends Controller {
         $categories = Category::model()->findAll('parent_id = 0 AND status = 1 AND trash = 0');
         $this->render('_listcategories', array('categories' => $categories));
     }
+
 }

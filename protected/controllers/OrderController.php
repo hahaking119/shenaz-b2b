@@ -15,7 +15,7 @@ class OrderController extends CController {
 
     public $layout = '//layouts/column2';
 
-    public function beforeAction($action) {
+    public function beforeAction() {
         if (Yii::app()->user->isGuest) {
             $this->redirect(Yii::app()->createAbsoluteUrl('site/login'));
             Yii::app()->end();
@@ -29,17 +29,27 @@ class OrderController extends CController {
         $companyInformation = CompanyInformation::model()->findByAttributes(array('member_id' => Yii::app()->user->getId()));
         $billingInformation = new BillingInformation();
         $shippingInformation = new ShippingInformation();
-
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'order-form') {
-            if (isset($_POST['BillingInformation'])) {
-                echo CActiveForm::validate(array($billingInformation));
-                Yii::app()->end();
-            }
-//            echo CActiveForm::validate(array($order, $billingInformation, $shippingInformation));
-//            Yii::app()->end();
-        }
         if (isset(Yii::app()->session['billingInfo'])) {
             $billingInfo = Yii::app()->session['billingInfo'];
+            $billingInformation = $billingInfo;
+        }
+        if (isset(Yii::app()->session['ShippingInfo'])) {
+            $shippingInfo = Yii::app()->session['ShippingInfo'];
+            $shippingInformation = $shippingInfo;
+        }
+        if (isset(Yii::app()->session['shippingMethod'])) {
+            $shippingMethod = Yii::app()->session['shippingMethod'];
+        }
+
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'order-form') {
+            if (isset($_POST['BillingInformation']) && !empty($billingInfo)) {
+                echo CActiveForm::validate(array($billingInformation));
+            }
+            if (isset($_POST['ShippingInformation'])) {
+                echo CActiveForm::validate(array($shippingInformation));
+            }
+//            echo CActiveForm::validate(array($order, $billingInformation, $shippingInformation));
+            Yii::app()->end();
         }
 
         if (isset($_POST['BillingInformation'])) {
@@ -51,6 +61,22 @@ class OrderController extends CController {
             } else {
                 Yii::app()->session['billingInfo'] = $billingInformation;
             }
+        }
+        if (isset($_POST['ShippingInformation'])) {
+            $shippingInformation->attributes = $_POST['ShippingInformation'];
+            if (!$shippingInformation->validate()) {
+                if (isset(Yii::app()->session['ShippingInfo'])) {
+                    unset(Yii::app()->session['ShippingInfo']);
+                }
+            } else {
+                Yii::app()->session['shippingInfo'] = $shippingInformation;
+            }
+        }
+        if (isset($_POST['Order']['shipping_method'])) {
+            Yii::app()->session['shippingMethod'] = $_POST['Order']['shipping_method'];
+        }
+        if (isset($_POST['Order']['payment_method'])) {
+            Yii::app()->session['paymentMethod'] = $_POST['Order']['payment_method'];
         }
         $this->render('_form', array(
             'order' => $order,

@@ -44,7 +44,7 @@ class Order extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('shipping_method, payment_method, total', 'required'),
+//            array('shipping_method', 'required'),
             array('shipping_method, payment_method, status, trash', 'numerical', 'integerOnly' => true),
             array('total', 'numerical'),
             // The following rule is used by search().
