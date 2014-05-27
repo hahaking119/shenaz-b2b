@@ -40,7 +40,7 @@ class SiteController extends Controller {
      * when an action is not explicitly requested by users.
      */
     public function actionIndex() {
-        $recentProducts = Product::model()->findAll(array('order' => 'product_id DESC', 'limit' => 5));
+        $recentProducts = Product::model()->findAll(array('order' => 'product_id DESC', 'limit' => 10));
 //        $allProducts = Product::model()->findAll('status = 1 and trash = 0', array('order' => 'name ASC'));
         $dataProvider = new CActiveDataProvider('Product', array(
                     'criteria' => array(
@@ -229,16 +229,18 @@ class SiteController extends Controller {
         $code = $captcha->verifyCode;
         if ($code === $_REQUEST['verifyCode']) {
             $model = new Email;
-            $model->from = $_POST['email'];
+            $model->from = Yii::app()->user->isGuest? '' : UserIdentity::getMemberId();
+            $model->from_email = Yii::app()->user->isGuest? $_POST['email'] : '';
             $model->to = $_POST['to'];
             $model->subject = $_POST['subject'];
             $model->message = $_POST['message'];
-            $model->sent = 0;
             if ($model->save()) {
                 $result['result'] = 'success';
                 $return = htmlspecialchars(json_encode($result), ENT_NOQUOTES);
                 echo $return;
                 Yii::app()->end();
+            }else{
+                echo "an error occured.";
             }
         } else {
             $result['result'] = 'incorrectCaptcha';
