@@ -47,7 +47,7 @@ class ShippingInformation extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('order_id, first_name, last_name, email, company, phone, area_code, area, province, country', 'required'),
+			array('first_name, last_name, email, company, phone, area_code, area, province, country', 'required'),
 			array('order_id', 'numerical', 'integerOnly'=>true),
 			array('first_name, last_name, email, company, phone, area_code, area, province, country', 'length', 'max'=>255),
 			// The following rule is used by search().
