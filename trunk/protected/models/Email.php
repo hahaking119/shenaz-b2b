@@ -38,7 +38,6 @@ class Email extends CActiveRecord {
     public function tableName() {
         return 'email';
     }
-
     /**
      * @return array validation rules for model attributes.
      */
@@ -47,7 +46,7 @@ class Email extends CActiveRecord {
         // will receive user inputs.
         return array(
             array('from, to, subject, message', 'required'),
-            array('to, status, trash, read', 'numerical', 'integerOnly' => true),
+            array('to, status, trash, read, sent', 'numerical', 'integerOnly' => true),
             array('from, subject, attachment', 'length', 'max' => 255),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
@@ -65,27 +64,28 @@ class Email extends CActiveRecord {
             'to0' => array(self::BELONGS_TO, 'Member', 'to'),
         );
     }
-
-    /**
-     * @return array customized attribute labels (name=>label)
-     */
-    public function attributeLabels() {
-        return array(
-            'email_id' => 'Email',
-            'from' => 'From',
-            'to' => 'To',
-            'subject' => 'Subject',
-            'message' => 'Message',
-            'attachment' => 'Attachment',
-            'status' => 'Status',
-            'trash' => 'Trash',
-            'sent' => 'Sent',
-            'created_at' => 'Created At',
-            'modified_at' => 'Modified At',
-            'trashed_at' => 'Trashed At',
-            'sent_at' => 'Sent At',
-        );
-    }
+	/**
+	 * @return array customized attribute labels (name=>label)
+	 */
+	public function attributeLabels()
+	{
+		return array(
+			'email_id' => 'Email',
+			'from' => 'From',
+			'to' => 'To',
+			'subject' => 'Subject',
+			'message' => 'Message',
+			'attachment' => 'Attachment',
+                        'read' => 'Read',
+			'status' => 'Status',
+			'trash' => 'Trash',
+			'sent' => 'Sent',
+			'created_at' => 'Created At',
+			'modified_at' => 'Modified At',
+			'trashed_at' => 'Trashed At',
+			'sent_at' => 'Sent At',
+		);
+	}
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
