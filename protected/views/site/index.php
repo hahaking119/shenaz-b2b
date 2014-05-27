@@ -4,17 +4,22 @@
 $this->pageTitle = Yii::app()->name;
 ?>
 
-<!-- jQuery library (served from Google) -->
-<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>-->
-<!-- bxSlider Javascript file -->
-<script src="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/jquery.bxslider/jquery.bxslider.min.js'); ?>"></script>
-<!-- bxSlider CSS file -->
-<link href="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/jquery.bxslider/jquery.bxslider.css'); ?>" rel="stylesheet" />
+<!-- Important Owl stylesheet -->
+<link rel="stylesheet" href="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/owl_carousel/owl-carousel/owl.carousel.css'); ?>">
+ 
+<!-- Default Theme -->
+<link rel="stylesheet" href="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/owl_carousel/owl-carousel/owl.theme.css')?>">
+ 
+<!--  jQuery 1.7+  -->
+<script src="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/owl_carousel/assets/js/jquery-1.9.1.min.js')?>"></script>
+ 
+<!-- Include js plugin -->
+<script src="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/owl_carousel/owl-carousel/owl.carousel.js')?>"></script>
 
 <h1>Welcome to <i><?php echo CHtml::encode(Yii::app()->name); ?></i></h1>
 <div class="new-arrivals">
     <h2>New Arrivals</h2>
-    <ul class="bxslider">
+    <ul id="products-slider">
 
         <?php
         $i = 1;
@@ -35,11 +40,51 @@ $this->pageTitle = Yii::app()->name;
                     <div class="cost">From <span class="price">US $<?php echo $product->price; ?></span> / Piece</div>
                     <div class="feedback">
                         <div class="rating">
-                            <span class="stars">
-                                <span class="rate-percent" style="width:95.2%"></span>
-                            </span>
+                            <?php 
+                                $form=$this->beginWidget('CActiveForm', array(
+                                    'id'=>'product-rating-form',
+                                    'enableAjaxValidation'=>false,
+                                ));
+                            ?>
+                                    <?php
+                                        $totalRating = Rating::model()->findAll();
+                                        $rating = Rating::model()->findAll('product_id = '.$product->product_id);
+                                        if(!empty($totalRating)){
+                                            $sum = 0;
+                                            $vote_sum = 0;
+                                            foreach($totalRating as $rate)
+                                            {
+                                                $sum = $sum + $rate->rating;
+                                            }
+                                            foreach($rating as $vote){
+                                                $vote_sum = $vote_sum + $vote->rating;
+                                            }
+                                            $ratingPercentage = ($vote_sum/$sum)*100;
+                                            $value = ($ratingPercentage/100)*5;
+                                        }
+                                            $this->widget('CStarRating',array(
+                                                      'name'=>'star-rating',
+                                                      'value'=>  round($value),
+                                                      'minRating'=>1,
+                                                      'maxRating'=>5,
+                                                      'starCount'=>5,
+                                                      'allowEmpty'=>FALSE,
+                                                      'readOnly'=>true
+                                                    ));
+                                     ?>
+
+                                <?php $this->endWidget(); ?>
                         </div>
-                        <span class="feedback-num">Feedback (2451)</span>
+                        <span class="feedback-num">
+                            <?php
+                                $feedbacks = Feedback::model()->findAll('product_id ='.$product->product_id.' and status = 1 and trash = 0');
+                                $count = 0;
+                                foreach($feedbacks as $feedback){
+                                    $count++;
+                                }
+                                echo "Feedback (".$count.")";
+                            ?>
+                        </span>
                     </div>
                 </div>
             </li>
@@ -72,18 +117,17 @@ $this->widget('bootstrap.widgets.TbThumbnails', array(
 ?>    
 </div>
 
-<script type="text/javascript">
-
-$(document).ready(function(){
-     $('.bxslider').bxSlider({
-      minSlides: 5,
-      maxSlides: 5,
-      slideWidth: 163,
-      slideMargin: 10,
-      ticker: true,
-      speed: 50000,
-      autoDelay: 2000,
+<script>
+    $(document).ready(function() {
+ 
+      $("#products-slider").owlCarousel({
+          navigation : false, // Show next and prev buttons
+          slideSpeed : 300,
+          paginationSpeed : 400,
+          items:5,
+          autoPlay: true,
+          stopOnHover: true
       });
-});
 
+    });
 </script>
