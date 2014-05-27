@@ -8,7 +8,7 @@ class CartComponent extends CComponent {
             $total = 0;
             foreach ($cart as $item) {
                 $product = Product::model()->findByPk($item['product_id']);
-                $total +=$product->price;
+                $total +=($product->price * $item['qty']);
             }
             return $total;
         } else {
