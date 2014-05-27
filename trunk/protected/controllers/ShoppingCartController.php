@@ -62,17 +62,42 @@ class ShoppingCartController extends CController {
         $this->render('view', array('products' => $products));
     }
 
-    public function actionRemove(){
-        if(isset($_POST['product_id'])){
+    public function actionRemove() {
+        if (isset($_POST['product_id'])) {
             $cart = Yii::app()->session['shopping_list'];
             foreach ($cart as $key => $value) {
-                    if ($value['product_id'] == $_POST['product_id']) {
-                        $cart_index = $key;
-                    }
+                if ($value['product_id'] == $_POST['product_id']) {
+                    $cart_index = $key;
                 }
-                if (isset($cart_index)) {
-                    unset($cart[$cart_index]);
-                }
+            }
+            if (isset($cart_index)) {
+                unset($cart[$cart_index]);
+            }
+            Yii::app()->session['shopping_list'] = $cart;
+            echo 'success';
+            Yii::app()->end();
         }
     }
+
+    public function actionUpdateQuantity() {
+        if (isset($_POST['product_id'])) {
+            $cart = Yii::app()->session['shopping_list'];
+            foreach ($cart as $key => $value) {
+                if ($value['product_id'] == $_POST['product_id']) {
+                    $cart_index = $key;
+                }
+            }
+            if (isset($cart_index)) {
+                $cart[$cart_index]['qty'] = $_POST['qty'];
+            }
+            Yii::app()->session['shopping_list'] = $cart;
+            echo 'success';
+            Yii::app()->end();
+        }
+    }
+
+    public function actionCheckout() {
+        $this->redirect(Yii::app()->createAbsoluteUrl('order/create'));
+    }
+
 }
