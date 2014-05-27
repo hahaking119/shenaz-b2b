@@ -244,7 +244,7 @@ input[class="search-button"]{
     width: 25px;
 }
 .item .image, .items .image{
-    height: 150px;
+    height: 131px;
     overflow: hidden;
     background: none repeat scroll 0 0 #FFFFFF;
 }
