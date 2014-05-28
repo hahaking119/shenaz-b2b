@@ -30,6 +30,15 @@ class SellerLeftColumn extends CWidget {
                         'itemOptions' => array('class' => ($controller == 'custom categories' && $action == 'create') ? 'child-menu active' : 'child-menu')),
                 )
             ),
+            array('label' => 'Email', 'url' => 'javascript:void(0)',
+                'itemOptions' => array('class' => ($controller == 'email') ? 'parent-menu active ' . $controller : 'parent-menu'),
+                'items' => array(
+                    array('label' => 'Manage Emails', 'url' => array('email/admin'),
+                        'itemOptions' => array('class' => ($controller == 'custom categories' && $action == 'admin') ? 'child-menu active' : 'child-menu')),
+                    array('label' => 'Compose', 'url' => array('email/create'),
+                        'itemOptions' => array('class' => ($controller == 'custom categories' && $action == 'create') ? 'child-menu active' : 'child-menu')),
+                )
+            ),
             array('label' => 'Edit Company and Directory Information', 'url' => array('directoryInformation/add_directory_company_info')),
             array('label' => 'Setting', 'url' => array('member/setting')),
             array('label' => 'Logout', 'url' => array('login/logout')),

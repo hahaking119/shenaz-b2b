@@ -229,17 +229,19 @@ class SiteController extends Controller {
         $code = $captcha->verifyCode;
         if ($code === $_REQUEST['verifyCode']) {
             $model = new Email;
-            $model->from = Yii::app()->user->isGuest? '' : UserIdentity::getMemberId();
-            $model->from_email = Yii::app()->user->isGuest? $_POST['email'] : '';
+            $model->from = Yii::app()->user->isGuest ? '' : UserIdentity::getMemberId();
+            $model->from_email = Yii::app()->user->isGuest ? $_POST['email'] : '';
             $model->to = $_POST['to'];
             $model->subject = $_POST['subject'];
             $model->message = $_POST['message'];
+            $model->created_at = new CDbExpression('NOW()');
+            $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
                 $result['result'] = 'success';
                 $return = htmlspecialchars(json_encode($result), ENT_NOQUOTES);
                 echo $return;
                 Yii::app()->end();
-            }else{
+            } else {
                 echo "an error occured.";
             }
         } else {
