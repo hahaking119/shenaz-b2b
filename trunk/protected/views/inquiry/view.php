@@ -8,7 +8,7 @@
 $this->widget('bootstrap.widgets.TbDetailView', array(
     'data' => $model,
     'attributes' => array(
-        'email_id',
+//        'email_id',
         array(
             'name' => 'from',
             'type' => 'raw',
