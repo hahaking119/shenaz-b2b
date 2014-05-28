@@ -72,5 +72,57 @@ class InquiryController extends CController {
         }
         $this->redirect(Yii::app()->createAbsoluteUrl('site/index'));
     }
+    
+    public function actionAdmin(){
+        $model = new Email('search');
+        $model->unsetAttributes();  // clear any default values
+        if (isset($_GET['Email']))
+            $model->attributes = $_GET['Email'];
+
+        $this->render('admin', array(
+            'model' => $model,
+        ));
+    }
+    
+    public function actionView($id) {
+        $this->render('view', array(
+            'model' => Email::model()->findByAttributes(array('email_id' => $id)),
+        ));
+    }
+    
+    public function actionreply($id) {
+        $model = Email::model()->findByPk($id);
+        $model->dbMessage = $model->message;
+        $model->dbTo = $model->from;
+        $model->dbToEmail = $model->from_email;
+        if (isset($_POST['Email'])) {
+
+            $email = new email;
+            $email->attributes = $_POST['Email'];
+            $email->from = Yii::app()->user->getId();
+            $email->to = $model->dbTo;
+            $email->message = $email->message . '<br><hr>' . $model->dbMessage;
+            $email->created_at = new CDbExpression('NOW()');
+            $email->modified_at = new CDbExpression('NOW()');
+            if ($email->save()) {
+                $mail = new Mail();
+                $from = Member::model()->findByPk($email->from)->email;
+                if (!empty($model->dbTo)) {
+                    $to = Member::model()->findByPk($model->dbTo)->email;
+                } else {
+                    $to = $model->dbToEmail;
+                }
+//                $to = 'sanjay.ariyaweb@gmail.com';
+                $subject = $email->subject;
+                $message = $email->message;
+                if (!$mail->sendEmail($from, $to, $subject, $message)) {
+                    print_r($mail->getErrors());
+                }
+
+                $this->redirect(Yii::app()->createAbsoluteUrl('seller/email/admin'));
+            }
+        }
+        $this->render('_form', array('model' => $model));
+    }
 
 }
