@@ -78,10 +78,11 @@
                                                             url: "'.CController::createUrl('rate').'",
                                                             data: "rating=" + $(this).val()+"&product_id='.$product->product_id.'+&company_id='.$companyInformation->company_id.'",
                                                             success: function(data){
-                                            }})}'
-
+                                                            }
+                                                        })
+                                            }'
                                         ));
-                                               ?>
+                       ?>
 
                 <?php $this->endWidget(); ?>
         </div>
