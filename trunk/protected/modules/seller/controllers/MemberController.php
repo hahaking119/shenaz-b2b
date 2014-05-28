@@ -53,6 +53,7 @@ class MemberController extends Controller
             $model->modified_at = new CDbExpression('NOW()');
             if ($model->save()) {
                 Yii::app()->user->setFlash('success', '<strong>Updated!</strong> The setting has been updated.');
+                $this->redirect('setting');
             } else {
                 Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
             }

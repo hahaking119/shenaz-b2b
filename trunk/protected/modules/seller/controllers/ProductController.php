@@ -1,156 +1,289 @@
 <?php
 
-class ProductController extends Controller
-{
-	/**
-	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
-	 * using two-column layout. See 'protected/views/layouts/column2.php'.
-	 */
-	public $layout='//layouts/column2';
+class ProductController extends Controller {
 
-	/**
-	 * @return array action filters
-	 */
-	public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-			'postOnly + delete', // we only allow deletion via POST request
-		);
-	}
+    /**
+     * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
+     * using two-column layout. See 'protected/views/layouts/column2.php'.
+     */
+    public $layout = '//layouts/column2';
 
-	/**
-	 * Specifies the access control rules.
-	 * This method is used by the 'accessControl' filter.
-	 * @return array access control rules
-	 */
-	public function accessRules()
-	{
-		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
-				'users'=>array('*'),
-			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','admin','upload','remove_image','trash','updateStatus', 'listSubCategories', 'ListLevel2Categories', 'listLevel1CustomCategories', 'listLevel2CustomCategories'),
-				'users'=>array('@'),
-			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
-		);
-	}
+    /**
+     * @return array action filters
+     */
+    public function filters() {
+        return array(
+            'accessControl', // perform access control for CRUD operations
+            'postOnly + delete', // we only allow deletion via POST request
+        );
+    }
 
-	/**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
-	public function actionView($id)
-	{
-            $this->layout = '//layouts/column3';
-		$this->render('view',array(
-			'model'=>$this->loadModel($id),
-		));
-	}
+    /**
+     * Specifies the access control rules.
+     * This method is used by the 'accessControl' filter.
+     * @return array access control rules
+     */
+    public function accessRules() {
+        return array(
+            array('allow', // allow all users to perform 'index' and 'view' actions
+                'actions' => array('index', 'view'),
+                'users' => array('*'),
+            ),
+            array('allow', // allow authenticated user to perform 'create' and 'update' actions
+                'actions' => array('create', 'update', 'admin', 'upload', 'remove_image', 'trash', 'updateStatus', 'listSubCategories', 'ListLevel2Categories', 'listLevel1CustomCategories', 'listLevel2CustomCategories'),
+                'users' => array('@'),
+            ),
+            array('allow', // allow admin user to perform 'admin' and 'delete' actions
+                'actions' => array('admin', 'delete'),
+                'users' => array('admin'),
+            ),
+            array('deny', // deny all users
+                'users' => array('*'),
+            ),
+        );
+    }
 
-	/**
-	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'view' page.
-	 */
-	public function actionCreate() {
-            $model = new Product;
+    /**
+     * Displays a particular model.
+     * @param integer $id the ID of the model to be displayed
+     */
+    public function actionView($id) {
+        $this->layout = '//layouts/column3';
+        $this->render('view', array(
+            'model' => $this->loadModel($id),
+        ));
+    }
 
-            $user_id = Yii::app()->user->getId();
-            $company_id = CompanyInformation::model()->findByAttributes(array('member_id'=>$user_id))->company_id;
-            $model->company_id = $company_id;
+    /**
+     * Creates a new model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     */
+    public function actionCreate() {
+        $model = new Product;
 
-            $categories = Category::model()->findAllByAttributes(array('parent_id' => 0,'status' => 1, 'trash' => 0));
-            $productImages = new ProductImage();
-            $productCategory = new ProductCategory();
-            $productCustomCategory = new ProductCustomCategory();
-            $customCategoryList = CustomCategory::model()->findAllByAttributes(array('company_id'=>$company_id, 'parent_id'=>0, 'status'=>1, 'trash'=>0));
+        $user_id = Yii::app()->user->getId();
+        $company_id = CompanyInformation::model()->findByAttributes(array('member_id' => $user_id))->company_id;
+        $model->company_id = $company_id;
 
-            // Uncomment the following line if AJAX validation is needed
-            $this->performAjaxValidation($model);
+        $categories = Category::model()->findAllByAttributes(array('parent_id' => 0, 'status' => 1, 'trash' => 0));
+        $productImages = new ProductImage();
+        $productCategory = new ProductCategory();
+        $productCustomCategory = new ProductCustomCategory();
+        $customCategoryList = CustomCategory::model()->findAllByAttributes(array('company_id' => $company_id, 'parent_id' => 0, 'status' => 1, 'trash' => 0));
 
-            if (isset($_POST['Product'])) {
-                $model->attributes = $_POST['Product'];
-                $model->slug = CommonClass::getSlug($model->name);
-                $model->category_id = null;
-                $model->custom_category_id = null;
-                $model->created_at = new CDbExpression('NOW()');
-                $model->modified_at = new CDbExpression('NOW()');
-                if ($model->save()) {
-                    if(!empty($_POST['ProductCategory']['category_id'])){
-                            $productCategory->product_id = $model->product_id;
-                            $productCategory->category_id = $_POST['ProductCategory']['category_id'];
-                            if (!$productCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCategory->getErrors());
-                            }
+        // Uncomment the following line if AJAX validation is needed
+        $this->performAjaxValidation($model);
+
+        if (isset($_POST['Product'])) {
+            $model->attributes = $_POST['Product'];
+            $model->slug = CommonClass::getSlug($model->name);
+            $model->category_id = null;
+            $model->custom_category_id = null;
+            $model->created_at = new CDbExpression('NOW()');
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                if (!empty($_POST['ProductCategory']['category_id'])) {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = $_POST['ProductCategory']['category_id'];
+                    if (!$productCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCategory->getErrors());
+                    }
+                }
+                if (!empty($_POST['ProductCategory']['subcategory_id'])) {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
+                    if (!$productCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCategory->getErrors());
+                    }
+                }
+                if (!empty($_POST['ProductCategory']['level2'])) {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = $_POST['ProductCategory']['level2'];
+                    if (!$productCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCategory->getErrors());
+                    }
+                }
+
+                if (empty($_POST['ProductCategory']['level2']) && empty($_POST['ProductCategory']['subcategory_id']) && empty($_POST['ProductCategory']['category_id'])) {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = "";
+                    $productCategory->save();
+                }
+
+                if (!empty($_POST['ProductCustomCategory']['custom_category_id'])) {
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
+                    if (!$productCustomCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCustomCategory->getErrors());
+                    }
+                }
+
+                if (!empty($_POST['ProductCustomCategory']['level1'])) {
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level1'];
+                    if (!$productCustomCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCustomCategory->getErrors());
+                    }
+                }
+
+                if (!empty($_POST['ProductCustomCategory']['level2'])) {
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level2'];
+                    if (!$productCustomCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCustomCategory->getErrors());
+                    }
+                }
+
+                if (empty($_POST['ProductCustomCategory']['level2']) && empty($_POST['ProductCustomCategory']['level1']) && empty($_POST['ProductCustomCategory']['custom_category_id'])) {
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = "";
+                    $productCustomCategory->save();
+                }
+
+                if (isset($_POST['ProductImages']['image'])) {
+                    foreach ($_POST['ProductImages']['image'] as $key => $value) {
+                        $productImage = new ProductImage();
+                        $productImage->product_id = $model->product_id;
+                        $productImage->image = $value;
+                        $productImage->save();
+
+                        $tempdir = Yii::app()->basePath . '/../uploads/temp/';
+                        $realdir = Yii::app()->basePath . '/../uploads/product/';
+                        $image = $value;
+
+                        @copy($tempdir . 'original/' . $image, $realdir . 'original/' . $image);
+                        @copy($tempdir . 'thumbs/' . $image, $realdir . 'thumbs/' . $image);
+                        @unlink($tempdir . 'original/' . $image);
+                        @unlink($tempdir . 'thumbs/' . $image);
+                    }
+                }
+                Yii::app()->user->setFlash('success', '<strong>Added!</strong> The new product has been added.');
+                $this->redirect(array('view', 'id' => $model->product_id));
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
+            }
+        }
+
+        $this->render('create', array(
+            'model' => $model,
+            'categories' => $categories,
+            'productImages' => $productImages,
+            'productCategory' => $productCategory,
+            'productCustomCategory' => $productCustomCategory,
+            'productCustomCategoryList' => $productCustomCategoryList,
+            'customCategoryList' => $customCategoryList,
+            'company_id' => $company_id,
+        ));
+    }
+
+    /**
+     * Updates a particular model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param integer $id the ID of the model to be updated
+     */
+    public function actionUpdate($id) {
+        $model = $this->loadModel($id);
+
+        $user_id = Yii::app()->user->getId();
+        $company_id = CompanyInformation::model()->findByAttributes(array('member_id' => $user_id))->company_id;
+        $model->company_id = $company_id;
+
+        $categories = Category::model()->findAllByAttributes(array('parent_id' => 0, 'status' => 1, 'trash' => 0));
+        $productImages = new ProductImage();
+        $productCategory = ProductCategory::model()->findByAttributes(array('product_id' => $id));
+        $productCustomCategory = ProductCustomCategory::model()->findByAttributes(array('product_id' => $id));
+        $productCategoryList = ProductCategory::model()->findAllByAttributes(array('product_id' => $id));
+        $productCustomCategoryList = ProductCustomCategory::model()->findAllByAttributes(array('product_id' => $id));
+        $productImageLists = ProductImage::model()->findAllByAttributes(array('product_id' => $id));
+
+        // Uncomment the following line if AJAX validation is needed
+        $this->performAjaxValidation($model);
+
+        if (isset($_POST['Product'])) {
+            $model->attributes = $_POST['Product'];
+            $model->slug = CommonClass::getSlug($model->name);
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save()) {
+                if (!empty($_POST['ProductCategory']['category_id'])) {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = $_POST['ProductCategory']['category_id'];
+                    if (!$productCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCategory->getErrors());
+                    }
+                }
+                if (!empty($_POST['ProductCategory']['subcategory_id'])) {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
+                    if (!$productCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCategory->getErrors());
+                    }
+                }
+                if (!empty($_POST['ProductCategory']['level2'])) {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = $_POST['ProductCategory']['level2'];
+                    if (!$productCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCategory->getErrors());
+                    }
+                }
+                if (empty($_POST['ProductCategory']['level2']) && empty($_POST['ProductCategory']['subcategory_id']) && empty($_POST['ProductCategory']['category_id'])) {
+                    $productCategory->product_id = $model->product_id;
+                    $productCategory->category_id = "";
+                    $productCategory->save();
+                }
+
+                if (!empty($_POST['ProductCustomCategory']['custom_category_id'])) {
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
+                    if (!$productCustomCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCustomCategory->getErrors());
+                    }
+                }
+
+                if (!empty($_POST['ProductCustomCategory']['level1'])) {
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level1'];
+                    if (!$productCustomCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCustomCategory->getErrors());
+                    }
+                }
+
+                if (!empty($_POST['ProductCustomCategory']['level2'])) {
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level2'];
+                    if (!$productCustomCategory->save()) {
+                        echo '<pre>';
+                        print_r($productCustomCategory->getErrors());
+                    }
+                }
+
+                if (empty($_POST['ProductCustomCategory']['level2']) && empty($_POST['ProductCustomCategory']['level1']) && empty($_POST['ProductCustomCategory']['custom_category_id'])) {
+                    $productCustomCategory->product_id = $model->product_id;
+                    $productCustomCategory->custom_category_id = "";
+                    $productCustomCategory->save();
+                }
+
+
+                if (isset($_POST['ProductImages']['image'])) {
+                    foreach ($productImageLists as $image) {
+
+                        if (!in_array($image->image, $_POST['ProductImages']['image'])) {
+                            $image->delete($image->id);
                         }
-                        if(!empty($_POST['ProductCategory']['subcategory_id'])){
-                            $productCategory->product_id = $model->product_id;
-                            $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
-                            if (!$productCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCategory->getErrors());
-                            }
-                        }
-                    if (!empty($_POST['ProductCategory']['level2'])) {
-                            $productCategory->product_id = $model->product_id;
-                            $productCategory->category_id = $_POST['ProductCategory']['level2'];
-                            if (!$productCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCategory->getErrors());
-                            }
-                        }
-                        
-                    if (empty($_POST['ProductCategory']['level2']) && empty($_POST['ProductCategory']['subcategory_id']) && empty($_POST['ProductCategory']['category_id'])) {
-                        $productCategory->product_id = $model->product_id;
-                        $productCategory->category_id = "";
-                        $productCategory->save();
                     }
-                        
-                    if (!empty($_POST['ProductCustomCategory']['custom_category_id'])) {
-                            $productCustomCategory->product_id = $model->product_id;
-                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
-                            if (!$productCustomCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCustomCategory->getErrors());
-                            }
-                    }
-                    
-                    if (!empty($_POST['ProductCustomCategory']['level1'])) {
-                            $productCustomCategory->product_id = $model->product_id;
-                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level1'];
-                            if (!$productCustomCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCustomCategory->getErrors());
-                            }
-                    }
-                    
-                    if (!empty($_POST['ProductCustomCategory']['level2'])) {
-                            $productCustomCategory->product_id = $model->product_id;
-                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level2'];
-                            if (!$productCustomCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCustomCategory->getErrors());
-                            }
-                    }
-                    
-                    if (empty($_POST['ProductCustomCategory']['level2']) && empty($_POST['ProductCustomCategory']['level1']) && empty($_POST['ProductCustomCategory']['custom_category_id'])) {
-                        $productCustomCategory->product_id = $model->product_id;
-                        $productCustomCategory->custom_category_id = "";
-                        $productCustomCategory->save();
-                    }
-                    
-                    if (isset($_POST['ProductImages']['image'])) {
-                        foreach ($_POST['ProductImages']['image'] as $key => $value) {
+                    foreach ($_POST['ProductImages']['image'] as $key => $value) {
+                        $productImage = ProductImage::model()->findByAttributes(array('image' => $value));
+                        if (!$productImage) {
                             $productImage = new ProductImage();
                             $productImage->product_id = $model->product_id;
                             $productImage->image = $value;
@@ -166,235 +299,98 @@ class ProductController extends Controller
                             @unlink($tempdir . 'thumbs/' . $image);
                         }
                     }
-                    Yii::app()->user->setFlash('success', '<strong>Added!</strong> The new product has been added.');
-                    $this->redirect(array('view', 'id' => $model->product_id));
-                } else {
-                    Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
                 }
+                Yii::app()->user->setFlash('success', '<strong>Updated!</strong> The product has been updated.');
+                $this->redirect(array('view', 'id' => $model->product_id));
+            } else {
+                Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
             }
-
-            $this->render('create', array(
-                'model' => $model,
-                'categories' => $categories,
-                'productImages' => $productImages,
-                'productCategory' => $productCategory,
-                'productCustomCategory' => $productCustomCategory,
-                'productCustomCategoryList' => $productCustomCategoryList,
-                'customCategoryList' => $customCategoryList,
-                'company_id' => $company_id,
-            ));
+        }
+        $this->render('update', array(
+            'model' => $model,
+            'companies' => $companies,
+            'categories' => $categories,
+            'productImages' => $productImages,
+            'productCategory' => $productCategory,
+            'productCustomCategory' => $productCustomCategory,
+            'productCategoryList' => $productCategoryList,
+            'productCustomCategoryList' => $productCustomCategoryList,
+            'productImageLists' => $productImageLists,
+            'company_id' => $company_id,
+        ));
     }
 
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
-	public function actionUpdate($id)
-	{
-            $model = $this->loadModel($id);
-            
-            $user_id = Yii::app()->user->getId();
-            $company_id = CompanyInformation::model()->findByAttributes(array('member_id'=>$user_id))->company_id;
-            $model->company_id = $company_id;
-            
-            $categories = Category::model()->findAllByAttributes(array('parent_id' => 0,'status' => 1, 'trash' => 0));
-            $productImages = new ProductImage();
-            $productCategory = ProductCategory::model()->findByAttributes(array('product_id'=>$id));
-            $productCustomCategory = ProductCustomCategory::model()->findByAttributes(array('product_id'=>$id));
-            $productCategoryList = ProductCategory::model()->findAllByAttributes(array('product_id' => $id));
-            $productCustomCategoryList = ProductCustomCategory::model()->findAllByAttributes(array('product_id' => $id));
-            $productImageLists = ProductImage::model()->findAllByAttributes(array('product_id' => $id));
+    /**
+     * Deletes a particular model.
+     * If deletion is successful, the browser will be redirected to the 'admin' page.
+     * @param integer $id the ID of the model to be deleted
+     */
+    public function actionDelete($id) {
+        $this->loadModel($id)->delete();
 
-            // Uncomment the following line if AJAX validation is needed
-            $this->performAjaxValidation($model);
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_GET['ajax']))
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+    }
 
-            if (isset($_POST['Product'])) {
-                $model->attributes = $_POST['Product'];
-                $model->slug = CommonClass::getSlug($model->name);
-                $model->modified_at = new CDbExpression('NOW()');
-                if ($model->save()) {
-                    if(!empty($_POST['ProductCategory']['category_id'])){
-                            $productCategory->product_id = $model->product_id;
-                            $productCategory->category_id = $_POST['ProductCategory']['category_id'];
-                            if (!$productCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCategory->getErrors());
-                            }
-                        }
-                        if(!empty($_POST['ProductCategory']['subcategory_id'])){
-                            $productCategory->product_id = $model->product_id;
-                            $productCategory->category_id = $_POST['ProductCategory']['subcategory_id'];
-                            if (!$productCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCategory->getErrors());
-                            }
-                        }
-                    if (!empty($_POST['ProductCategory']['level2'])) {
-                            $productCategory->product_id = $model->product_id;
-                            $productCategory->category_id = $_POST['ProductCategory']['level2'];
-                            if (!$productCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCategory->getErrors());
-                            }
-                        }
-                    if (empty($_POST['ProductCategory']['level2']) && empty($_POST['ProductCategory']['subcategory_id']) && empty($_POST['ProductCategory']['category_id'])) {
-                        $productCategory->product_id = $model->product_id;
-                        $productCategory->category_id = "";
-                        $productCategory->save();
-                    }
-                        
-                    if (!empty($_POST['ProductCustomCategory']['custom_category_id'])) {
-                            $productCustomCategory->product_id = $model->product_id;
-                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['custom_category_id'];
-                            if (!$productCustomCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCustomCategory->getErrors());
-                            }
-                    }
-                    
-                    if (!empty($_POST['ProductCustomCategory']['level1'])) {
-                            $productCustomCategory->product_id = $model->product_id;
-                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level1'];
-                            if (!$productCustomCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCustomCategory->getErrors());
-                            }
-                    }
-                    
-                    if (!empty($_POST['ProductCustomCategory']['level2'])) {
-                            $productCustomCategory->product_id = $model->product_id;
-                            $productCustomCategory->custom_category_id = $_POST['ProductCustomCategory']['level2'];
-                            if (!$productCustomCategory->save()) {
-                                echo '<pre>';
-                                print_r($productCustomCategory->getErrors());
-                            }
-                    }
-                    
-                    if (empty($_POST['ProductCustomCategory']['level2']) && empty($_POST['ProductCustomCategory']['level1']) && empty($_POST['ProductCustomCategory']['custom_category_id'])) {
-                        $productCustomCategory->product_id = $model->product_id;
-                        $productCustomCategory->custom_category_id = "";
-                        $productCustomCategory->save();
-                    }
-                    
-                    
-                    if (isset($_POST['ProductImages']['image'])) {
-                        foreach ($productImageLists as $image) {
+    /**
+     * Lists all models.
+     */
+    public function actionIndex() {
+        $dataProvider = new CActiveDataProvider('Product');
+        $this->render('index', array(
+            'dataProvider' => $dataProvider,
+        ));
+    }
 
-                            if (!in_array($image->image, $_POST['ProductImages']['image'])) {
-                                $image->delete($image->id);
-                            }
-                        }
-                        foreach ($_POST['ProductImages']['image'] as $key => $value) {
-                            $productImage = ProductImage::model()->findByAttributes(array('image' => $value));
-                            if (!$productImage) {
-                                $productImage = new ProductImage();
-                                $productImage->product_id = $model->product_id;
-                                $productImage->image = $value;
-                                $productImage->save();
+    /**
+     * Manages all models.
+     */
+    public function actionAdmin() {
+        $this->layout = '//layouts/column3';
+        $model = new Product('search');
+        $model->unsetAttributes();  // clear any default values
+        $companyId = CompanyInformation::model()->findByAttributes(array('member_id' => Yii::app()->user->getId()))->company_id;
 
-                                $tempdir = Yii::app()->basePath . '/../uploads/temp/';
-                                $realdir = Yii::app()->basePath . '/../uploads/product/';
-                                $image = $value;
+        if (!$companyId) {
+            $companyId = '';
+        }
 
-                                @copy($tempdir . 'original/' . $image, $realdir . 'original/' . $image);
-                                @copy($tempdir . 'thumbs/' . $image, $realdir . 'thumbs/' . $image);
-                                @unlink($tempdir . 'original/' . $image);
-                                @unlink($tempdir . 'thumbs/' . $image);
-                            }
-                        }
-                    }
-                    Yii::app()->user->setFlash('success', '<strong>Updated!</strong> The product has been updated.');
-                    $this->redirect(array('view', 'id' => $model->product_id));
-                } else {
-                    Yii::app()->user->setFlash('error', '<strong>Error!</strong> An error has occured.');
-                }
-            
-            }
-            $this->render('update', array(
-                'model' => $model,
-                'companies' => $companies,
-                'categories' => $categories,
-                'productImages' => $productImages,
-                'productCategory' => $productCategory,
-                'productCustomCategory' => $productCustomCategory,
-                'productCategoryList' => $productCategoryList,
-                'productCustomCategoryList' => $productCustomCategoryList,
-                'productImageLists' => $productImageLists,
-                'company_id' => $company_id,
-            ));
-	}
+        if (isset($_GET['Product']))
+            $model->attributes = $_GET['Product'];
 
-	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'admin' page.
-	 * @param integer $id the ID of the model to be deleted
-	 */
-	public function actionDelete($id)
-	{
-		$this->loadModel($id)->delete();
+        $this->render('admin', array(
+            'model' => $model,
+            'companyId' => $companyId,
+        ));
+    }
 
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-	}
+    /**
+     * Returns the data model based on the primary key given in the GET variable.
+     * If the data model is not found, an HTTP exception will be raised.
+     * @param integer $id the ID of the model to be loaded
+     * @return Product the loaded model
+     * @throws CHttpException
+     */
+    public function loadModel($id) {
+        $model = Product::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
 
-	/**
-	 * Lists all models.
-	 */
-	public function actionIndex()
-	{
-		$dataProvider=new CActiveDataProvider('Product');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
-	}
+    /**
+     * Performs the AJAX validation.
+     * @param Product $model the model to be validated
+     */
+    protected function performAjaxValidation($model) {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'product-form') {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
+        }
+    }
 
-	/**
-	 * Manages all models.
-	 */
-	public function actionAdmin()
-	{
-            $this->layout = '//layouts/column3';
-		$model=new Product('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Product']))
-			$model->attributes=$_GET['Product'];
-
-		$this->render('admin',array(
-			'model'=>$model,
-		));
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer $id the ID of the model to be loaded
-	 * @return Product the loaded model
-	 * @throws CHttpException
-	 */
-	public function loadModel($id)
-	{
-		$model=Product::model()->findByPk($id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
-	}
-
-	/**
-	 * Performs the AJAX validation.
-	 * @param Product $model the model to be validated
-	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='product-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
-	}
-        
-        public function actionUpload() {
+    public function actionUpload() {
         Yii::import("ext.EAjaxUpload.qqFileUploader");
 
         $folder = Yii::app()->basePath . '/../uploads/temp/original/'; // folder for uploaded files
@@ -415,12 +411,12 @@ class ProductController extends Controller
 
         echo $return; // it's array
     }
-    
+
     public function actionRemove_image() {
         if (Yii::app()->request->isAjaxRequest) {
             $image = $_POST['image'];
             $id = $_POST['id'];
-            if(!empty($id)){
+            if (!empty($id)) {
                 $product_img = ProductImage::model()->findByPk($id);
                 $product_img->delete();
             }
@@ -437,7 +433,7 @@ class ProductController extends Controller
             echo 'success';
         }
     }
-    
+
     public function actionTrash($id) {
         $model = $this->loadModel($id);
         $model->trash = 1;
@@ -450,65 +446,62 @@ class ProductController extends Controller
         }
         $this->redirect(array('admin'));
     }
-    
+
     public function actionUpdateStatus($id) {
-            $model = $this->loadModel($id);
-            if (isset($_POST['status'])) {
-                $model->status = $_POST['status'];
-                $model->modified_at = new CDbExpression('NOW()');
-                if ($model->save())
-                    echo 'success';
-                Yii::app()->end();
-            }
+        $model = $this->loadModel($id);
+        if (isset($_POST['status'])) {
+            $model->status = $_POST['status'];
+            $model->modified_at = new CDbExpression('NOW()');
+            if ($model->save())
+                echo 'success';
+            Yii::app()->end();
+        }
     }
-    
+
     public function actionListSubCategories() {
-            if (isset($_POST['id']) && !empty($_POST['id'])) {
-                echo "<option value=''>--- Select Sub Category ---</option>";
-                if ($_POST['id'] != 0) {
-                    $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'category_id', 'title');
-                    foreach ($data as $value => $name)
-                        echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
-                }
+        if (isset($_POST['id']) && !empty($_POST['id'])) {
+            echo "<option value=''>--- Select Sub Category ---</option>";
+            if ($_POST['id'] != 0) {
+                $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'category_id', 'title');
+                foreach ($data as $value => $name)
+                    echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
             }
-            else{
+        } else {
             echo "<option value=''>--- Select Sub Category ---</option>";
         }
     }
-    
-    public function actionListLevel2Categories(){
-        if(isset($_POST['id']) && !empty($_POST['id'])){
+
+    public function actionListLevel2Categories() {
+        if (isset($_POST['id']) && !empty($_POST['id'])) {
             echo "<option value=''>--- Select Level 2 Category ---</option>";
             $data = CHtml::listData(Category::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'category_id', 'title');
             foreach ($data as $value => $name)
                 echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
-        }
-        else{
+        } else {
             echo "<option value=''>--- Select Level 2 Category ---</option>";
         }
     }
-    
-    public function actionListLevel1CustomCategories(){
+
+    public function actionListLevel1CustomCategories() {
         if (isset($_POST['id']) && !empty($_POST['id'])) {
             echo "<option value=''>Select Level 1 Custom Category</option>";
             $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'id', 'title');
             foreach ($data as $value => $name)
                 echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
-        }
-        else{
+        } else {
             echo "<option value=''>Select Level 1 Custom Category</option>";
         }
     }
-    
-    public function actionListLevel2CustomCategories(){
+
+    public function actionListLevel2CustomCategories() {
         if (isset($_POST['id']) && !empty($_POST['id'])) {
             echo "<option value=''>Select Level 2 Custom Category</option>";
             $data = CHtml::listData(CustomCategory::model()->findAllByAttributes(array('parent_id' => $_POST['id'], 'status' => 1, 'trash' => 0)), 'id', 'title');
             foreach ($data as $value => $name)
                 echo CHtml::tag('option', array('value' => $value), CHtml::encode($name), true);
-        }
-        else{
+        } else {
             echo "<option value=''>Select Level 2 Custom Category</option>";
         }
     }
+
 }

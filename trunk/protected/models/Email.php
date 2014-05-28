@@ -22,6 +22,10 @@
  * @property Member $to0
  */
 class Email extends CActiveRecord {
+    
+    public $dbMessage;
+    public $dbTo;
+    public $dbToEmail;
 
     /**
      * Returns the static model of the specified AR class.
@@ -91,11 +95,11 @@ class Email extends CActiveRecord {
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
-    public function search() {
+    public function search($parmas = array()) {
         // Warning: Please modify the following code to remove attributes that
         // should not be searched.
 
-        $criteria = new CDbCriteria;
+        $criteria = new CDbCriteria($parmas);
 
         $criteria->compare('email_id', $this->email_id);
         $criteria->compare('from', $this->from, true);
@@ -114,6 +118,9 @@ class Email extends CActiveRecord {
 
         return new CActiveDataProvider($this, array(
                     'criteria' => $criteria,
+                    'sort' => array(
+                        'defaultOrder' => 't.email_id DESC'
+                    )
                 ));
     }
 

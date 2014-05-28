@@ -19,7 +19,7 @@ class UserIdentity extends CUserIdentity {
      */
     public function authenticate() {
         $username = $this->username;
-        $user = Member::model()->find('email=? and activation_status = 1 and business_type = 1 and status = 1', array($username));
+        $user = Member::model()->find('email=? and activation_status = 1 and business_type < 2 and status = 1', array($username));
         $users = array(
             // username => password
             $user["email"] => $user["password"],

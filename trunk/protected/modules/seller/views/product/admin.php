@@ -2,14 +2,14 @@
 /* @var $this ProductController */
 /* @var $model Product */
 
-$this->breadcrumbs=array(
-	'Products'=>array('index'),
-	'Manage',
+$this->breadcrumbs = array(
+    'Products' => array('index'),
+    'Manage',
 );
 
-$this->menu=array(
-	array('label'=>'List Product', 'url'=>array('index')),
-	array('label'=>'Create Product', 'url'=>array('create')),
+$this->menu = array(
+    array('label' => 'List Product', 'url' => array('index')),
+    array('label' => 'Create Product', 'url' => array('create')),
 );
 
 //Yii::app()->clientScript->registerScript('search', "
@@ -41,7 +41,7 @@ $this->menu=array(
 $this->widget('bootstrap.widgets.TbGridView', array(
     'id' => 'product-grid',
     'type' => 'striped bordered condensed',
-    'dataProvider' => $model->search(array('condition' => 'trash = 0')),
+    'dataProvider' => $model->search(array('condition' => 'trash = 0 AND company_id =' . $companyId)),
     'filter' => $model,
     'columns' => array(
         array(
