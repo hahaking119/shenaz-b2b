@@ -264,9 +264,12 @@ class SiteController extends Controller {
         $rating->product_id = $_POST['product_id'];
         $rating->company_id = $_POST['company_id'];
         $rating->rating = $_POST['rating'];
-        $rating->member_id = UserIdentity::getMemberId();
-        if ($rating->save())
+        $rating->member_id = $member_id;
+        print_r($rating->attributes);
+        if($rating->save()){
             echo 'rated';
+            Yii::app()->end();
+        }
     }
 
     public function actionView_all() {
