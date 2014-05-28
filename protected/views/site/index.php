@@ -11,7 +11,7 @@ $this->pageTitle = Yii::app()->name;
 <link rel="stylesheet" href="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/owl_carousel/owl-carousel/owl.theme.css')?>">
  
 <!--  jQuery 1.7+  -->
-<script src="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/owl_carousel/assets/js/jquery-1.9.1.min.js')?>"></script>
+<!--<script src="<?php // echo Yii::app()->createAbsoluteUrl('themes/default/scripts/owl_carousel/assets/js/jquery-1.9.1.min.js')?>"></script>-->
  
 <!-- Include js plugin -->
 <script src="<?php echo Yii::app()->createAbsoluteUrl('themes/default/scripts/owl_carousel/owl-carousel/owl.carousel.js')?>"></script>
@@ -20,7 +20,6 @@ $this->pageTitle = Yii::app()->name;
 <div class="new-arrivals">
     <h2>New Arrivals</h2>
     <ul id="products-slider">
-
         <?php
         $i = 1;
         foreach ($recentProducts as $product) {
