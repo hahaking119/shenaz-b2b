@@ -24,7 +24,7 @@
                 <!--<img src="<?php echo Yii::app()->createAbsoluteUrl(''); ?>" alt="b2b logo">-->
                 <a href="<?php echo Yii::app()->createAbsoluteUrl('site'); ?>">B2B Logo</a>
             </div>
-            <div class="span8 search-bar pull-right">
+            <div class="<?php if(Yii::app()->user->isGuest){echo "span8";}else{echo "span9";} ?> search-bar pull-right">
                 <ul>
                     <li class="search-form">
                         <div class="input-append">
@@ -55,7 +55,8 @@
                             <a href="<?php echo Yii::app()->createAbsoluteUrl('site/login'); ?>">Sign In</a>
                             <?php
                         } else {
-                            ?>
+                            echo Chtml::link('View Inquiry',Yii::app()->createAbsoluteUrl('inquiry/admin'));
+                            ?>|
                             <a href="<?php echo Yii::app()->createAbsoluteUrl('site/logout'); ?>">Logout</a>
                             <?php
                         }
